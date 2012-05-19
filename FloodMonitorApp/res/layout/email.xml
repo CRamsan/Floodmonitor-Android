@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+>
+	<LinearLayout
+	    xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent"
+	    android:orientation="vertical" >
+	    <TextView
+	        android:id="@+id/latitudeView"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="Latitude"
+	        android:textAppearance="?android:attr/textAppearanceMedium" >
+	    </TextView>
+
+	    <EditText
+	        android:id="@+id/latitudeText"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:inputType="numberDecimal" />
+
+	    <TextView
+	        android:id="@+id/longitudeView"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="Longitude"
+	        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+	    <EditText
+	        android:id="@+id/longitudeText"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:inputType="numberDecimal" />
+
+	    <TextView
+	        android:id="@+id/hoursagoView"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="Hours Ago"
+	        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+	    <EditText
+	        android:id="@+id/minutesagoText"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:inputType="time" />
+
+	    <TextView
+	        android:id="@+id/minutesagoView"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="Minutes Ago"
+	        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+	    <EditText
+	        android:id="@+id/hoursagoText"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:inputType="time" />
+
+	    <TextView
+	        android:id="@+id/streetstateView"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="Ditches/City Streets were"
+	        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+	    <Spinner
+	        android:id="@+id/streetstateSpinner"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content" />
+
+	    <TextView
+	        android:id="@+id/coverView"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="Fields/pastures/gardens/yards were covered with"
+	        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+	    <Spinner
+	        android:id="@+id/coverSpinner"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content" />
+
+	    <TextView
+	        android:id="@+id/depthView"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="The snow/water/ice cover was"
+	        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+	    <EditText
+	        android:id="@+id/depthText"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:inputType="number" />
+
+	    <TextView
+	        android:id="@+id/commentView"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="I would also like to report the following: (Optional)"
+	        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+	    <EditText
+	        android:id="@+id/commentText"
+	        android:layout_width="match_parent"
+	        android:layout_height="94dp" />
+
+	    <TextView
+	        android:id="@+id/pictureView"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="I would like to upload a picture taken at this location: (Optional)"
+	        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+	    <Button
+	        android:id="@+id/pictureButton"
+	        android:layout_width="84dp"
+	        android:layout_height="wrap_content"
+	        android:text="Choose File" />
+
+	    <TextView
+	        android:id="@+id/textView1"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="Medium Text"
+	        android:layout_gravity="right"
+	        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+	    <TextView
+	        android:id="@+id/emailView"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="Please type letters/numbers from the image:"
+	        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+	    <EditText
+	        android:id="@+id/emailText"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:inputType="textEmailAddress" />
+	</LinearLayout>
+
+</ScrollView>

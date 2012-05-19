@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/frameLayout1"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
+	    <ImageView  
+        	android:layout_width="fill_parent" 
+        	android:layout_height="fill_parent" 
+        	android:scaleType="centerCrop"
+        	android:src="@drawable/flood" />
+	    
+	        <TextView
+	            android:id="@+id/textView1"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_gravity="top|center"
+	            android:layout_marginTop="20dip"
+	            android:text="Flood Monitor"
+	            android:textSize="50sp" />
+	        
+	        <LinearLayout
+	            android:id="@+id/linearLayout1"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_gravity="center"
+	            android:orientation="vertical" >
+	            
+		            <Button
+			            android:id="@+id/viewMap"
+			            android:layout_width="wrap_content"
+			            android:layout_height="wrap_content"
+			            android:layout_gravity="center_horizontal"
+			            android:textSize="35sp"
+		            android:text="View Map" />
+		            
+		        	<Button
+			            android:id="@+id/uploadForm"
+			            android:layout_width="wrap_content"
+			            android:layout_height="wrap_content"
+			            android:layout_gravity="center_horizontal"
+			            android:textSize="35sp"
+		            android:text="Post Picture" />
+		        	
+	        </LinearLayout>
+
+    </FrameLayout>
