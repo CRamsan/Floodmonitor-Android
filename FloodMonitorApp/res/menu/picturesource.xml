@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item android:id="@+id/sourcecamera" android:showAsAction="always|withText" android:title="From Camera"></item>
+    <item android:id="@+id/sourcegallery" android:showAsAction="always|withText" android:title="From Gallery"></item>   
+
+</menu>
