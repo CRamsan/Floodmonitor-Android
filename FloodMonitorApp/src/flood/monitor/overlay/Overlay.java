@@ -3,6 +3,7 @@ package flood.monitor.overlay;
 import java.util.ArrayList;
 
 import android.content.ClipData.Item;
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 
 import com.google.android.maps.ItemizedOverlay;

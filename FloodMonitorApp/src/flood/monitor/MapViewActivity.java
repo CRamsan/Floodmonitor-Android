@@ -51,6 +51,7 @@ public class MapViewActivity extends MapActivity {
                 return true;
             case R.id.item2://Upload
     			Intent intent = new Intent(MapViewActivity.this, UploadFormActivity.class);
+            	//Intent intent = new Intent(MapViewActivity.this, FloodMonitorActivity.class);
     			startActivity(intent);
                 return true;
             default:
