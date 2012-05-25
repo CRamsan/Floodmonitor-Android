@@ -4,32 +4,34 @@
     android:versionCode="1"
     android:versionName="1.0" >
 
-    <uses-sdk android:minSdkVersion="8" />
-        
-   	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-   	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-	<uses-permission android:name="android.permission.INTERNET" />
+    <uses-sdk
+        android:minSdkVersion="4"
+        android:targetSdkVersion="11" />
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:icon="@drawable/ic_launcher"
-        android:theme="@style/LightThemeSelector"
-        android:label="@string/app_name" >
-        
-		<uses-library android:name="com.google.android.maps" />
-        
+        android:label="@string/app_name"
+        android:theme="@style/ThemeSelector" >
+        <uses-library android:name="com.google.android.maps" />
+
         <activity
-            android:label="@string/app_name"
-            android:name=".FloodMonitorActivity" >
-            <intent-filter >
+            android:name=".FloodMonitorActivity"
+            android:label="@string/app_name" >
+        </activity>
+        <activity android:name=".UploadFormActivity" >
+        </activity>
+        <activity android:name=".MapViewActivity" >
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        
-        <activity android:name=".UploadFormActivity">
-        </activity>
-        <activity android:name=".MapViewActivity"></activity>
-		
     </application>
 
 </manifest>

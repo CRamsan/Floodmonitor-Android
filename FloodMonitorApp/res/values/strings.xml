@@ -3,5 +3,6 @@
 
     <string name="hello">Hello World, FloodMonitorActivity!</string>
     <string name="app_name">FloodMonitor</string>
+    <string name="upload">Upload</string>
 
 </resources>
