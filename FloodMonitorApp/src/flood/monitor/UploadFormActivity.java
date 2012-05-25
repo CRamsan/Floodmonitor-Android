@@ -10,9 +10,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -31,8 +33,7 @@ import android.widget.PopupMenu.OnMenuItemClickListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class UploadFormActivity extends Activity implements
-		OnMenuItemClickListener {
+public class UploadFormActivity extends Activity {
 
 	public String file;
 	public Context context = this;
@@ -67,12 +68,23 @@ public class UploadFormActivity extends Activity implements
 		});
 	}
 
+	/*	public void showMenu(View arg0){
+	PopupMenu popup = new PopupMenu(context, arg0);
+	MenuInflater inflater = popup.getMenuInflater();
+	popup.setOnMenuItemClickListener(this);
+	inflater.inflate(R.menu.picturesource, popup.getMenu());
+	popup.show();
+	}*/
+	
 	public void showMenu(View arg0){
-		PopupMenu popup = new PopupMenu(context, arg0);
-		MenuInflater inflater = popup.getMenuInflater();
-		popup.setOnMenuItemClickListener(this);
-		inflater.inflate(R.menu.picturesource, popup.getMenu());
-		popup.show();
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle("Pick a Source");
+		builder.setItems(R.array.picturesource, new DialogInterface.OnClickListener() {
+		    public void onClick(DialogInterface dialog, int item) {
+		        Toast.makeText(getApplicationContext(), "Blah blah", Toast.LENGTH_SHORT).show();
+		    }
+		});
+		AlertDialog alert = builder.create();
 	}
 
 	public void onSaveInstanceState(Bundle savedInstanceState) {
@@ -87,7 +99,7 @@ public class UploadFormActivity extends Activity implements
 		super.onSaveInstanceState(savedInstanceState);
 	}
 
-	@Override
+/*	@Override
 	public boolean onMenuItemClick(MenuItem item) {
 		Intent intent;
 		switch (item.getItemId()) {
@@ -104,7 +116,7 @@ public class UploadFormActivity extends Activity implements
 		default:
 			return false;
 		}
-	}
+	}*/
 
 	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
