@@ -39,6 +39,7 @@ public class UploadFormActivity extends Activity {
 	public Context context = this;
 	public UploadFormActivity activity = this;
 	static final int UPLOADING_DIALOG = 1;
+	static final int SOURCE_SELECTION_DIALOG = 2;
 	public ProgressDialog progressDialog;
 	public ProgressThread progressThread;
 	private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
@@ -56,7 +57,7 @@ public class UploadFormActivity extends Activity {
 		buttonLoadImage.setOnClickListener(new Button.OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-				showMenu(arg0);
+				showDialog(SOURCE_SELECTION_DIALOG);
 			}
 		});
 		Button buttonUploadImage = (Button) findViewById(R.id.submitButton);
@@ -137,6 +138,29 @@ public class UploadFormActivity extends Activity {
 			progressDialog.setIndeterminate(true);
 			progressDialog.setCancelable(true);
 			return progressDialog;
+		}
+		case SOURCE_SELECTION_DIALOG:{
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setTitle("Pick a Source");
+			builder.setItems(R.array.picturesource, new DialogInterface.OnClickListener() {
+			    public void onClick(DialogInterface dialog, int item) {
+					Intent intent;
+					switch (item) {
+					case 0:
+						intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+						fileUri = getOutputMediaFileUri(MEDIA_TYPE_IMAGE); // create a file to save the image
+					    intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // set the image file name
+						startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
+						break;
+					case 1:
+						intent = new Intent(Intent.ACTION_PICK,android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+						startActivityForResult(intent, CAPTURE_GALLERY_IMAGE_REQUEST_CODE);
+						break;
+					default:
+					}
+			    }
+			});
+			return builder.create();
 		}
 		default: {
 			return null;

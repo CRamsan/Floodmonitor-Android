@@ -1,6 +1,7 @@
 package flood.monitor;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -17,6 +18,8 @@ import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
 import com.google.android.maps.OverlayItem;
 
+import flood.monitor.modules.kmlparser.Parser;
+
 public class MapViewActivity extends MapActivity {
 
 	MapView mapView;
@@ -28,6 +31,7 @@ public class MapViewActivity extends MapActivity {
         setContentView(R.layout.map);
         mapView = (MapView) findViewById(R.id.mapview);
         mapView.setBuiltInZoomControls(true);
+        openAsset();
     }
         
     @Override
@@ -64,24 +68,21 @@ public class MapViewActivity extends MapActivity {
      */
     
     public void openAsset(){
-
-    	String str="";
-    	StringBuffer buf = new StringBuffer();			
-    	InputStream is = this.getResources().openRawResource(R.raw.sample);
-    	BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-    	try{
-    		
-    	if (is!=null) {							
-    		while ((str = reader.readLine()) != null) {	
-    			buf.append(str + "\n" );
-    		}				
-    	}		
-    	is.close();	
-    	Toast.makeText(getBaseContext(), 
-    			buf.toString(), Toast.LENGTH_LONG).show();				   	
-    	}catch (Exception e) {
-    		
-    	}
-
+    	String file = "";
+    	InputStream stream = null;
+    	AssetManager assetManager = getAssets();
+    	Parser parser = new Parser();
+    	try {
+            stream = assetManager.open("sample.kml");
+            parser.Parse(file, stream);
+        } catch (IOException e) {
+            // handle
+        }finally {
+            if (stream != null) {
+                try {
+                     stream.close();
+                } catch (IOException e) {}
+          }
+        }
     }
 } 
