@@ -2,19 +2,27 @@ package flood.monitor;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import android.content.Intent;
 import android.content.res.AssetManager;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
+import com.google.android.maps.Overlay;
+import com.google.android.maps.OverlayItem;
 
 import flood.monitor.modules.Locator;
 import flood.monitor.modules.kmlparser.Parser;
+import flood.monitor.overlay.CustomOverlay;
 
 /**
  * MapViewActivity.java Purpose: Activity that represents the map
@@ -34,6 +42,8 @@ public class MapViewActivity extends MapActivity {
 	// ===========================================================
 	private MapView mapView;
 	private Locator locator;
+	private CustomOverlay overlay;
+
 	// ===========================================================
 	// Constructors
 	// ===========================================================
@@ -53,7 +63,28 @@ public class MapViewActivity extends MapActivity {
 		mapView = (MapView) findViewById(R.id.mapview);
 		mapView.setBuiltInZoomControls(true);
 		locator = new Locator(this);
-		openAsset();
+		Drawable drawable = this.getResources().getDrawable(
+				R.drawable.ic_launcher);
+		overlay = new CustomOverlay(drawable, this);
+		List<Overlay> mapOverlays = mapView.getOverlays();
+
+		// THIS IS TEMPORARY ONLY
+		 GeoPoint point = new GeoPoint(46901130, -96792070);
+		 OverlayItem overlayitem = new OverlayItem(point, "Hello",
+		 "I'm in Athens, Greece!");
+		//try {
+			ArrayList<OverlayItem> mOverlays = openAsset();
+			//overlay.setOverlay(mOverlays);
+			for(int i = 0; i < mOverlays.size(); i++)
+			{
+				overlay.addOverlay(mOverlays.get(i));
+			}
+			overlay.addOverlay(overlayitem);
+			mapOverlays.add(overlay);
+			
+		//} catch (Exception e) {
+		//	Log.i("ERROR","WHY!");
+		//}
 	}
 
 	@Override
@@ -65,14 +96,14 @@ public class MapViewActivity extends MapActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		locator.startListening(this);
+		// locator.startListening(this);
 		// The activity has become visible (it is now "resumed").
 	}
 
 	@Override
 	protected void onPause() {
 		super.onPause();
-		locator.stopListening(this);
+		// locator.stopListening(this);
 		// Another activity is taking focus (this activity is about to be
 		// "paused").
 	}
@@ -138,14 +169,15 @@ public class MapViewActivity extends MapActivity {
 	// ===========================================================
 	// Debug
 	// ===========================================================
-	public void openAsset() {
+	public ArrayList<OverlayItem> openAsset() {
 		String file = "";
 		InputStream stream = null;
 		AssetManager assetManager = getAssets();
 		Parser parser = new Parser();
+		ArrayList<OverlayItem> itemList = new ArrayList<OverlayItem>(0);
 		try {
 			stream = assetManager.open("sample.kml");
-			parser.Parse(file, stream);
+			itemList = parser.Parse(file, stream);
 		} catch (IOException e) {
 			// handle
 		} finally {
@@ -156,5 +188,6 @@ public class MapViewActivity extends MapActivity {
 				}
 			}
 		}
+		return itemList;
 	}
 }
