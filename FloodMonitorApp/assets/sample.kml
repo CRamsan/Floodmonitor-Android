@@ -1,49 +1,54 @@
 <kml xmlns="http://www.opengis.net/kml/2.2">
-  <Document>
-    <Placemark>
-      <name>CDATA example</name>
-      <description>
-		This is an example, please dont erase me 
-      </description>
-      <Point>
-        <coordinates>46.901130,-96.792070</coordinates>
-      </Point>
-    </Placemark>
-    <Placemark>
-      <name>CDATA example</name>
-      <description>
-		This is an example, please dont erase me 
-      </description>
-      <Point>
-        <coordinates>46.901132,-96.792060</coordinates>
-      </Point>
-    </Placemark>
-    <Placemark>
-      <name>CDATA example</name>
-      <description>
-		This is an example, please dont erase me 
-      </description>
-      <Point>
-        <coordinates>46.901171,-96.792072</coordinates>
-      </Point>
-    </Placemark>
-    <Placemark>
-      <name>CDATA example</name>
-      <description>
-		This is an example, please dont erase me 
-      </description>
-      <Point>
-        <coordinates>46.901131,-96.792098</coordinates>
-      </Point>
-    </Placemark>
-    <Placemark>
-      <name>CDATA example</name>
-      <description>
-		This is an example, please dont erase me 
-      </description>
-      <Point>
-        <coordinates>46.901133,-96.792077</coordinates>
-      </Point>
-    </Placemark>
-  </Document>
+	<Document>
+		<Placemark>
+			<name>CDATA example</name>
+			<description>
+				This is an example, please dont erase me 
+			</description>
+			<Point>
+				<coordinates>46.941130,-96.796070</coordinates>
+				<severity>1</severity>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>CDATA example</name>
+			<description>
+				This is an example, please dont erase me 
+			</description>
+			<Point>
+				<coordinates>46.901122,-96.492060</coordinates>
+				<severity>2</severity>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>CDATA example</name>
+			<description>
+				This is an example, please dont erase me 
+			</description>
+			<Point>
+				<coordinates>46.904171,-96.752072</coordinates>
+				<severity>3</severity>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>CDATA example</name>
+			<description>
+				This is an example, please dont erase me 
+			</description>
+			<Point>
+				<coordinates>46.901231,-96.796098</coordinates>
+				<severity>4</severity>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>CDATA example</name>
+			<description>
+				This is an example, please dont erase me 
+			</description>
+			<Point>
+				<coordinates>46.902133,-96.792117</coordinates>
+				<severity>5</severity>
+			</Point>
+		</Placemark>
+	</Document>
 </kml> 

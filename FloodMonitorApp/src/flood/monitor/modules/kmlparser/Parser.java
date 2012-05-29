@@ -19,16 +19,21 @@ import com.google.android.maps.GeoPoint;
 import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
 
+import flood.monitor.R;
 import flood.monitor.overlay.CustomOverlay;
 
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.util.Log;
 
 public class Parser {
 
-	public ArrayList<OverlayItem> Parse(String file, InputStream stream) {
+	private Context context;
 
+	public ArrayList<OverlayItem> Parse(String file, InputStream stream, Context context) {
+		
+		this.context = context;
 		/*
 		 * Drawable drawable =
 		 * this.getResources().getDrawable(R.drawable.ic_launcher); overlay =
@@ -38,26 +43,6 @@ public class Parser {
 		 * OverlayItem(point, "Hello", "I'm in Athens, Greece!");
 		 */
 
-		/*
-		 * <?xml version="1.0" encoding="UTF-8"?> <kml
-		 * xmlns="http://www.opengis.net/kml/2.2"> <Document> <Placemark>
-		 * <name>CDATA example</name> <description> This is an example, please
-		 * dont erase me </description> <Point>
-		 * <coordinates>46.901130,96.792070</coordinates> </Point> </Placemark>
-		 * <Placemark> <name>CDATA example</name> <description> This is an
-		 * example, please dont erase me </description> <Point>
-		 * <coordinates>46.901132,96.792060</coordinates> </Point> </Placemark>
-		 * <Placemark> <name>CDATA example</name> <description> This is an
-		 * example, please dont erase me </description> <Point>
-		 * <coordinates>46.901171,96.792072</coordinates> </Point> </Placemark>
-		 * <Placemark> <name>CDATA example</name> <description> This is an
-		 * example, please dont erase me </description> <Point>
-		 * <coordinates>46.901131,96.792098</coordinates> </Point> </Placemark>
-		 * <Placemark> <name>CDATA example</name> <description> This is an
-		 * example, please dont erase me </description> <Point>
-		 * <coordinates>46.901133,96.792077</coordinates> </Point> </Placemark>
-		 * </Document> </kml>
-		 */
 		KMLHandler handler = new KMLHandler();
 		ArrayList<OverlayItem> itemList = new ArrayList<OverlayItem>(0);
 		try {
@@ -95,12 +80,16 @@ public class Parser {
 		private String description;
 		private int latitude;
 		private int longitude;
+		private int severity;
 		private GeoPoint point;
 		private OverlayItem overlayitem;
+
+		private String temp = "";
 
 		@Override
 		public void startElement(String uri, String localName, String qName,
 				Attributes attributes) throws SAXException {
+
 			if (qName.equalsIgnoreCase("DOCUMENT")) {
 				mOverlay = new ArrayList<OverlayItem>(0);
 				DOCUMENT = true;
@@ -115,6 +104,8 @@ public class Parser {
 			} else if (qName.equalsIgnoreCase("COORDINATES")) {
 				COORDINATES = true;
 			}
+
+			temp = "";
 			Log.i(Parser.class.toString(), "Start Element :" + qName);
 		}
 
@@ -124,57 +115,61 @@ public class Parser {
 			if (qName.equalsIgnoreCase("DOCUMENT")) {
 			} else if (qName.equalsIgnoreCase("PLACEMARK")) {
 				overlayitem = new OverlayItem(point, name, description);
+				Drawable icon = null;
+				switch (severity) {
+				case 1:
+					icon = context.getResources().getDrawable(
+				R.drawable.marker_green_large);
+					break;
+				case 2:
+					icon = context.getResources().getDrawable(
+				R.drawable.marker_green_yellow_large);
+					break;
+				case 3:
+					icon = context.getResources().getDrawable(
+				R.drawable.marker_yellow_large);
+					break;
+				case 4:
+					icon = context.getResources().getDrawable(
+				R.drawable.marker_orange_large);
+					break;
+				case 5:
+					icon = context.getResources().getDrawable(
+				R.drawable.marker_red_large);
+					break;
+				default:
+					break;
+				}
+				icon.setBounds(0, 0, icon.getIntrinsicWidth(), icon.getIntrinsicHeight());
+				overlayitem.setMarker(icon);
+				severity = 0;
 				mOverlay.add(overlayitem);
 			} else if (qName.equalsIgnoreCase("NAME")) {
+				name = temp;
 			} else if (qName.equalsIgnoreCase("DESCRIPTION")) {
+				description = temp;
 			} else if (qName.equalsIgnoreCase("POINT")) {
 				point = new GeoPoint(latitude, longitude);
 			} else if (qName.equalsIgnoreCase("COORDINATES")) {
+				String coordinates = temp;
+				latitude = (int) (Float.parseFloat(coordinates.substring(0,
+						coordinates.indexOf(","))) * 1000000);
+				longitude = (int) (Float.parseFloat(coordinates
+						.substring(coordinates.indexOf(",") + 1)) * 1000000);
+			} else if (qName.equalsIgnoreCase("SEVERITY")) {
+				severity = Integer.parseInt(temp);
 			}
-
+			temp = "";
 			Log.i(Parser.class.toString(), "End Element :" + qName);
 		}
 
 		@Override
 		public void characters(char ch[], int start, int length)
 				throws SAXException {
-			if (DOCUMENT) {
-				Log.i(Parser.class.toString(), "Document :");
-				DOCUMENT = false;
-			}
-			if (PLACEMARK) {
-				Log.i(Parser.class.toString(), "Placemark :");
-				PLACEMARK = false;
-			}
-			if (NAME) {
-				name = new String(ch, start, length);
-				NAME = false;
-				Log.i(Parser.class.toString(), "Name :" + name);
-			}
-			if (DESCRIPTION) {
-				description = new String(ch, start, length);
-				DESCRIPTION = false;
-				Log.i(Parser.class.toString(), "Description :" + description);
-			}
-			if (POINT) {
-				POINT = false;
-				Log.i(Parser.class.toString(), "Point :");
-			}
-			if (COORDINATES) {
-				COORDINATES = false;
-				String coordinates = new String(ch, start, length);
-				try {
-					latitude = (int) (Float.parseFloat(coordinates.substring(0,
-							coordinates.indexOf(","))) * 1000000);
-					longitude = (int) (Float.parseFloat(coordinates
-							.substring(coordinates.indexOf(",") + 1)) * 1000000);
-				} catch (Exception e) {
-					String s = e.getMessage();
-					s = s + "s";
-					s = "";
-				}
-				Log.i(Parser.class.toString(), "Coordinates :" + coordinates);
-			}
+			String input = new String(ch, start, length);
+			temp = temp + input.replaceAll("\n", "").replaceAll("\t", "");
+			Log.i(Parser.class.toString(), "Content :"
+					+ new String(ch, start, length));
 		}
 
 		public ArrayList<OverlayItem> getResult() {

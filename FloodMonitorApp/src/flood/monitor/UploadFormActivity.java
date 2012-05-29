@@ -169,7 +169,12 @@ public class UploadFormActivity extends Activity {
 					Toast.makeText(this, "Image saved to:\n" + file,
 							Toast.LENGTH_LONG).show();
 				} catch (Exception e) {
-					Log.i(UploadFormActivity.class.toString(), e.getMessage());
+					Log.i(UploadFormActivity.class.toString(),
+							"Something went terribly bad and I still can't figure out what it is");
+					Toast.makeText(
+							this,
+							"Error while retrieving picture, select this picture through the gallery please",
+							Toast.LENGTH_LONG).show();
 				}
 			} else if (resultCode == RESULT_CANCELED) {
 				// User cancelled the image capture
@@ -273,11 +278,11 @@ public class UploadFormActivity extends Activity {
 		// using Environment.getExternalStorageState() before doing this.
 
 		int sdasdf = 3;
-		
+
 		File mediaStorageDir = new File(
 				Environment
-						.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
-				"MyCameraApp");
+						.getExternalStorageDirectory(),
+				"FloodMonitor");
 		// This location works best if you want the created images to be shared
 		// between applications and persist after your app has been uninstalled.
 
@@ -288,8 +293,8 @@ public class UploadFormActivity extends Activity {
 				return null;
 			}
 		}
-		 if(sdasdf == 9)
-			 return null;
+		if (sdasdf == 9)
+			return null;
 		// Create a media file name
 		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss")
 				.format(new Date());

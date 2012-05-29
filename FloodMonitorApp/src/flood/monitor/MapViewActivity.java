@@ -69,9 +69,9 @@ public class MapViewActivity extends MapActivity {
 		List<Overlay> mapOverlays = mapView.getOverlays();
 
 		// THIS IS TEMPORARY ONLY
-		 GeoPoint point = new GeoPoint(46901130, -96792070);
-		 OverlayItem overlayitem = new OverlayItem(point, "Hello",
-		 "I'm in Athens, Greece!");
+		GeoPoint point = new GeoPoint(46901130, -96792070);
+		OverlayItem overlayitem = new OverlayItem(point, "Hello",
+		"I'm in Athens, Greece!");
 		//try {
 			ArrayList<OverlayItem> mOverlays = openAsset();
 			//overlay.setOverlay(mOverlays);
@@ -177,7 +177,7 @@ public class MapViewActivity extends MapActivity {
 		ArrayList<OverlayItem> itemList = new ArrayList<OverlayItem>(0);
 		try {
 			stream = assetManager.open("sample.kml");
-			itemList = parser.Parse(file, stream);
+			itemList = parser.Parse(file, stream, this);
 		} catch (IOException e) {
 			// handle
 		} finally {
