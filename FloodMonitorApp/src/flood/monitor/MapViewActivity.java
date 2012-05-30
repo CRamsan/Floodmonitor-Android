@@ -8,6 +8,7 @@ import java.util.List;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -71,20 +72,19 @@ public class MapViewActivity extends MapActivity {
 		// THIS IS TEMPORARY ONLY
 		GeoPoint point = new GeoPoint(46901130, -96792070);
 		OverlayItem overlayitem = new OverlayItem(point, "Hello",
-		"I'm in Athens, Greece!");
-		//try {
-			ArrayList<OverlayItem> mOverlays = openAsset();
-			//overlay.setOverlay(mOverlays);
-			for(int i = 0; i < mOverlays.size(); i++)
-			{
-				overlay.addOverlay(mOverlays.get(i));
-			}
-			overlay.addOverlay(overlayitem);
-			mapOverlays.add(overlay);
-			
-		//} catch (Exception e) {
-		//	Log.i("ERROR","WHY!");
-		//}
+				"I'm in Fargo, ND!");
+		// try {
+		ArrayList<OverlayItem> mOverlays = openAsset();
+		// overlay.setOverlay(mOverlays);
+		for (int i = 0; i < mOverlays.size(); i++) {
+			overlay.addOverlay(mOverlays.get(i));
+		}
+		overlay.addOverlay(overlayitem);
+		mapOverlays.add(overlay);
+
+		// } catch (Exception e) {
+		// Log.i("ERROR","WHY!");
+		// }
 	}
 
 	@Override
@@ -96,14 +96,14 @@ public class MapViewActivity extends MapActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		// locator.startListening(this);
+		locator.startListening(this);
 		// The activity has become visible (it is now "resumed").
 	}
 
 	@Override
 	protected void onPause() {
 		super.onPause();
-		// locator.stopListening(this);
+		locator.stopListening(this);
 		// Another activity is taking focus (this activity is about to be
 		// "paused").
 	}
@@ -133,21 +133,26 @@ public class MapViewActivity extends MapActivity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.mainmenu, menu);
-		return true;
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			MenuInflater inflater = getMenuInflater();
+			inflater.inflate(R.menu.mainmenu, menu);
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle item selection
 		switch (item.getItemId()) {
-		case R.id.item1:// Setings
-			return true;
-		case R.id.item2:// Upload
+		case R.id.item1:// Upload
 			Intent intent = new Intent(MapViewActivity.this,
 					UploadFormActivity.class);
 			startActivity(intent);
+
+			return true;
+		case R.id.item2:// Settings
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);

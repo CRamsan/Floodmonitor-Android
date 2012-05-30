@@ -1,9 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.maps.MapView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/mapview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clickable="true"
-		android:apiKey="07r48M7l5UiVa_UiwTJ0obzICl3MXbGn_5FAzTA"
-/>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:android1="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android1:layout_width="match_parent"
+        android1:layout_height="wrap_content" >
+
+        <Button
+            android1:id="@+id/button1"
+            android1:layout_width="wrap_content"
+            android1:layout_height="wrap_content"
+            android1:text="Button" />
+
+        <Button
+            android1:id="@+id/button2"
+            android1:layout_width="wrap_content"
+            android1:layout_height="wrap_content"
+            android1:text="Button" />
+
+        <Button
+            android1:id="@+id/button3"
+            android1:layout_width="wrap_content"
+            android1:layout_height="wrap_content"
+            android1:text="Button" />
+
+    </LinearLayout>
+	<com.google.android.maps.MapView
+	    xmlns:android="http://schemas.android.com/apk/res/android"
+	        android:id="@+id/mapview"
+	        android:layout_width="match_parent"
+	        android:layout_height="match_parent"
+	        android:clickable="true"
+			android:apiKey="07r48M7l5UiVa_UiwTJ0obzICl3MXbGn_5FAzTA"
+	/>
+</LinearLayout>
