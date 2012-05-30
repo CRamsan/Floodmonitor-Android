@@ -133,13 +133,9 @@ public class MapViewActivity extends MapActivity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			MenuInflater inflater = getMenuInflater();
 			inflater.inflate(R.menu.mainmenu, menu);
 			return true;
-		} else {
-			return false;
-		}
 	}
 
 	@Override
