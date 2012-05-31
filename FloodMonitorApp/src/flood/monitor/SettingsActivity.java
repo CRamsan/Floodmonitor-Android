@@ -11,6 +11,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.android.apis.preference.FragmentPreferences.PrefsFragment;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
@@ -69,6 +70,9 @@ public class SettingsActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		// The activity is launched or restarted after been killed.
+		// Display the fragment as the main content.
+		getFragmentManager().beginTransaction().replace(android.R.id.content,
+                new PrefsFragment()).commit();
 	}
 
 	@Override

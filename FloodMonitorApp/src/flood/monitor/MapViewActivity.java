@@ -129,14 +129,17 @@ public class MapViewActivity extends MapActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle item selection
+		Intent intent = null;
 		switch (item.getItemId()) {
 		case R.id.item1:// Upload
-			Intent intent = new Intent(MapViewActivity.this,
+			intent = new Intent(MapViewActivity.this,
 					UploadFormActivity.class);
 			startActivity(intent);
-
 			return true;
 		case R.id.item2:// Settings
+			intent = new Intent(MapViewActivity.this,
+					SettingsActivity.class);
+			startActivity(intent);
 			return true;
 		case R.id.item0:
 			locator.updateListening(this);
