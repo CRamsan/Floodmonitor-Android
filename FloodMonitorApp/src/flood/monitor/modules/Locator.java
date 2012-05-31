@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 import com.google.android.maps.OverlayItem;
 
+import flood.monitor.MapViewActivity;
+
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
@@ -22,21 +24,21 @@ public class Locator {
 	// Fields
 	// ===========================================================
 	private Location bestLocation;
-	private Location currentLocation;
 	private LocationManager locationManager;
 	private LocationListener locationListener;
-
+	private MapViewActivity activity;
+	
 	// ===========================================================
 	// Constructors
 	// ===========================================================
-	public Locator(Context context) {
+	public Locator(MapViewActivity activity) {
 		// Acquire a reference to the system Location Manager
-		locationManager = (LocationManager) context
+		locationManager = (LocationManager) activity
 				.getSystemService(Context.LOCATION_SERVICE);
-
+		this.activity = activity;
 		locationListener = new MobileLocationListener();
 
-		currentLocation = locationManager
+		Location currentLocation = locationManager
 				.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 		if (currentLocation == null) {
 			currentLocation = locationManager
@@ -75,20 +77,13 @@ public class Locator {
 	}
 
 	private void updateLocation(Location newLocation) {
-		this.bestLocation = newLocation;
+		if(isBetterLocation(newLocation, bestLocation))
+		{
+			this.bestLocation = newLocation;
+		}
 	}
 
-	/**
-	 * Determines whether one Location reading is better than the current
-	 * Location fix
-	 * 
-	 * @param location
-	 *            The new Location that you want to evaluate
-	 * @param currentBestLocation
-	 *            The current Location fix, to which you want to compare the new
-	 *            one
-	 */
-	protected boolean isBetterLocation(Location location,
+	private boolean isBetterLocation(Location location,
 			Location currentBestLocation) {
 		if (currentBestLocation == null) {
 			// A new location is always better than no location
@@ -136,7 +131,6 @@ public class Locator {
 		return false;
 	}
 
-	/** Checks whether two providers are the same */
 	private boolean isSameProvider(String provider1, String provider2) {
 		if (provider1 == null) {
 			return provider2 == null;
@@ -150,12 +144,19 @@ public class Locator {
 	private class MobileLocationListener implements LocationListener {
 		@Override
 		public void onStatusChanged(String provider, int status, Bundle extras) {
+			
 			switch (status) {
 			case LocationProvider.OUT_OF_SERVICE:
+				Log.v("Locator", "Provider Status Changed: Out Of Service");
 				break;
 			case LocationProvider.TEMPORARILY_UNAVAILABLE:
+				Log.v("Locator", "Provider Status Changed: Temporarily Unavailable");
 				break;
 			case LocationProvider.AVAILABLE:
+				Log.v("Locator", "Provider Status Changed: Available");
+				break;
+			default:
+				Log.v("Locator", "Provider Status Changed: Not Specified");
 				break;
 			}
 		}
@@ -170,14 +171,18 @@ public class Locator {
 			Log.v("Locator", "Londitude: " + location.getLongitude()
 					+ "Latitude: " + location.getLatitude());
 			Log.v("Locator", "Timestamp: " + location.getTime());
+			updateLocation(location);
+			activity.updateBestLocation();
 		}
 
 		@Override
 		public void onProviderEnabled(String provider) {
+			Log.v("Locator", "Provider Enabled " + provider);
 		}
 
 		@Override
 		public void onProviderDisabled(String provider) {
+			Log.v("Locator", "Provider Disabled " + provider);
 		}
 
 	}

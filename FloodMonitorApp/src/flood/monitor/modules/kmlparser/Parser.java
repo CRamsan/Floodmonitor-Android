@@ -31,8 +31,9 @@ public class Parser {
 
 	private Context context;
 
-	public ArrayList<OverlayItem> Parse(String file, InputStream stream, Context context) {
-		
+	public ArrayList<OverlayItem> Parse(String file, InputStream stream,
+			Context context) {
+
 		this.context = context;
 		/*
 		 * Drawable drawable =
@@ -106,7 +107,7 @@ public class Parser {
 			}
 
 			temp = "";
-			Log.i(Parser.class.toString(), "Start Element :" + qName);
+			//Log.i(Parser.class.toString(), "Start Element :" + qName);
 		}
 
 		@Override
@@ -119,28 +120,29 @@ public class Parser {
 				switch (severity) {
 				case 1:
 					icon = context.getResources().getDrawable(
-				R.drawable.marker_green_large);
+							R.drawable.marker_green_large);
 					break;
 				case 2:
 					icon = context.getResources().getDrawable(
-				R.drawable.marker_green_yellow_large);
+							R.drawable.marker_green_yellow_large);
 					break;
 				case 3:
 					icon = context.getResources().getDrawable(
-				R.drawable.marker_yellow_large);
+							R.drawable.marker_yellow_large);
 					break;
 				case 4:
 					icon = context.getResources().getDrawable(
-				R.drawable.marker_orange_large);
+							R.drawable.marker_orange_large);
 					break;
 				case 5:
 					icon = context.getResources().getDrawable(
-				R.drawable.marker_red_large);
+							R.drawable.marker_red_large);
 					break;
 				default:
 					break;
 				}
-				icon.setBounds(0, 0, icon.getIntrinsicWidth(), icon.getIntrinsicHeight());
+				icon.setBounds(0, 0, icon.getIntrinsicWidth(),
+						icon.getIntrinsicHeight());
 				overlayitem.setMarker(icon);
 				severity = 0;
 				mOverlay.add(overlayitem);
@@ -160,7 +162,6 @@ public class Parser {
 				severity = Integer.parseInt(temp);
 			}
 			temp = "";
-			Log.i(Parser.class.toString(), "End Element :" + qName);
 		}
 
 		@Override
@@ -168,8 +169,10 @@ public class Parser {
 				throws SAXException {
 			String input = new String(ch, start, length);
 			temp = temp + input.replaceAll("\n", "").replaceAll("\t", "");
-			Log.i(Parser.class.toString(), "Content :"
-					+ new String(ch, start, length));
+			if (!temp.isEmpty()) {
+				//Log.i(Parser.class.toString(),"Content :" + input.replaceAll("\n", "").replaceAll("\t",""));
+			}
+
 		}
 
 		public ArrayList<OverlayItem> getResult() {

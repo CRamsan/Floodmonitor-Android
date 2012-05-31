@@ -1,7 +1,7 @@
 <kml xmlns="http://www.opengis.net/kml/2.2">
 	<Document>
 		<Placemark>
-			<name>CDATA example</name>
+			<name>This is a marker title</name>
 			<description>
 				This is an example, please dont erase me 
 			</description>
@@ -11,7 +11,7 @@
 			</Point>
 		</Placemark>
 		<Placemark>
-			<name>CDATA example</name>
+			<name>This is a marker title</name>
 			<description>
 				This is an example, please dont erase me 
 			</description>
@@ -21,7 +21,7 @@
 			</Point>
 		</Placemark>
 		<Placemark>
-			<name>CDATA example</name>
+			<name>This is a marker title</name>
 			<description>
 				This is an example, please dont erase me 
 			</description>
@@ -31,7 +31,7 @@
 			</Point>
 		</Placemark>
 		<Placemark>
-			<name>CDATA example</name>
+			<name>This is a marker title</name>
 			<description>
 				This is an example, please dont erase me 
 			</description>
@@ -41,12 +41,52 @@
 			</Point>
 		</Placemark>
 		<Placemark>
-			<name>CDATA example</name>
+			<name>This is a marker title</name>
 			<description>
 				This is an example, please dont erase me 
 			</description>
 			<Point>
 				<coordinates>46.902133,-96.792117</coordinates>
+				<severity>5</severity>
+			</Point>
+		</Placemark>
+				<Placemark>
+			<name>This is a marker title</name>
+			<description>
+				This is an example, please dont erase me 
+			</description>
+			<Point>
+				<coordinates>46.982133,-96.792417</coordinates>
+				<severity>5</severity>
+			</Point>
+		</Placemark>
+				<Placemark>
+			<name>This is a marker title</name>
+			<description>
+				This is an example, please dont erase me 
+			</description>
+			<Point>
+				<coordinates>46.902153,-96.793117</coordinates>
+				<severity>5</severity>
+			</Point>
+		</Placemark>
+				<Placemark>
+			<name>This is a marker title</name>
+			<description>
+				This is an example, please dont erase me 
+			</description>
+			<Point>
+				<coordinates>46.902139,-95.792117</coordinates>
+				<severity>5</severity>
+			</Point>
+		</Placemark>
+				<Placemark>
+			<name>This is a marker title</name>
+			<description>
+				This is an example, please dont erase me 
+			</description>
+			<Point>
+				<coordinates>46.902123,-96.792115</coordinates>
 				<severity>5</severity>
 			</Point>
 		</Placemark>

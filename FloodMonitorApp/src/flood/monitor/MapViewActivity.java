@@ -8,6 +8,7 @@ import java.util.List;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -69,22 +70,9 @@ public class MapViewActivity extends MapActivity {
 		overlay = new CustomOverlay(drawable, this);
 		List<Overlay> mapOverlays = mapView.getOverlays();
 
-		// THIS IS TEMPORARY ONLY
-		GeoPoint point = new GeoPoint(46901130, -96792070);
-		OverlayItem overlayitem = new OverlayItem(point, "Hello",
-				"I'm in Fargo, ND!");
-		// try {
 		ArrayList<OverlayItem> mOverlays = openAsset();
-		// overlay.setOverlay(mOverlays);
-		for (int i = 0; i < mOverlays.size(); i++) {
-			overlay.addOverlay(mOverlays.get(i));
-		}
-		overlay.addOverlay(overlayitem);
+		overlay.setOverlay(mOverlays);
 		mapOverlays.add(overlay);
-
-		// } catch (Exception e) {
-		// Log.i("ERROR","WHY!");
-		// }
 	}
 
 	@Override
@@ -133,9 +121,9 @@ public class MapViewActivity extends MapActivity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-			MenuInflater inflater = getMenuInflater();
-			inflater.inflate(R.menu.mainmenu, menu);
-			return true;
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.mainmenu, menu);
+		return true;
 	}
 
 	@Override
@@ -156,13 +144,21 @@ public class MapViewActivity extends MapActivity {
 	}
 
 	// ===========================================================
-	// Methods for/from SuperClass/Interfaces
+	// Methods from Parent
+	// ===========================================================
+
+	// ===========================================================
+	// Methods from Interfaces
 	// ===========================================================
 
 	// ===========================================================
 	// Methods
 	// ===========================================================
-
+	public void updateBestLocation(){
+		overlay.updateBestLocation(locator.getBestLocation());
+				
+	}
+	
 	// ===========================================================
 	// Inner and Anonymous Classes
 	// ===========================================================
