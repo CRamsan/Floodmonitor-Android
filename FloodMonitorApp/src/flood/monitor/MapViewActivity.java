@@ -9,12 +9,18 @@ import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.View.OnTouchListener;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
@@ -33,11 +39,14 @@ import flood.monitor.overlay.CustomOverlay;
  * @version 25/05/12
  */
 
-public class MapViewActivity extends MapActivity {
+public class MapViewActivity extends MapActivity implements OnTouchListener {
 
 	// ===========================================================
 	// Constants
 	// ===========================================================
+	final static int WAITING_FOR_MARKER_BUTTON_PRESS = 0;
+	final static int WAITING_FOR_MARKER_UPLOAD = 1;
+	final static int RESTORE_INITIAL= 2;
 
 	// ===========================================================
 	// Fields
@@ -45,6 +54,7 @@ public class MapViewActivity extends MapActivity {
 	private MapView mapView;
 	private Locator locator;
 	private CustomOverlay overlay;
+	private int markerState;
 
 	// ===========================================================
 	// Constructors
@@ -73,6 +83,8 @@ public class MapViewActivity extends MapActivity {
 		ArrayList<OverlayItem> mOverlays = openAsset();
 		overlay.setOverlay(mOverlays);
 		mapOverlays.add(overlay);
+		markerState = 0;
+		invalidateOptionsMenu();
 	}
 
 	@Override
@@ -132,25 +144,67 @@ public class MapViewActivity extends MapActivity {
 		Intent intent = null;
 		switch (item.getItemId()) {
 		case R.id.item1:// Upload
-			intent = new Intent(MapViewActivity.this,
-					UploadFormActivity.class);
+			
+			intent = new Intent(MapViewActivity.this, UploadFormActivity.class);
 			intent.putExtra("latitude", locator.getBestLocation().getLatitude());
-			intent.putExtra("longitude", locator.getBestLocation().getLongitude());
+			intent.putExtra("longitude", locator.getBestLocation()
+					.getLongitude());
 			startActivity(intent);
+			markerState = RESTORE_INITIAL;
+			invalidateOptionsMenu();
 			return true;
 		case R.id.item2:// Settings
-			intent = new Intent(MapViewActivity.this,
-					SettingsActivity.class);
+			intent = new Intent(MapViewActivity.this, SettingsActivity.class);
 			startActivity(intent);
 			return true;
-		case R.id.item0:
+		case R.id.item0://Update
 			locator.updateListening(this);
+			return true;
+		case R.id.item6://PlaceMarker
+			markerState = WAITING_FOR_MARKER_UPLOAD;
+			invalidateOptionsMenu();
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
 	}
 
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		switch (markerState) {
+		case WAITING_FOR_MARKER_BUTTON_PRESS:
+			menu.removeItem(R.id.item1);
+			return true;
+		case WAITING_FOR_MARKER_UPLOAD:
+			menu.removeItem(R.id.item6);
+			menu.add(R.id.item1);
+			return true;
+		case RESTORE_INITIAL:
+			menu.removeItem(R.id.item1);
+			menu.add(R.id.item6);
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	@Override
+	public boolean onTouch(View v, MotionEvent event) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+
+		if (requestCode == CAPTURE_GALLERY_IMAGE_REQUEST_CODE) {
+			if (resultCode == RESULT_OK) {
+
+			}
+		}
+	}
+	
 	// ===========================================================
 	// Methods from Parent
 	// ===========================================================
@@ -162,11 +216,11 @@ public class MapViewActivity extends MapActivity {
 	// ===========================================================
 	// Methods
 	// ===========================================================
-	public void updateBestLocation(){
+	public void updateBestLocation() {
 		overlay.updateBestLocation(locator.getBestLocation());
-		mapView.invalidate();				
+		mapView.invalidate();
 	}
-	
+
 	// ===========================================================
 	// Inner and Anonymous Classes
 	// ===========================================================
@@ -195,4 +249,5 @@ public class MapViewActivity extends MapActivity {
 		}
 		return itemList;
 	}
+
 }

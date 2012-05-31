@@ -46,7 +46,8 @@ public class UploadFormActivity extends Activity {
 
 	private final static int UPLOAD_RUNNING = 0;
 	private final static int UPLOAD_COMPLETE = 1;
-
+	private final static int UPLOAD_NOTCOMPLETED = 2;
+	
 	// ===========================================================
 	// Fields
 	// ===========================================================
@@ -101,6 +102,7 @@ public class UploadFormActivity extends Activity {
 			latText.setText(Integer.toString(latitude));
 			lonText.setText(Integer.toString(longitude));
 		}
+		setResult(UPLOAD_NOTCOMPLETED);
 	}
 
 	@Override
@@ -262,6 +264,7 @@ public class UploadFormActivity extends Activity {
 				public void handleMessage(Message msg) {
 					int state = msg.arg1;
 					if (state == UPLOAD_COMPLETE) {
+						setResult(UPLOAD_COMPLETE);
 						dismissDialog(UPLOADING_DIALOG);
 					}
 				}
