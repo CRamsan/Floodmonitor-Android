@@ -9,6 +9,7 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import android.R.integer;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -26,6 +27,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,14 +50,16 @@ public class UploadFormActivity extends Activity {
 	// ===========================================================
 	// Fields
 	// ===========================================================
-	public UploadFormActivity activity = this;
-	public Context context = this;
+	private UploadFormActivity activity = this;
+	private Context context = this;
 
-	public String file;
+	private String file;
 
-	public ProgressDialog progressDialog;
-	public ProgressThread progressThread;
-	public Uri fileUri;
+	private ProgressDialog progressDialog;
+	private ProgressThread progressThread;
+	private Uri fileUri;
+	private int latitude;
+	private int longitude;
 
 	// ===========================================================
 	// Constructors
@@ -87,6 +91,16 @@ public class UploadFormActivity extends Activity {
 				showDialog(UPLOADING_DIALOG);
 			}
 		});
+
+		Bundle location = getIntent().getExtras();
+		if (location != null) {
+			latitude = (int) (location.getDouble("latitude") * 1000000);
+			longitude = (int) (location.getDouble("longitude") * 1000000);
+			EditText latText = (EditText) findViewById(R.id.latitudeEditText);
+			EditText lonText = (EditText) findViewById(R.id.longitudeEditText);
+			latText.setText(Integer.toString(latitude));
+			lonText.setText(Integer.toString(longitude));
+		}
 	}
 
 	@Override
@@ -280,9 +294,7 @@ public class UploadFormActivity extends Activity {
 		int sdasdf = 3;
 
 		File mediaStorageDir = new File(
-				Environment
-						.getExternalStorageDirectory(),
-				"FloodMonitor");
+				Environment.getExternalStorageDirectory(), "FloodMonitor");
 		// This location works best if you want the created images to be shared
 		// between applications and persist after your app has been uninstalled.
 

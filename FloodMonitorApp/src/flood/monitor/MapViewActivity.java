@@ -91,7 +91,6 @@ public class MapViewActivity extends MapActivity {
 	@Override
 	protected void onPause() {
 		super.onPause();
-		locator.stopListening(this);
 		// Another activity is taking focus (this activity is about to be
 		// "paused").
 	}
@@ -99,6 +98,7 @@ public class MapViewActivity extends MapActivity {
 	@Override
 	protected void onStop() {
 		super.onStop();
+		locator.stopListening(this);
 		// The activity is no longer visible (it is now "stopped")
 	}
 
@@ -134,6 +134,8 @@ public class MapViewActivity extends MapActivity {
 		case R.id.item1:// Upload
 			intent = new Intent(MapViewActivity.this,
 					UploadFormActivity.class);
+			intent.putExtra("latitude", locator.getBestLocation().getLatitude());
+			intent.putExtra("longitude", locator.getBestLocation().getLongitude());
 			startActivity(intent);
 			return true;
 		case R.id.item2:// Settings

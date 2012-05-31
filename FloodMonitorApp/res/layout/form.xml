@@ -19,7 +19,7 @@
 	        android:textAppearance="?android:attr/textAppearanceMedium" />
 
 	    <EditText
-	        android:id="@+id/latitudeText"
+	        android:id="@+id/latitudeEditText"
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
 	        android:inputType="numberDecimal" />
@@ -32,7 +32,7 @@
 	        android:textAppearance="?android:attr/textAppearanceMedium" />
 
 	    <EditText
-	        android:id="@+id/longitudeText"
+	        android:id="@+id/longitudeEditText"
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
 	        android:inputType="numberDecimal" />
