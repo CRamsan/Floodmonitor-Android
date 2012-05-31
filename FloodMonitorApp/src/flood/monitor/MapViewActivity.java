@@ -138,6 +138,9 @@ public class MapViewActivity extends MapActivity {
 			return true;
 		case R.id.item2:// Settings
 			return true;
+		case R.id.item0:
+			locator.updateListening(this);
+			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
@@ -156,7 +159,7 @@ public class MapViewActivity extends MapActivity {
 	// ===========================================================
 	public void updateBestLocation(){
 		overlay.updateBestLocation(locator.getBestLocation());
-				
+		mapView.invalidate();				
 	}
 	
 	// ===========================================================

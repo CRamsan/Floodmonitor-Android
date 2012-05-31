@@ -27,7 +27,8 @@ public class Locator {
 	private LocationManager locationManager;
 	private LocationListener locationListener;
 	private MapViewActivity activity;
-	
+	private boolean isLitening = false;
+
 	// ===========================================================
 	// Constructors
 	// ===========================================================
@@ -68,17 +69,30 @@ public class Locator {
 	// Methods
 	// ===========================================================
 	public void startListening(Context context) {
-		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-				ONE_MINUTE, 10f, locationListener);
+		if (!isLitening) {
+			locationManager.requestLocationUpdates(
+					LocationManager.GPS_PROVIDER, ONE_MINUTE, 10f,
+					locationListener);
+			isLitening = true;
+		}
 	}
 
 	public void stopListening(Context context) {
-		locationManager.removeUpdates(locationListener);
+		if (isLitening) {
+			locationManager.removeUpdates(locationListener);
+			isLitening = false;
+		}
+	}
+
+	public void updateListening(Context context) {
+		if (isLitening) {
+			stopListening(context);
+		}
+		startListening(context);
 	}
 
 	private void updateLocation(Location newLocation) {
-		if(isBetterLocation(newLocation, bestLocation))
-		{
+		if (isBetterLocation(newLocation, bestLocation)) {
 			this.bestLocation = newLocation;
 		}
 	}
@@ -144,13 +158,14 @@ public class Locator {
 	private class MobileLocationListener implements LocationListener {
 		@Override
 		public void onStatusChanged(String provider, int status, Bundle extras) {
-			
+
 			switch (status) {
 			case LocationProvider.OUT_OF_SERVICE:
 				Log.v("Locator", "Provider Status Changed: Out Of Service");
 				break;
 			case LocationProvider.TEMPORARILY_UNAVAILABLE:
-				Log.v("Locator", "Provider Status Changed: Temporarily Unavailable");
+				Log.v("Locator",
+						"Provider Status Changed: Temporarily Unavailable");
 				break;
 			case LocationProvider.AVAILABLE:
 				Log.v("Locator", "Provider Status Changed: Available");
