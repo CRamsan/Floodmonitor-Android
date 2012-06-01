@@ -77,6 +77,30 @@ public class CustomOverlay extends ItemizedOverlay<OverlayItem> {
 	// Getter & Setter
 	// ===========================================================
 
+	public Location getMarkerLocation() {
+		Location temp = new Location("Picture Marker");
+		temp.setLatitude(pictureLocationMarker.getPoint().getLatitudeE6());
+		temp.setLongitude(pictureLocationMarker.getPoint().getLongitudeE6());
+		return temp;
+	}
+
+	public void setOverlay(ArrayList<OverlayItem> overlay) {
+		mOverlays = overlay;
+		if (currentLocationMarker != null) {
+			addOverlay(currentLocationMarker);
+		}
+		populate();
+	}
+
+	private void setDragImagePosition(int x, int y) {
+		RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) dragImage
+				.getLayoutParams();
+
+		lp.setMargins(x - xDragImageOffset - xDragTouchOffset, y
+				- yDragImageOffset - yDragTouchOffset, 0, 0);
+		dragImage.setLayoutParams(lp);
+	}
+
 	// ===========================================================
 	// Methods from Parent
 	// ===========================================================
@@ -195,14 +219,6 @@ public class CustomOverlay extends ItemizedOverlay<OverlayItem> {
 		populate();
 	}
 
-	public void setOverlay(ArrayList<OverlayItem> overlay) {
-		mOverlays = overlay;
-		if (currentLocationMarker != null) {
-			addOverlay(currentLocationMarker);
-		}
-		populate();
-	}
-
 	public void updateBestLocation(Location location) {
 		mOverlays.remove(currentLocationMarker);
 		currentLocationMarker = new OverlayItem(new GeoPoint(
@@ -213,18 +229,9 @@ public class CustomOverlay extends ItemizedOverlay<OverlayItem> {
 		populate();
 	}
 
-	private void setDragImagePosition(int x, int y) {
-		RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) dragImage
-				.getLayoutParams();
-
-		lp.setMargins(x - xDragImageOffset - xDragTouchOffset, y
-				- yDragImageOffset - yDragTouchOffset, 0, 0);
-		dragImage.setLayoutParams(lp);
-	}
-
 	public void initiateDragMarker(Location location) {
 		pictureLocationMarker = new OverlayItem(new GeoPoint(
-				(int) (location.getLatitude() * 1000000),
+				(int) (location.getLatitude()  * 1000000),
 				(int) (location.getLongitude() * 1000000)), "", "");
 		mOverlays.add(pictureLocationMarker);
 		populate();

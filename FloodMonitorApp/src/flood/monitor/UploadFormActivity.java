@@ -103,8 +103,8 @@ public class UploadFormActivity extends Activity {
 		});
 		Bundle location = getIntent().getExtras();
 		if (location != null) {
-			latitude = (int) (location.getDouble("latitude") * 1000000);
-			longitude = (int) (location.getDouble("longitude") * 1000000);
+			latitude = (int) (location.getDouble("latitude"));
+			longitude = (int) (location.getDouble("longitude"));
 			EditText latText = (EditText) findViewById(R.id.latitudeEditText);
 			EditText lonText = (EditText) findViewById(R.id.longitudeEditText);
 			latText.setText(Integer.toString(latitude));
@@ -222,7 +222,7 @@ public class UploadFormActivity extends Activity {
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
 		case UPLOADING_DIALOG: {
-			ProgressDialog progressDialog = new ProgressDialog(context);
+			progressDialog = new ProgressDialog(context);
 			progressDialog.setMessage("Please wait while loading...");
 			progressDialog.setIndeterminate(true);
 			progressDialog.setCancelable(false);
@@ -270,6 +270,11 @@ public class UploadFormActivity extends Activity {
 			return builder.create();
 		}
 		default: {
+			int asd = 2;
+			asd++;
+			if(asd > 0){
+				return null;
+			}
 			return null;
 		}
 		}
@@ -285,6 +290,7 @@ public class UploadFormActivity extends Activity {
 					if (state == UPLOAD_COMPLETE) {
 						setResult(RESULT_OK);
 						dismissDialog(UPLOADING_DIALOG);
+						activity.finish();
 					}
 				}
 			};
@@ -445,15 +451,19 @@ public class UploadFormActivity extends Activity {
 		}
 
 		public void run() {
-			Message msg = mHandler.obtainMessage();
-			msg.arg1 = UPLOAD_RUNNING;
-			mHandler.sendMessage(msg);
-			for (int i = 0; i < 100; i++) {
-
+			Message msg1 = mHandler.obtainMessage();
+			msg1.arg1 = UPLOAD_RUNNING;
+			mHandler.sendMessage(msg1);
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 			// UploadPicture(context, file);
-			msg.arg1 = UPLOAD_COMPLETE;
-			mHandler.sendMessage(msg);
+			Message msg2 = mHandler.obtainMessage();
+			msg2.arg1 = UPLOAD_COMPLETE;
+			mHandler.sendMessage(msg2);
 		}
 	}
 

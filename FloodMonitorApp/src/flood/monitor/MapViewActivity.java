@@ -145,8 +145,9 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		switch (item.getItemId()) {
 		case R.id.menuItemUpload:// Upload
 			intent = new Intent(MapViewActivity.this, UploadFormActivity.class);
-			intent.putExtra("latitude", locator.getBestLocation().getLatitude());
-			intent.putExtra("longitude", locator.getBestLocation()
+			intent.putExtra("latitude", overlay.getMarkerLocation()
+					.getLatitude());
+			intent.putExtra("longitude", overlay.getMarkerLocation()
 					.getLongitude());
 			startActivityForResult(intent, UPLOAD_REQUEST);
 			return true;
