@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
@@ -29,7 +30,9 @@ import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
 
 import flood.monitor.modules.Locator;
+import flood.monitor.modules.kmlparser.MarkerManager;
 import flood.monitor.modules.kmlparser.Parser;
+import flood.monitor.modules.kmlparser.SQLliteManager;
 import flood.monitor.overlay.CustomOverlay;
 
 /**
@@ -47,6 +50,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	private final static int ENABLE_MARKER = 0;
 	private final static int ENABLE_UPLOAD = 1;
 	private final static int UPLOAD_REQUEST = 100;
+	private final static String PREFS_NAME = "MapViewPref";
 
 	// ===========================================================
 	// Fields
@@ -54,7 +58,9 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	private MapView mapView;
 	private Locator locator;
 	private CustomOverlay overlay;
+	private MarkerManager manager;
 	private int markerState;
+	private boolean installedBefore;
 
 	// ===========================================================
 	// Constructors
@@ -71,6 +77,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		// The activity is launched or restarted after been killed.
+
 		setContentView(R.layout.map);
 		mapView = (MapView) findViewById(R.id.mapview);
 		mapView.setBuiltInZoomControls(true);
@@ -85,6 +92,19 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		mapOverlays.add(overlay);
 		markerState = ENABLE_MARKER;
 		invalidateOptionsMenu();
+
+		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+		installedBefore = settings.getBoolean("Install_State", false);
+
+		if (installedBefore) {
+			//Proceed to load from db
+		} else {
+			SharedPreferences.Editor editor = settings.edit();
+			installedBefore = true;
+			editor.putBoolean("Install_State", installedBefore);
+			editor.commit();
+			//create DB
+		}
 	}
 
 	@Override
