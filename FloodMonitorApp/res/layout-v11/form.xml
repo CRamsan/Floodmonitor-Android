@@ -1,159 +1,170 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
->
+    android:layout_height="wrap_content" >
 
-	<LinearLayout
-	    xmlns:android="http://schemas.android.com/apk/res/android"
-	    android:layout_width="match_parent"
-	    android:layout_height="match_parent"
-	    android:orientation="vertical" >
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
 
-	    <TextView
-	        android:id="@+id/latitudeView"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:text="Latitude"
-	        android:textAppearance="?android:attr/textAppearanceMedium" />
+        <TextView
+            android:id="@+id/latitudeView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Latitude"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
-	    <EditText
-	        android:id="@+id/latitudeEditText"
-	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content"
-	        android:inputType="numberDecimal" />
+        <EditText
+            android:id="@+id/latitudeEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal" />
 
-	    <TextView
-	        android:id="@+id/longitudeView"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:text="Longitude"
-	        android:textAppearance="?android:attr/textAppearanceMedium" />
+        <TextView
+            android:id="@+id/longitudeView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Longitude"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
-	    <EditText
-	        android:id="@+id/longitudeEditText"
-	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content"
-	        android:inputType="numberDecimal" />
+        <EditText
+            android:id="@+id/longitudeEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal" />
 
-	    <TextView
-	        android:id="@+id/hoursagoView"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:text="Hours Ago"
-	        android:textAppearance="?android:attr/textAppearanceMedium" />
+        <TextView
+            android:id="@+id/hoursagoView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hours Ago"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
-	    <EditText
-	        android:id="@+id/hoursagoText"
-	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content"
-	        android:inputType="time"
-	        android:text="00" />
+        <EditText
+            android:id="@+id/hoursagoText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="time"
+            android:text="00" />
 
-	    <TextView
-	        android:id="@+id/minutesagoView"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:text="Minutes Ago"
-	        android:textAppearance="?android:attr/textAppearanceMedium" />
+        <TextView
+            android:id="@+id/minutesagoView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Minutes Ago"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
-	    <EditText
-	        android:id="@+id/minutesagoText"
-	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content"
-	        android:inputType="time"
-	        android:text="00" />
+        <EditText
+            android:id="@+id/minutesagoText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="time"
+            android:text="00" />
 
-	    <TextView
-	        android:id="@+id/streetstateView"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:text="Ditches/City Streets were"
-	        android:textAppearance="?android:attr/textAppearanceMedium" />
+        <TextView
+            android:id="@+id/streetstateView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ditches/City Streets were"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
-	    <Spinner
-	        android:id="@+id/streetstateSpinner"
-	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content" />
+        <Spinner
+            android:id="@+id/streetstateSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
-	    <TextView
-	        android:id="@+id/coverView"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:text="Fields/pastures/gardens/yards were covered with"
-	        android:textAppearance="?android:attr/textAppearanceMedium" />
+        <TextView
+            android:id="@+id/coverView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Fields/pastures/gardens/yards were covered with"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
-	    <Spinner
-	        android:id="@+id/coverSpinner"
-	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content" />
+        <Spinner
+            android:id="@+id/coverSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
-	    <TextView
-	        android:id="@+id/depthView"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:text="The snow/water/ice cover was"
-	        android:textAppearance="?android:attr/textAppearanceMedium" />
+        <TextView
+            android:id="@+id/depthView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="The snow/water/ice cover was"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
-	    <EditText
-	        android:id="@+id/depthText"
-	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content"
-	        android:inputType="number" />
+        <EditText
+            android:id="@+id/depthText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number" />
 
-	    <TextView
-	        android:id="@+id/commentView"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:text="I would also like to report the following: (Optional)"
-	        android:textAppearance="?android:attr/textAppearanceMedium" />
+        <TextView
+            android:id="@+id/commentView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="I would also like to report the following: (Optional)"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
-	    <EditText
-	        android:id="@+id/commentText"
-	        android:layout_width="match_parent"
-	        android:layout_height="94dp" />
+        <EditText
+            android:id="@+id/commentText"
+            android:layout_width="match_parent"
+            android:layout_height="94dp" />
 
-	    <TextView
-	        android:id="@+id/pictureView"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:text="I would like to upload a picture taken at this location: (Optional)"
-	        android:textAppearance="?android:attr/textAppearanceMedium" />
+        <TextView
+            android:id="@+id/pictureView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="I would like to upload a picture taken at this location: (Optional)"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
-	    <Button
-	        android:id="@+id/pictureButton"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_weight="0.10"
-	        android:text="Choose File" />
+        <Button
+            android:id="@+id/pictureButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.10"
+            android:text="Choose File" />
 
-	    <TextView
-	        android:id="@+id/pathView"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:text="File:"
-	        android:textAppearance="?android:attr/textAppearanceSmall" />
+        <TextView
+            android:id="@+id/pathView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="File:"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
 
-	    <TextView
-	        android:id="@+id/emailView"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:text="Optional: e-mail address (will not appear on map)"
-	        android:textAppearance="?android:attr/textAppearanceMedium" />
+        <TextView
+            android:id="@+id/emailView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Optional: e-mail address (will not appear on map)"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
-	    <EditText
-	        android:id="@+id/emailText"
-	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content"
-	        android:inputType="textEmailAddress" />
+        <EditText
+            android:id="@+id/emailText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textEmailAddress" />
 
-	    <Button
-	        android:id="@+id/submitButton"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_gravity="right"
-	        android:text="Submit" />
-	</LinearLayout>
+        <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal" >
+
+            <Button
+                android:id="@+id/submitButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:text="Submit" />
+
+            <Button
+                android:id="@+id/cancelButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Cancel" />
+        </LinearLayout>
+    </LinearLayout>
 
 </ScrollView>

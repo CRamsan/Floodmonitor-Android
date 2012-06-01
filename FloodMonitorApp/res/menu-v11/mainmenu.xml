@@ -1,39 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
     <item
-        android:id="@+id/item0"
-        android:showAsAction="always|withText"
+        android:id="@+id/menuItemRefresh"
+        android:showAsAction="ifRoom|withText"
         android:title="Refresh">
     </item>    
     <item
-        android:id="@+id/item1"
+        android:id="@+id/menuItemUpload"
         android:showAsAction="always|withText"
         android:title="Upload">
     </item>
     <item
-        android:id="@+id/item6"
+        android:id="@+id/menuItemPlaceMarker"
         android:showAsAction="always|withText"
         android:title="Place Marker">
     </item>
     <item
-        android:id="@+id/item2"
+        android:id="@+id/menuItemSettings"
         android:showAsAction="withText"
         android:title="Settings">
     </item>
     <item
-        android:id="@+id/item3"
+        android:id="@+id/menuItemHelp"
         android:showAsAction="withText"
         android:title="Help">
     </item>
     <item
-        android:id="@+id/item4"
+        android:id="@+id/menuItemAbout"
         android:showAsAction="withText"
         android:title="About">
     </item>
     <item
-        android:id="@+id/item5"
+        android:id="@+id/menuItemExit"
         android:showAsAction="withText"
         android:title="Exit">
     </item>
-
+    <item
+        android:id="@+id/menuItemCancel"
+        android:showAsAction="withText|always"
+        android:title="Cancel">
+    </item>
 </menu>

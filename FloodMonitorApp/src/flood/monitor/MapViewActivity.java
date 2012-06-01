@@ -44,9 +44,9 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	// ===========================================================
 	// Constants
 	// ===========================================================
-	final static int WAITING_FOR_MARKER_BUTTON_PRESS = 0;
-	final static int WAITING_FOR_MARKER_UPLOAD = 1;
-	final static int RESTORE_INITIAL= 2;
+	private final static int ENABLE_MARKER = 0;
+	private final static int ENABLE_UPLOAD = 1;
+	private final static int UPLOAD_REQUEST = 100;
 
 	// ===========================================================
 	// Fields
@@ -83,7 +83,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		ArrayList<OverlayItem> mOverlays = openAsset();
 		overlay.setOverlay(mOverlays);
 		mapOverlays.add(overlay);
-		markerState = 0;
+		markerState = ENABLE_MARKER;
 		invalidateOptionsMenu();
 	}
 
@@ -143,25 +143,39 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		// Handle item selection
 		Intent intent = null;
 		switch (item.getItemId()) {
-		case R.id.item1:// Upload
-			
+		case R.id.menuItemUpload:// Upload
 			intent = new Intent(MapViewActivity.this, UploadFormActivity.class);
 			intent.putExtra("latitude", locator.getBestLocation().getLatitude());
 			intent.putExtra("longitude", locator.getBestLocation()
 					.getLongitude());
-			startActivity(intent);
-			markerState = RESTORE_INITIAL;
-			invalidateOptionsMenu();
+			startActivityForResult(intent, UPLOAD_REQUEST);
 			return true;
-		case R.id.item2:// Settings
+		case R.id.menuItemSettings:// Settings
 			intent = new Intent(MapViewActivity.this, SettingsActivity.class);
 			startActivity(intent);
 			return true;
-		case R.id.item0://Update
+		case R.id.menuItemRefresh:// Update
 			locator.updateListening(this);
 			return true;
-		case R.id.item6://PlaceMarker
-			markerState = WAITING_FOR_MARKER_UPLOAD;
+		case R.id.menuItemPlaceMarker:// PlaceMarker
+			markerState = ENABLE_UPLOAD;
+			overlay.initiateDragMarker(locator.getBestLocation());
+			invalidateOptionsMenu();
+			return true;
+		case R.id.menuItemExit:// Exit
+			finish();
+			return true;
+		case R.id.menuItemAbout:
+			intent = new Intent(MapViewActivity.this, AboutActivity.class);
+			startActivity(intent);
+			return true;
+		case R.id.menuItemHelp:
+			intent = new Intent(MapViewActivity.this, HelpActivity.class);
+			startActivity(intent);
+			return true;
+		case R.id.menuItemCancel:
+			markerState = ENABLE_MARKER;
+			overlay.stopDragMarker();
 			invalidateOptionsMenu();
 			return true;
 		default:
@@ -172,19 +186,15 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		switch (markerState) {
-		case WAITING_FOR_MARKER_BUTTON_PRESS:
-			menu.removeItem(R.id.item1);
+		case ENABLE_MARKER:
+			menu.removeItem(R.id.menuItemUpload);
+			menu.removeItem(R.id.menuItemCancel);
 			return true;
-		case WAITING_FOR_MARKER_UPLOAD:
-			menu.removeItem(R.id.item6);
-			menu.add(R.id.item1);
-			return true;
-		case RESTORE_INITIAL:
-			menu.removeItem(R.id.item1);
-			menu.add(R.id.item6);
+		case ENABLE_UPLOAD:
+			menu.removeItem(R.id.menuItemPlaceMarker);
 			return true;
 		default:
-			return false;
+			return true;
 		}
 	}
 
@@ -198,13 +208,13 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 
-		if (requestCode == CAPTURE_GALLERY_IMAGE_REQUEST_CODE) {
-			if (resultCode == RESULT_OK) {
-
-			}
+		if (requestCode == UPLOAD_REQUEST) {
+			markerState = ENABLE_MARKER;
+			overlay.stopDragMarker();
+			invalidateOptionsMenu();
 		}
 	}
-	
+
 	// ===========================================================
 	// Methods from Parent
 	// ===========================================================

@@ -18,6 +18,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -47,7 +48,7 @@ public class UploadFormActivity extends Activity {
 	private final static int UPLOAD_RUNNING = 0;
 	private final static int UPLOAD_COMPLETE = 1;
 	private final static int UPLOAD_NOTCOMPLETED = 2;
-	
+
 	// ===========================================================
 	// Fields
 	// ===========================================================
@@ -92,7 +93,14 @@ public class UploadFormActivity extends Activity {
 				showDialog(UPLOADING_DIALOG);
 			}
 		});
-
+		Button buttonCancel = (Button) findViewById(R.id.cancelButton);
+		buttonCancel.setOnClickListener(new Button.OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				setResult(RESULT_OK);
+				finish();
+			}
+		});
 		Bundle location = getIntent().getExtras();
 		if (location != null) {
 			latitude = (int) (location.getDouble("latitude") * 1000000);
@@ -102,7 +110,7 @@ public class UploadFormActivity extends Activity {
 			latText.setText(Integer.toString(latitude));
 			lonText.setText(Integer.toString(longitude));
 		}
-		setResult(UPLOAD_NOTCOMPLETED);
+		setResult(RESULT_CANCELED);
 	}
 
 	@Override
@@ -147,8 +155,9 @@ public class UploadFormActivity extends Activity {
 		// Save UI state changes to the savedInstanceState.
 		// This bundle will be passed to onCreate if the process is
 		// killed and restarted.
-		savedInstanceState.putString("FilePath",
+		savedInstanceState.putString("FilePathView",
 				(String) ((TextView) findViewById(R.id.pathView)).getText());
+		savedInstanceState.putString("FilePathVar",file);
 		super.onSaveInstanceState(savedInstanceState);
 	}
 
@@ -158,7 +167,8 @@ public class UploadFormActivity extends Activity {
 		// Restore UI state from the savedInstanceState.
 		// This bundle has also been passed to onCreate.
 		TextView path = (TextView) findViewById(R.id.pathView);
-		path.setText(savedInstanceState.getString("FilePath"));
+		path.setText(savedInstanceState.getString("FilePathView"));
+		file = savedInstanceState.getString("FilePathVar");
 	}
 
 	@Override
@@ -175,9 +185,17 @@ public class UploadFormActivity extends Activity {
 		}
 
 		if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
+			MediaScannerConnection.scanFile(this,
+					new String[] { file.toString() }, null,
+					new MediaScannerConnection.OnScanCompletedListener() {
+						public void onScanCompleted(String path, Uri uri) {
+							Log.i("ExternalStorage", "Scanned " + path + ":");
+							Log.i("ExternalStorage", "-> uri=" + uri);
+						}
+					});
 			if (resultCode == RESULT_OK) {
 				try {
-					file = fileUri.getEncodedPath();
+					// file = fileUri.getEncodedPath();
 					TextView path = (TextView) findViewById(R.id.pathView);
 					path.setText("File: " + file);
 					// Image captured and saved to fileUri specified in the
@@ -207,7 +225,7 @@ public class UploadFormActivity extends Activity {
 			ProgressDialog progressDialog = new ProgressDialog(context);
 			progressDialog.setMessage("Please wait while loading...");
 			progressDialog.setIndeterminate(true);
-			progressDialog.setCancelable(true);
+			progressDialog.setCancelable(false);
 			return progressDialog;
 		}
 		case SOURCE_SELECTION_DIALOG: {
@@ -232,6 +250,7 @@ public class UploadFormActivity extends Activity {
 									Log.i(UploadFormActivity.class.toString(),
 											"fileUri empty at createDialog()");
 								}
+								file = fileUri.getPath();
 								intent.putExtra(MediaStore.EXTRA_OUTPUT,
 										fileUri); // set the image file name
 								startActivityForResult(intent,
@@ -264,7 +283,7 @@ public class UploadFormActivity extends Activity {
 				public void handleMessage(Message msg) {
 					int state = msg.arg1;
 					if (state == UPLOAD_COMPLETE) {
-						setResult(UPLOAD_COMPLETE);
+						setResult(RESULT_OK);
 						dismissDialog(UPLOADING_DIALOG);
 					}
 				}
@@ -429,7 +448,10 @@ public class UploadFormActivity extends Activity {
 			Message msg = mHandler.obtainMessage();
 			msg.arg1 = UPLOAD_RUNNING;
 			mHandler.sendMessage(msg);
-			UploadPicture(context, file);
+			for (int i = 0; i < 100; i++) {
+
+			}
+			// UploadPicture(context, file);
 			msg.arg1 = UPLOAD_COMPLETE;
 			mHandler.sendMessage(msg);
 		}
