@@ -179,12 +179,10 @@ public class Locator {
 		@Override
 		public void onLocationChanged(Location location) {
 			Log.v("Locator", "Location Changed");
-			Log.v("Locator", "Londitude: " + location.getLongitude()
+			Log.v("Locator", "Longitude: " + location.getLongitude()
 					+ "Latitude: " + location.getLatitude());
 			Log.v("Locator", "Altitiude: " + location.getAltitude()
 					+ "Accuracy: " + location.getAccuracy());
-			Log.v("Locator", "Londitude: " + location.getLongitude()
-					+ "Latitude: " + location.getLatitude());
 			Log.v("Locator", "Timestamp: " + location.getTime());
 			updateLocation(location);
 			activity.updateBestLocation();

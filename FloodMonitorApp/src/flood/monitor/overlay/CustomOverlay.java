@@ -38,13 +38,13 @@ public class CustomOverlay extends ItemizedOverlay<OverlayItem> {
 	// ===========================================================
 	// Fields
 	// ===========================================================
-	private ArrayList<OverlayItem> mOverlays = new ArrayList<OverlayItem>();
+	private ArrayList<CustomOverlayItem> mOverlays = new ArrayList<CustomOverlayItem>();
 	private MapViewActivity activity;
-	private OverlayItem currentLocationMarker;
+	private CustomOverlayItem currentLocationMarker;
 	private MapView map;
 	private Drawable defaultMarker;
 
-	private OverlayItem pictureLocationMarker;
+	private CustomOverlayItem pictureLocationMarker;
 	private ImageView dragImage = null;
 	private int xDragImageOffset = 0;
 	private int yDragImageOffset = 0;
@@ -84,7 +84,7 @@ public class CustomOverlay extends ItemizedOverlay<OverlayItem> {
 		return temp;
 	}
 
-	public void setOverlay(ArrayList<OverlayItem> overlay) {
+	public void setOverlay(ArrayList<CustomOverlayItem> overlay) {
 		mOverlays = overlay;
 		if (currentLocationMarker != null) {
 			addOverlay(currentLocationMarker);
@@ -188,7 +188,7 @@ public class CustomOverlay extends ItemizedOverlay<OverlayItem> {
 				GeoPoint pt = map.getProjection().fromPixels(
 						x - xDragTouchOffset, y - yDragTouchOffset);
 
-				OverlayItem toDrop = new OverlayItem(pt,
+				CustomOverlayItem toDrop = new CustomOverlayItem(pt,
 						pictureLocationMarker.getTitle(),
 						pictureLocationMarker.getSnippet());
 
@@ -214,14 +214,14 @@ public class CustomOverlay extends ItemizedOverlay<OverlayItem> {
 	// ===========================================================
 	// Methods
 	// ===========================================================
-	public void addOverlay(OverlayItem overlay) {
+	public void addOverlay(CustomOverlayItem overlay) {
 		mOverlays.add(overlay);
 		populate();
 	}
 
 	public void updateBestLocation(Location location) {
 		mOverlays.remove(currentLocationMarker);
-		currentLocationMarker = new OverlayItem(new GeoPoint(
+		currentLocationMarker = new CustomOverlayItem(new GeoPoint(
 				(int) (location.getLatitude() * 1000000),
 				(int) (location.getLongitude() * 1000000)), "You are here",
 				"Description...");
@@ -230,7 +230,7 @@ public class CustomOverlay extends ItemizedOverlay<OverlayItem> {
 	}
 
 	public void initiateDragMarker(Location location) {
-		pictureLocationMarker = new OverlayItem(new GeoPoint(
+		pictureLocationMarker = new CustomOverlayItem(new GeoPoint(
 				(int) (location.getLatitude()  * 1000000),
 				(int) (location.getLongitude() * 1000000)), "", "");
 		mOverlays.add(pictureLocationMarker);

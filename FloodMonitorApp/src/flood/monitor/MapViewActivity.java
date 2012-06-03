@@ -34,6 +34,7 @@ import flood.monitor.modules.kmlparser.MarkerManager;
 import flood.monitor.modules.kmlparser.Parser;
 import flood.monitor.modules.kmlparser.SQLliteManager;
 import flood.monitor.overlay.CustomOverlay;
+import flood.monitor.overlay.CustomOverlayItem;
 
 /**
  * MapViewActivity.java Purpose: Activity that represents the map
@@ -87,7 +88,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		overlay = new CustomOverlay(drawable, this);
 		List<Overlay> mapOverlays = mapView.getOverlays();
 
-		ArrayList<OverlayItem> mOverlays = openAsset();
+		ArrayList<CustomOverlayItem> mOverlays = openAsset();
 		overlay.setOverlay(mOverlays);
 		mapOverlays.add(overlay);
 		markerState = ENABLE_MARKER;
@@ -198,6 +199,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			markerState = ENABLE_MARKER;
 			overlay.stopDragMarker();
 			invalidateOptionsMenu();
+			mapView.invalidate();
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
@@ -233,6 +235,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			markerState = ENABLE_MARKER;
 			overlay.stopDragMarker();
 			invalidateOptionsMenu();
+			mapView.invalidate();
 		}
 	}
 
@@ -259,12 +262,12 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	// ===========================================================
 	// Debug
 	// ===========================================================
-	public ArrayList<OverlayItem> openAsset() {
+	public ArrayList<CustomOverlayItem> openAsset() {
 		String file = "";
 		InputStream stream = null;
 		AssetManager assetManager = getAssets();
 		Parser parser = new Parser();
-		ArrayList<OverlayItem> itemList = new ArrayList<OverlayItem>(0);
+		ArrayList<CustomOverlayItem> itemList = new ArrayList<CustomOverlayItem>(0);
 		try {
 			stream = assetManager.open("sample.kml");
 			itemList = parser.Parse(file, stream, this);

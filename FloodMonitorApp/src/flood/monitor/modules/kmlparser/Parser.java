@@ -21,6 +21,7 @@ import com.google.android.maps.OverlayItem;
 
 import flood.monitor.R;
 import flood.monitor.overlay.CustomOverlay;
+import flood.monitor.overlay.CustomOverlayItem;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -31,7 +32,7 @@ public class Parser {
 
 	private Context context;
 
-	public ArrayList<OverlayItem> Parse(String file, InputStream stream,
+	public ArrayList<CustomOverlayItem> Parse(String file, InputStream stream,
 			Context context) {
 
 		this.context = context;
@@ -45,7 +46,8 @@ public class Parser {
 		 */
 
 		KMLHandler handler = new KMLHandler();
-		ArrayList<OverlayItem> itemList = new ArrayList<OverlayItem>(0);
+		ArrayList<CustomOverlayItem> itemList = new ArrayList<CustomOverlayItem>(
+				0);
 		try {
 
 			SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -68,22 +70,31 @@ public class Parser {
 
 	private class KMLHandler extends DefaultHandler {
 
-		private ArrayList<OverlayItem> mOverlay;
+		private ArrayList<CustomOverlayItem> mOverlay;
 
-		private boolean DOCUMENT = false;
-		private boolean PLACEMARK = false;
-		private boolean NAME = false;
-		private boolean DESCRIPTION = false;
-		private boolean POINT = false;
-		private boolean COORDINATES = false;;
+		private String observationtime;
+		private String usercomment;
+		private String image;
+		private char covertype;
+		private int coverHeight;
 
-		private String name;
-		private String description;
 		private int latitude;
 		private int longitude;
+
 		private int severity;
 		private GeoPoint point;
-		private OverlayItem overlayitem;
+		private CustomOverlayItem overlayitem;
+
+		private static final String DOCUMENT = "Document";
+		private static final String PLACEMARK = "Placemark";
+		private static final String SEVERITY = "styleUrl";
+		private static final String POINT = "Point";
+		private static final String COORDINATES = "coordinates";
+		private static final String OBSERVATIONTIME = "mark:ObservationTime";
+		private static final String USERCOMMENT = "mark:UserComment";
+		private static final String IMAGE = "mark:ImageUrl";
+		private static final String COVERTYPE = "mark:CoverType";
+		private static final String COVERHEIGHT = "mark:CoverHeight";
 
 		private String temp = "";
 
@@ -91,50 +102,61 @@ public class Parser {
 		public void startElement(String uri, String localName, String qName,
 				Attributes attributes) throws SAXException {
 
-			if (qName.equalsIgnoreCase("DOCUMENT")) {
-				mOverlay = new ArrayList<OverlayItem>(0);
-				DOCUMENT = true;
-			} else if (qName.equalsIgnoreCase("PLACEMARK")) {
-				PLACEMARK = true;
-			} else if (qName.equalsIgnoreCase("NAME")) {
-				NAME = true;
-			} else if (qName.equalsIgnoreCase("DESCRIPTION")) {
-				DESCRIPTION = true;
-			} else if (qName.equalsIgnoreCase("POINT")) {
-				POINT = true;
-			} else if (qName.equalsIgnoreCase("COORDINATES")) {
-				COORDINATES = true;
+			if (qName.equalsIgnoreCase(DOCUMENT)) {
+				mOverlay = new ArrayList<CustomOverlayItem>(0);
+
+			} else if (qName.equalsIgnoreCase(PLACEMARK)) {
+
+			} else if (qName.equalsIgnoreCase(SEVERITY)) {
+
+			} else if (qName.equalsIgnoreCase(POINT)) {
+
+			} else if (qName.equalsIgnoreCase(COORDINATES)) {
+
+			} else if (qName.equalsIgnoreCase(OBSERVATIONTIME)) {
+
+			} else if (qName.equalsIgnoreCase(USERCOMMENT)) {
+
+			} else if (qName.equalsIgnoreCase(IMAGE)) {
+
+			} else if (qName.equalsIgnoreCase(COVERTYPE)) {
+
+			} else if (qName.equalsIgnoreCase(COVERHEIGHT)) {
+
 			}
 
 			temp = "";
-			//Log.i(Parser.class.toString(), "Start Element :" + qName);
+			// Log.i(Parser.class.toString(), "Start Element :" + qName);
 		}
 
 		@Override
 		public void endElement(String uri, String localName, String qName)
 				throws SAXException {
-			if (qName.equalsIgnoreCase("DOCUMENT")) {
-			} else if (qName.equalsIgnoreCase("PLACEMARK")) {
-				overlayitem = new OverlayItem(point, name, description);
+
+			if (qName.equalsIgnoreCase(DOCUMENT)) {
+
+			} else if (qName.equalsIgnoreCase(PLACEMARK)) {
+				overlayitem = new CustomOverlayItem(point, observationtime,
+						usercomment);
 				Drawable icon = null;
 				switch (severity) {
-				case 1:
+				case 4:
 					icon = context.getResources().getDrawable(
 							R.drawable.marker_green_large);
 					break;
-				case 2:
+				case 5:
 					icon = context.getResources().getDrawable(
 							R.drawable.marker_green_yellow_large);
 					break;
-				case 3:
+				case 6:
 					icon = context.getResources().getDrawable(
 							R.drawable.marker_yellow_large);
 					break;
-				case 4:
+				case 7:
 					icon = context.getResources().getDrawable(
 							R.drawable.marker_orange_large);
 					break;
-				case 5:
+				case 8:
 					icon = context.getResources().getDrawable(
 							R.drawable.marker_red_large);
 					break;
@@ -146,21 +168,31 @@ public class Parser {
 				overlayitem.setMarker(icon);
 				severity = 0;
 				mOverlay.add(overlayitem);
-			} else if (qName.equalsIgnoreCase("NAME")) {
-				name = temp;
-			} else if (qName.equalsIgnoreCase("DESCRIPTION")) {
-				description = temp;
-			} else if (qName.equalsIgnoreCase("POINT")) {
-				point = new GeoPoint(latitude, longitude);
-			} else if (qName.equalsIgnoreCase("COORDINATES")) {
+
+			} else if (qName.equalsIgnoreCase(SEVERITY)) {
 				String coordinates = temp;
-				latitude = (int) (Float.parseFloat(coordinates.substring(0,
+				severity = Integer.parseInt(Character.toString(coordinates
+						.charAt(coordinates.length() - 1)));
+			} else if (qName.equalsIgnoreCase(POINT)) {
+				point = new GeoPoint(latitude, longitude);
+			} else if (qName.equalsIgnoreCase(COORDINATES)) {
+				String coordinates = temp;
+				longitude = (int) (Float.parseFloat(coordinates.substring(0,
 						coordinates.indexOf(","))) * 1000000);
-				longitude = (int) (Float.parseFloat(coordinates
+				latitude = (int) (Float.parseFloat(coordinates
 						.substring(coordinates.indexOf(",") + 1)) * 1000000);
-			} else if (qName.equalsIgnoreCase("SEVERITY")) {
-				severity = Integer.parseInt(temp);
+			} else if (qName.equalsIgnoreCase(OBSERVATIONTIME)) {
+				observationtime = temp;
+			} else if (qName.equalsIgnoreCase(USERCOMMENT)) {
+				usercomment = temp;
+			} else if (qName.equalsIgnoreCase(IMAGE)) {
+				image = temp;
+			} else if (qName.equalsIgnoreCase(COVERTYPE)) {
+				covertype = (temp.charAt(0));
+			} else if (qName.equalsIgnoreCase(COVERHEIGHT)) {
+				coverHeight = Integer.parseInt(temp);
 			}
+
 			temp = "";
 		}
 
@@ -170,13 +202,14 @@ public class Parser {
 			String input = new String(ch, start, length);
 			temp = temp + input.replaceAll("\n", "").replaceAll("\t", "");
 			if (!temp.isEmpty()) {
-				//Log.i(Parser.class.toString(),"Content :" + input.replaceAll("\n", "").replaceAll("\t",""));
+				// Log.i(Parser.class.toString(),"Content :" +
+				// input.replaceAll("\n", "").replaceAll("\t",""));
 			}
 
 		}
 
-		public ArrayList<OverlayItem> getResult() {
-			return (ArrayList<OverlayItem>) (mOverlay.clone());
+		public ArrayList<CustomOverlayItem> getResult() {
+			return (ArrayList<CustomOverlayItem>) (mOverlay.clone());
 		}
 
 	}

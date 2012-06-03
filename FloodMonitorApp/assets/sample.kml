@@ -1,94 +1,148 @@
 <kml xmlns="http://www.opengis.net/kml/2.2">
 	<Document>
-		<Placemark>
-			<name>This is a marker title</name>
-			<description>
-				This is an example, please dont erase me 
-			</description>
-			<Point>
-				<coordinates>46.941130,-96.796070</coordinates>
-				<severity>1</severity>
-			</Point>
+		<Placemark id="0">
+		  <styleUrl>#sever_4</styleUrl>
+		  <Point>
+		     <coordinates>-96.72801900000000,46.93281100000000</coordinates>
+		  </Point>
+		  <ExtendedData xmlns:mark="http://flood.cs.ndsu.nodak.edu">
+		    <mark:ObservationTime>2010-03-11 15:53:41</mark:ObservationTime>
+		    <mark:UploadTime>2010-03-11 15:53:41</mark:UploadTime>
+		    <mark:UploadTime>2010-03-11 15:53:41</mark:UploadTime>
+		    <mark:Email>_</mark:Email>
+		    <mark:PhoneNumber>555555</mark:PhoneNumber>
+		    <mark:Valid>t</mark:Valid>
+		    <mark:UserComment>Puddles on the road, nothing serious yet.</mark:UserComment>
+		    <mark:ImageUrl> http://flood.cs.ndsu.nodak.edu/pictures/35.jpg</mark:ImageUrl>
+		    <mark:CoverType>_</mark:CoverType>
+		    <mark:CoverHeight>1</mark:CoverHeight>
+		  </ExtendedData>
 		</Placemark>
-		<Placemark>
-			<name>This is a marker title</name>
-			<description>
-				This is an example, please dont erase me 
-			</description>
-			<Point>
-				<coordinates>46.901122,-96.492060</coordinates>
-				<severity>2</severity>
-			</Point>
+		<Placemark id="0">
+		  <styleUrl>#sever_4</styleUrl>
+		  <Point>
+		     <coordinates>-96.77861900000000,46.91281100000000</coordinates>
+		  </Point>
+		  <ExtendedData xmlns:mark="http://flood.cs.ndsu.nodak.edu">
+		    <mark:ObservationTime>2010-03-11 15:53:41</mark:ObservationTime>
+		    <mark:UploadTime>2010-03-11 15:53:41</mark:UploadTime>
+		    <mark:UploadTime>2010-03-11 15:53:41</mark:UploadTime>
+		    <mark:Email>_</mark:Email>
+		    <mark:PhoneNumber>555555</mark:PhoneNumber>
+		    <mark:Valid>t</mark:Valid>
+		    <mark:UserComment>Puddles on the road, nothing serious yet.</mark:UserComment>
+		    <mark:ImageUrl> http://flood.cs.ndsu.nodak.edu/pictures/35.jpg</mark:ImageUrl>
+		    <mark:CoverType>_</mark:CoverType>
+		    <mark:CoverHeight>1</mark:CoverHeight>
+		  </ExtendedData>
 		</Placemark>
-		<Placemark>
-			<name>This is a marker title</name>
-			<description>
-				This is an example, please dont erase me 
-			</description>
-			<Point>
-				<coordinates>46.904171,-96.752072</coordinates>
-				<severity>3</severity>
-			</Point>
+		<Placemark id="0">
+		  <styleUrl>#sever_4</styleUrl>
+		  <Point>
+		     <coordinates>-96.79107900000000,46.93211100000000</coordinates>
+		  </Point>
+		  <ExtendedData xmlns:mark="http://flood.cs.ndsu.nodak.edu">
+		    <mark:ObservationTime>2010-03-11 15:53:41</mark:ObservationTime>
+		    <mark:UploadTime>2010-03-11 15:53:41</mark:UploadTime>
+		    <mark:UploadTime>2010-03-11 15:53:41</mark:UploadTime>
+		    <mark:Email>_</mark:Email>
+		    <mark:PhoneNumber>555555</mark:PhoneNumber>
+		    <mark:Valid>t</mark:Valid>
+		    <mark:UserComment>Puddles on the road, nothing serious yet.</mark:UserComment>
+		    <mark:ImageUrl> http://flood.cs.ndsu.nodak.edu/pictures/35.jpg</mark:ImageUrl>
+		    <mark:CoverType>_</mark:CoverType>
+		    <mark:CoverHeight>1</mark:CoverHeight>
+		  </ExtendedData>
 		</Placemark>
-		<Placemark>
-			<name>This is a marker title</name>
-			<description>
-				This is an example, please dont erase me 
-			</description>
-			<Point>
-				<coordinates>46.901231,-96.796098</coordinates>
-				<severity>4</severity>
-			</Point>
+		<Placemark id="0">
+		  <styleUrl>#sever_4</styleUrl>
+		  <Point>
+		     <coordinates>-96.71801200000000,46.92285100000000</coordinates>
+		  </Point>
+		  <ExtendedData xmlns:mark="http://flood.cs.ndsu.nodak.edu">
+		    <mark:ObservationTime>2010-03-11 15:53:41</mark:ObservationTime>
+		    <mark:UploadTime>2010-03-11 15:53:41</mark:UploadTime>
+		    <mark:UploadTime>2010-03-11 15:53:41</mark:UploadTime>
+		    <mark:Email>_</mark:Email>
+		    <mark:PhoneNumber>555555</mark:PhoneNumber>
+		    <mark:Valid>t</mark:Valid>
+		    <mark:UserComment>Puddles on the road, nothing serious yet.</mark:UserComment>
+		    <mark:ImageUrl> http://flood.cs.ndsu.nodak.edu/pictures/35.jpg</mark:ImageUrl>
+		    <mark:CoverType>_</mark:CoverType>
+		    <mark:CoverHeight>1</mark:CoverHeight>
+		  </ExtendedData>
 		</Placemark>
-		<Placemark>
-			<name>This is a marker title</name>
-			<description>
-				This is an example, please dont erase me 
-			</description>
-			<Point>
-				<coordinates>46.902133,-96.792117</coordinates>
-				<severity>5</severity>
-			</Point>
+		<Placemark id="0">
+		  <styleUrl>#sever_4</styleUrl>
+		  <Point>
+		     <coordinates>-96.79811300000000,46.96181100000000</coordinates>
+		  </Point>
+		  <ExtendedData xmlns:mark="http://flood.cs.ndsu.nodak.edu">
+		    <mark:ObservationTime>2010-03-11 15:53:41</mark:ObservationTime>
+		    <mark:UploadTime>2010-03-11 15:53:41</mark:UploadTime>
+		    <mark:UploadTime>2010-03-11 15:53:41</mark:UploadTime>
+		    <mark:Email>_</mark:Email>
+		    <mark:PhoneNumber>555555</mark:PhoneNumber>
+		    <mark:Valid>t</mark:Valid>
+		    <mark:UserComment>Puddles on the road, nothing serious yet.</mark:UserComment>
+		    <mark:ImageUrl> http://flood.cs.ndsu.nodak.edu/pictures/35.jpg</mark:ImageUrl>
+		    <mark:CoverType>_</mark:CoverType>
+		    <mark:CoverHeight>1</mark:CoverHeight>
+		  </ExtendedData>
 		</Placemark>
-				<Placemark>
-			<name>This is a marker title</name>
-			<description>
-				This is an example, please dont erase me 
-			</description>
-			<Point>
-				<coordinates>46.982133,-96.792417</coordinates>
-				<severity>5</severity>
-			</Point>
+		<Placemark id="0">
+		  <styleUrl>#sever_4</styleUrl>
+		  <Point>
+		     <coordinates>-96.79441900000000,46.92281600000000</coordinates>
+		  </Point>
+		  <ExtendedData xmlns:mark="http://flood.cs.ndsu.nodak.edu">
+		    <mark:ObservationTime>2010-03-11 15:53:41</mark:ObservationTime>
+		    <mark:UploadTime>2010-03-11 15:53:41</mark:UploadTime>
+		    <mark:UploadTime>2010-03-11 15:53:41</mark:UploadTime>
+		    <mark:Email>_</mark:Email>
+		    <mark:PhoneNumber>555555</mark:PhoneNumber>
+		    <mark:Valid>t</mark:Valid>
+		    <mark:UserComment>Puddles on the road, nothing serious yet.</mark:UserComment>
+		    <mark:ImageUrl> http://flood.cs.ndsu.nodak.edu/pictures/35.jpg</mark:ImageUrl>
+		    <mark:CoverType>_</mark:CoverType>
+		    <mark:CoverHeight>1</mark:CoverHeight>
+		  </ExtendedData>
 		</Placemark>
-				<Placemark>
-			<name>This is a marker title</name>
-			<description>
-				This is an example, please dont erase me 
-			</description>
-			<Point>
-				<coordinates>46.902153,-96.793117</coordinates>
-				<severity>5</severity>
-			</Point>
+		<Placemark id="0">
+		  <styleUrl>#sever_4</styleUrl>
+		  <Point>
+		     <coordinates>-96.72803900000000,46.92981100000000</coordinates>
+		  </Point>
+		  <ExtendedData xmlns:mark="http://flood.cs.ndsu.nodak.edu">
+		    <mark:ObservationTime>2010-03-11 15:53:41</mark:ObservationTime>
+		    <mark:UploadTime>2010-03-11 15:53:41</mark:UploadTime>
+		    <mark:UploadTime>2010-03-11 15:53:41</mark:UploadTime>
+		    <mark:Email>_</mark:Email>
+		    <mark:PhoneNumber>555555</mark:PhoneNumber>
+		    <mark:Valid>t</mark:Valid>
+		    <mark:UserComment>Puddles on the road, nothing serious yet.</mark:UserComment>
+		    <mark:ImageUrl> http://flood.cs.ndsu.nodak.edu/pictures/35.jpg</mark:ImageUrl>
+		    <mark:CoverType>_</mark:CoverType>
+		    <mark:CoverHeight>1</mark:CoverHeight>
+		  </ExtendedData>
 		</Placemark>
-				<Placemark>
-			<name>This is a marker title</name>
-			<description>
-				This is an example, please dont erase me 
-			</description>
-			<Point>
-				<coordinates>46.902139,-95.792117</coordinates>
-				<severity>5</severity>
-			</Point>
-		</Placemark>
-				<Placemark>
-			<name>This is a marker title</name>
-			<description>
-				This is an example, please dont erase me 
-			</description>
-			<Point>
-				<coordinates>46.902123,-96.792115</coordinates>
-				<severity>5</severity>
-			</Point>
-		</Placemark>
+		<Placemark id="0">
+		  <styleUrl>#sever_4</styleUrl>
+		  <Point>
+		     <coordinates>-96.79201600000000,46.94231100000000</coordinates>
+		  </Point>
+		  <ExtendedData xmlns:mark="http://flood.cs.ndsu.nodak.edu">
+		    <mark:ObservationTime>2010-03-11 15:53:41</mark:ObservationTime>
+		    <mark:UploadTime>2010-03-11 15:53:41</mark:UploadTime>
+		    <mark:UploadTime>2010-03-11 15:53:41</mark:UploadTime>
+		    <mark:Email>_</mark:Email>
+		    <mark:PhoneNumber>555555</mark:PhoneNumber>
+		    <mark:Valid>t</mark:Valid>
+		    <mark:UserComment>Puddles on the road, nothing serious yet.</mark:UserComment>
+		    <mark:ImageUrl> http://flood.cs.ndsu.nodak.edu/pictures/35.jpg</mark:ImageUrl>
+		    <mark:CoverType>_</mark:CoverType>
+		    <mark:CoverHeight>1</mark:CoverHeight>
+		  </ExtendedData>
+		</Placemark>		
 	</Document>
 </kml> 
