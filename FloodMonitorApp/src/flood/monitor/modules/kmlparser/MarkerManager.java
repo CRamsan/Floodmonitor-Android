@@ -3,6 +3,9 @@ package flood.monitor.modules.kmlparser;
 import java.util.ArrayList;
 import java.util.List;
 
+import flood.monitor.abstracts.ModuleEventListener;
+
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -93,5 +96,4 @@ public class MarkerManager {
 		public String image;
 		public String time;
 	}
-
 }

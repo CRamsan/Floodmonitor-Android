@@ -30,22 +30,10 @@ import android.util.Log;
 
 public class Parser {
 
-	private Context context;
-
 	public ArrayList<CustomOverlayItem> Parse(String file, InputStream stream,
 			Context context) {
 
-		this.context = context;
-		/*
-		 * Drawable drawable =
-		 * this.getResources().getDrawable(R.drawable.ic_launcher); overlay =
-		 * new CustomOverlay(drawable, this); List<Overlay> mapOverlays =
-		 * mapView.getOverlays(); GeoPoint point = new
-		 * GeoPoint(46901130,96792070); OverlayItem overlayitem = new
-		 * OverlayItem(point, "Hello", "I'm in Athens, Greece!");
-		 */
-
-		KMLHandler handler = new KMLHandler();
+		KMLHandler handler = new KMLHandler(context);
 		ArrayList<CustomOverlayItem> itemList = new ArrayList<CustomOverlayItem>(
 				0);
 		try {
@@ -68,6 +56,93 @@ public class Parser {
 		return itemList;
 	}
 
+	public ArrayList<Region> ParseRegions(String file, InputStream stream,
+			Context context) {
+
+		XMLHandler handler = new XMLHandler(context);
+		String[] itemList;
+		
+		try {
+
+			SAXParserFactory factory = SAXParserFactory.newInstance();
+			SAXParser saxParser = factory.newSAXParser();
+			saxParser.parse(stream, handler);
+
+		} catch (SAXException e) {
+			String message = e.getMessage();
+			Log.i(Parser.class.toString(), message);
+		} catch (ParserConfigurationException e) {
+			String message = e.getMessage();
+			Log.i(Parser.class.toString(), message);
+		} catch (IOException e) {
+			String message = e.getMessage();
+			Log.i(Parser.class.toString(), message);
+		}
+		return handler.getResult();
+	}
+
+	private class XMLHandler extends DefaultHandler {
+
+		private static final String DOCUMENT = "Document";
+		private static final String PLACEMARK = "Placemark";
+		private static final String NAME = "name";
+
+		private ArrayList<Region> options;
+		private Context context;
+		private String name;
+		private int id;
+		private String temp = "";
+
+		public XMLHandler(Context context) {
+			super();
+			this.context = context;
+		}
+
+		@Override
+		public void startElement(String uri, String localName, String qName,
+				Attributes attributes) throws SAXException {
+
+			if (qName.equalsIgnoreCase(DOCUMENT)) {
+				options = new ArrayList<Region>(0);
+
+			} else if (qName.equalsIgnoreCase(PLACEMARK)) {
+
+			} else if (qName.equalsIgnoreCase(NAME)) {
+
+			}
+
+			temp = "";
+			// Log.i(Parser.class.toString(), "Start Element :" + qName);
+		}
+
+		@Override
+		public void endElement(String uri, String localName, String qName)
+				throws SAXException {
+
+			if (qName.equalsIgnoreCase(DOCUMENT)) {
+
+			} else if (qName.equalsIgnoreCase(PLACEMARK)) {
+				Region reg = new Region(name, id);
+				options.add(reg);
+			} else if (qName.equalsIgnoreCase(NAME)) {
+				name = temp;
+			}
+
+			temp = "";
+		}
+
+		@Override
+		public void characters(char ch[], int start, int length)
+				throws SAXException {
+			String input = new String(ch, start, length);
+			temp = temp + input.replaceAll("\n", "").replaceAll("\t", "");
+		}
+
+		public ArrayList<Region> getResult() {
+			return options;
+		}
+	}
+
 	private class KMLHandler extends DefaultHandler {
 
 		private ArrayList<CustomOverlayItem> mOverlay;
@@ -85,6 +160,8 @@ public class Parser {
 		private GeoPoint point;
 		private CustomOverlayItem overlayitem;
 
+		private Context context;
+
 		private static final String DOCUMENT = "Document";
 		private static final String PLACEMARK = "Placemark";
 		private static final String SEVERITY = "styleUrl";
@@ -97,6 +174,11 @@ public class Parser {
 		private static final String COVERHEIGHT = "mark:CoverHeight";
 
 		private String temp = "";
+
+		public KMLHandler(Context context) {
+			super();
+			this.context = context;
+		}
 
 		@Override
 		public void startElement(String uri, String localName, String qName,
@@ -201,15 +283,36 @@ public class Parser {
 				throws SAXException {
 			String input = new String(ch, start, length);
 			temp = temp + input.replaceAll("\n", "").replaceAll("\t", "");
-			if (!temp.isEmpty()) {
-				// Log.i(Parser.class.toString(),"Content :" +
-				// input.replaceAll("\n", "").replaceAll("\t",""));
-			}
-
 		}
 
 		public ArrayList<CustomOverlayItem> getResult() {
 			return (ArrayList<CustomOverlayItem>) (mOverlay.clone());
+		}
+	}
+
+	public class Region {
+		private String name;
+		private int regionId;
+
+		public Region(String name, int id) {
+			this.setName(name);
+			this.setRegionId(id);
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		public int getRegionId() {
+			return regionId;
+		}
+
+		public void setRegionId(int regionId) {
+			this.regionId = regionId;
 		}
 
 	}

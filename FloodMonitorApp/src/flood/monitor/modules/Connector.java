@@ -33,20 +33,20 @@ import android.widget.Toast;
 
 public class Connector {
 
-	private final String WORLD = "http://flood.cs.ndsu.nodak.edu/~ander773/flood/kmls/default.xml";
-	private final String REGION = "http://flood.cs.ndsu.nodak.edu/~ander773/flood/test/kmltest.php";
-	private final String DOWNLOAD_DIR = ".cache";
+	public final String WORLD = "http://flood.cs.ndsu.nodak.edu/~ander773/flood/kmls/default.xml";
+	public final String REGION = "http://flood.cs.ndsu.nodak.edu/~ander773/flood/test/kmltest.php";
+	public final String DOWNLOAD_DIR = ".cache";
 	
 	private Connection conn;
 	private Statement stmt;
 
-	public File download(String location, String filename) {
+	public File downloadXML(String urlLocation, String filename) {
 		File mediaStorageDir = new File(
 				Environment.getExternalStorageDirectory(), "FloodMonitor");
 		File file = new File(mediaStorageDir.getPath() + File.separator
-				+ File.separator + File.separator + filename);
+				+ DOWNLOAD_DIR + File.separator + filename);
 		try {
-			URL url = new URL(location);
+			URL url = new URL(urlLocation);
 
 			long startTime = System.currentTimeMillis();
 			/* Open a connection to that URL. */

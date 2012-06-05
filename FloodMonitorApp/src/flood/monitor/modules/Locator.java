@@ -14,8 +14,9 @@ import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.os.Bundle;
 import android.util.Log;
-import flood.monitor.interfaces.*;
-public class Locator implements IActivityDependant {
+import flood.monitor.abstracts.*;
+
+public class Locator {
 	// ===========================================================
 	// Constants
 	// ===========================================================
@@ -24,10 +25,11 @@ public class Locator implements IActivityDependant {
 	// ===========================================================
 	// Fields
 	// ===========================================================
+	private Activity activity;
+	
 	private Location bestLocation;
 	private LocationManager locationManager;
 	private LocationListener locationListener;
-	private MapViewActivity activity;
 	private boolean isLitening = false;
 
 	// ===========================================================
@@ -35,10 +37,41 @@ public class Locator implements IActivityDependant {
 	// ===========================================================
 	public Locator() {
 		// Acquire a reference to the system Location Manager
-		locationManager = (LocationManager) activity
-				.getSystemService(Context.LOCATION_SERVICE);
 		locationListener = new MobileLocationListener();
 
+		
+	}
+
+	// ===========================================================
+	// Getter & Setter
+	// ===========================================================
+	public Location getBestLocation() {
+		return bestLocation;
+	}
+
+	public void setActivity(MapViewActivity activity) {
+		this.activity = activity;
+	}
+
+	// ===========================================================
+	// Methods from Parent
+	// ===========================================================
+
+	// ===========================================================
+	// Methods from Interfaces
+	// ===========================================================
+	
+	// ===========================================================
+	// Methods
+	// ===========================================================
+	public void updateActivity(Activity newActivity) {
+		this.activity = newActivity;
+		locationManager = (LocationManager) newActivity
+				.getSystemService(Context.LOCATION_SERVICE);
+		
+	}	
+	
+	public void updateOldLocation(){
 		Location currentLocation = locationManager
 				.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 		if (currentLocation == null) {
@@ -49,34 +82,10 @@ public class Locator implements IActivityDependant {
 			updateLocation(currentLocation);
 		}
 	}
-
-	// ===========================================================
-	// Getter & Setter
-	// ===========================================================
-	public Location getBestLocation() {
-		return bestLocation;
-	}
-
-	public void setActivity(MapViewActivity activity){
-		this.activity = activity;
-	}
-	// ===========================================================
-	// Methods from Parent
-	// ===========================================================
-
-	// ===========================================================
-	// Methods from Interfaces
-	// ===========================================================
-	@Override
-	public void updateActivity(Activity newActivity) {
-		// TODO Auto-generated method stub
-		
-	}
-	// ===========================================================
-	// Methods
-	// ===========================================================
+	
 	public void startListening(Context context) {
 		if (!isLitening) {
+			
 			locationManager.requestLocationUpdates(
 					LocationManager.GPS_PROVIDER, ONE_MINUTE, 10f,
 					locationListener);
@@ -192,7 +201,7 @@ public class Locator implements IActivityDependant {
 					+ "Accuracy: " + location.getAccuracy());
 			Log.v("Locator", "Timestamp: " + location.getTime());
 			updateLocation(location);
-			activity.updateBestLocation();
+			((MapViewActivity) activity).updateBestLocation();
 		}
 
 		@Override
@@ -206,8 +215,5 @@ public class Locator implements IActivityDependant {
 		}
 
 	}
-
-
-
 
 }

@@ -2,6 +2,7 @@ package flood.monitor.overlay;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.EventObject;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -28,9 +29,10 @@ import com.google.android.maps.OverlayItem;
 
 import flood.monitor.MapViewActivity;
 import flood.monitor.R;
-import flood.monitor.interfaces.IActivityDependant;
+import flood.monitor.abstracts.ModuleEventListener;
+import flood.monitor.modules.kmlparser.MarkerManager;
 
-public class CustomOverlay extends ItemizedOverlay<OverlayItem> implements IActivityDependant{
+public class CustomOverlay extends ItemizedOverlay<OverlayItem> {
 
 	// ===========================================================
 	// Constants
@@ -40,11 +42,12 @@ public class CustomOverlay extends ItemizedOverlay<OverlayItem> implements IActi
 	// Fields
 	// ===========================================================
 	private ArrayList<CustomOverlayItem> mOverlays = new ArrayList<CustomOverlayItem>();
-	private MapViewActivity activity;
 	private CustomOverlayItem currentLocationMarker;
-	private MapView map;
 	private Drawable defaultMarker;
+	private MarkerManager manager;
 
+	private Activity activity;
+	
 	private CustomOverlayItem pictureLocationMarker;
 	private ImageView dragImage = null;
 	private int xDragImageOffset = 0;
@@ -66,10 +69,7 @@ public class CustomOverlay extends ItemizedOverlay<OverlayItem> implements IActi
 
 	public CustomOverlay(Drawable defaultMarker, MapViewActivity activity) {
 		super(boundCenterBottom(defaultMarker));
-		this.activity = activity;
-		this.isMarking = false;
-		this.map = (MapView) activity.findViewById(R.id.mapview);
-		this.defaultMarker = defaultMarker;
+		this.isMarking = false;this.defaultMarker = defaultMarker;
 
 		dragImage = (ImageView) activity.findViewById(R.id.drag);
 		xDragImageOffset = dragImage.getDrawable().getIntrinsicWidth() / 2;
@@ -151,6 +151,9 @@ public class CustomOverlay extends ItemizedOverlay<OverlayItem> implements IActi
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event, MapView mapView) {
+		if(mOverlays.size() == 0){
+			return false;			
+		}
 		if (isMarking) {
 			final int action = event.getAction();
 			final int x = (int) event.getX();
@@ -159,7 +162,7 @@ public class CustomOverlay extends ItemizedOverlay<OverlayItem> implements IActi
 			if (action == MotionEvent.ACTION_DOWN) {
 				Point p = new Point(0, 0);
 
-				map.getProjection().toPixels(pictureLocationMarker.getPoint(),
+				((MapView) activity.findViewById(R.layout.map)).getProjection().toPixels(pictureLocationMarker.getPoint(),
 						p);
 
 				if (hitTest(pictureLocationMarker, defaultMarker, x - p.x, y
@@ -188,7 +191,7 @@ public class CustomOverlay extends ItemizedOverlay<OverlayItem> implements IActi
 					&& pictureLocationMarker != null && isTouching) {
 				dragImage.setVisibility(View.GONE);
 
-				GeoPoint pt = map.getProjection().fromPixels(
+				GeoPoint pt = ((MapView) activity.findViewById(R.layout.map)).getProjection().fromPixels(
 						x - xDragTouchOffset, y - yDragTouchOffset);
 
 				CustomOverlayItem toDrop = new CustomOverlayItem(pt,
@@ -213,15 +216,15 @@ public class CustomOverlay extends ItemizedOverlay<OverlayItem> implements IActi
 	// ===========================================================
 	// Methods from Interfaces
 	// ===========================================================
-	@Override
-	public void updateActivity(Activity newActivity) {
-		// TODO Auto-generated method stub
-		
-	}
+
 	
 	// ===========================================================
 	// Methods
 	// ===========================================================
+	public void updateActivity(Activity newActivity) {
+		this.activity = newActivity;		
+	}
+	
 	public void addOverlay(CustomOverlayItem overlay) {
 		mOverlays.add(overlay);
 		populate();
@@ -252,5 +255,5 @@ public class CustomOverlay extends ItemizedOverlay<OverlayItem> implements IActi
 		populate();
 	}
 
-
+	
 }
