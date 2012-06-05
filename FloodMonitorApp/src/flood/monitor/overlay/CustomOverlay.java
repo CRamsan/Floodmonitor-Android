@@ -28,8 +28,9 @@ import com.google.android.maps.OverlayItem;
 
 import flood.monitor.MapViewActivity;
 import flood.monitor.R;
+import flood.monitor.interfaces.IActivityDependant;
 
-public class CustomOverlay extends ItemizedOverlay<OverlayItem> {
+public class CustomOverlay extends ItemizedOverlay<OverlayItem> implements IActivityDependant{
 
 	// ===========================================================
 	// Constants
@@ -57,8 +58,10 @@ public class CustomOverlay extends ItemizedOverlay<OverlayItem> {
 	// ===========================================================
 	// Constructors
 	// ===========================================================
+
 	public CustomOverlay(Drawable defaultMarker) {
 		super(boundCenterBottom(defaultMarker));
+		this.mOverlays = new ArrayList<CustomOverlayItem>(0);
 	}
 
 	public CustomOverlay(Drawable defaultMarker, MapViewActivity activity) {
@@ -210,7 +213,12 @@ public class CustomOverlay extends ItemizedOverlay<OverlayItem> {
 	// ===========================================================
 	// Methods from Interfaces
 	// ===========================================================
-
+	@Override
+	public void updateActivity(Activity newActivity) {
+		// TODO Auto-generated method stub
+		
+	}
+	
 	// ===========================================================
 	// Methods
 	// ===========================================================
@@ -243,4 +251,6 @@ public class CustomOverlay extends ItemizedOverlay<OverlayItem> {
 		mOverlays.remove(pictureLocationMarker);
 		populate();
 	}
+
+
 }

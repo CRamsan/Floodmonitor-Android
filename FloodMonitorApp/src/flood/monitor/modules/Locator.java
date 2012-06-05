@@ -6,6 +6,7 @@ import com.google.android.maps.OverlayItem;
 
 import flood.monitor.MapViewActivity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
@@ -13,8 +14,8 @@ import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.os.Bundle;
 import android.util.Log;
-
-public class Locator {
+import flood.monitor.interfaces.*;
+public class Locator implements IActivityDependant {
 	// ===========================================================
 	// Constants
 	// ===========================================================
@@ -32,11 +33,10 @@ public class Locator {
 	// ===========================================================
 	// Constructors
 	// ===========================================================
-	public Locator(MapViewActivity activity) {
+	public Locator() {
 		// Acquire a reference to the system Location Manager
 		locationManager = (LocationManager) activity
 				.getSystemService(Context.LOCATION_SERVICE);
-		this.activity = activity;
 		locationListener = new MobileLocationListener();
 
 		Location currentLocation = locationManager
@@ -57,6 +57,9 @@ public class Locator {
 		return bestLocation;
 	}
 
+	public void setActivity(MapViewActivity activity){
+		this.activity = activity;
+	}
 	// ===========================================================
 	// Methods from Parent
 	// ===========================================================
@@ -64,7 +67,11 @@ public class Locator {
 	// ===========================================================
 	// Methods from Interfaces
 	// ===========================================================
-
+	@Override
+	public void updateActivity(Activity newActivity) {
+		// TODO Auto-generated method stub
+		
+	}
 	// ===========================================================
 	// Methods
 	// ===========================================================
@@ -199,4 +206,8 @@ public class Locator {
 		}
 
 	}
+
+
+
+
 }

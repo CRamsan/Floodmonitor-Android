@@ -52,16 +52,18 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	private final static int ENABLE_UPLOAD = 1;
 	private final static int UPLOAD_REQUEST = 100;
 	private final static String PREFS_NAME = "MapViewPref";
+	private final static String INSTALL_STATE = "Install_State";
 
 	// ===========================================================
 	// Fields
 	// ===========================================================
-	private MapView mapView;
+	//private MapView mapView;
 	private Locator locator;
 	private CustomOverlay overlay;
 	private MarkerManager manager;
 	private int markerState;
 	private boolean installedBefore;
+	private boolean worldLoaded;
 
 	// ===========================================================
 	// Constructors
@@ -80,31 +82,16 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		// The activity is launched or restarted after been killed.
 
 		setContentView(R.layout.map);
-		mapView = (MapView) findViewById(R.id.mapview);
-		mapView.setBuiltInZoomControls(true);
-		locator = new Locator(this);
-		Drawable drawable = this.getResources().getDrawable(
-				R.drawable.ic_launcher);
-		overlay = new CustomOverlay(drawable, this);
-		List<Overlay> mapOverlays = mapView.getOverlays();
-
-		ArrayList<CustomOverlayItem> mOverlays = openAsset();
-		overlay.setOverlay(mOverlays);
-		mapOverlays.add(overlay);
-		markerState = ENABLE_MARKER;
-		invalidateOptionsMenu();
-
-		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-		installedBefore = settings.getBoolean("Install_State", false);
-
-		if (installedBefore) {
-			//Proceed to load from db
+		if (savedInstanceState == null) {
+			SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+			installedBefore = settings.getBoolean(INSTALL_STATE, false);
+			if (installedBefore) {
+				onInstall();
+			} else {
+				onInitialize();
+			}
 		} else {
-			SharedPreferences.Editor editor = settings.edit();
-			installedBefore = true;
-			editor.putBoolean("Install_State", installedBefore);
-			editor.commit();
-			//create DB
+			onRecreate();
 		}
 	}
 
@@ -117,6 +104,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	@Override
 	protected void onResume() {
 		super.onResume();
+		invalidateOptionsMenu();
 		locator.startListening(this);
 		// The activity has become visible (it is now "resumed").
 	}
@@ -199,7 +187,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			markerState = ENABLE_MARKER;
 			overlay.stopDragMarker();
 			invalidateOptionsMenu();
-			mapView.invalidate();
+			((MapView) findViewById(R.id.mapview)).invalidate();
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
@@ -235,8 +223,18 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			markerState = ENABLE_MARKER;
 			overlay.stopDragMarker();
 			invalidateOptionsMenu();
-			mapView.invalidate();
+			((MapView) findViewById(R.id.mapview)).invalidate();
 		}
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle savedInstanceState) {
+		super.onSaveInstanceState(savedInstanceState);
+	}
+
+	@Override
+	public void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
 	}
 
 	// ===========================================================
@@ -252,7 +250,44 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	// ===========================================================
 	public void updateBestLocation() {
 		overlay.updateBestLocation(locator.getBestLocation());
-		mapView.invalidate();
+		((MapView) findViewById(R.id.mapview)).invalidate();
+	}
+
+	private void onInstall() {
+		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+		SharedPreferences.Editor editor = settings.edit();
+		installedBefore = true;
+		editor.putBoolean(INSTALL_STATE, installedBefore);
+		editor.commit();
+		// create DB
+	}
+
+	private void onInitialize() {
+		MapView mapView = (MapView) findViewById(R.id.mapview);
+		mapView.setBuiltInZoomControls(true);
+		locator = new Locator();
+		Drawable drawable = this.getResources().getDrawable(
+				R.drawable.ic_launcher);
+		overlay = new CustomOverlay(drawable);
+		List<Overlay> mapOverlays = mapView.getOverlays();
+		overlay.setOverlay(mOverlays);
+		mapOverlays.add(overlay);
+		markerState = ENABLE_MARKER;
+		
+	}
+
+	private void onRecreate() {
+		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+		installedBefore = settings.getBoolean("Install_State", false);
+		if (installedBefore) {
+			// Proceed to load from db
+		} else {
+			SharedPreferences.Editor editor = settings.edit();
+			installedBefore = true;
+			editor.putBoolean("Install_State", installedBefore);
+			editor.commit();
+			// create DB
+		}
 	}
 
 	// ===========================================================
@@ -262,12 +297,13 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	// ===========================================================
 	// Debug
 	// ===========================================================
-	public ArrayList<CustomOverlayItem> openAsset() {
+	private ArrayList<CustomOverlayItem> openAsset() {
 		String file = "";
 		InputStream stream = null;
 		AssetManager assetManager = getAssets();
 		Parser parser = new Parser();
-		ArrayList<CustomOverlayItem> itemList = new ArrayList<CustomOverlayItem>(0);
+		ArrayList<CustomOverlayItem> itemList = new ArrayList<CustomOverlayItem>(
+				0);
 		try {
 			stream = assetManager.open("sample.kml");
 			itemList = parser.Parse(file, stream, this);
@@ -284,4 +320,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		return itemList;
 	}
 
+	private void loadWorld() {
+
+	}
 }
