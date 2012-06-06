@@ -19,4 +19,14 @@
         android:src="@drawable/marker"
         android:visibility="gone" />
 
+    <Button
+        android1:id="@+id/button1"
+        android1:layout_width="wrap_content"
+        android1:layout_height="wrap_content"
+        android1:layout_alignParentRight="true"
+        android1:layout_alignParentTop="true"
+        android1:layout_marginRight="16dp"
+        android1:layout_marginTop="32dp"
+        android1:text="Button" />
+
 </RelativeLayout>

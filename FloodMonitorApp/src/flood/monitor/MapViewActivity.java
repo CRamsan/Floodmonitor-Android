@@ -262,6 +262,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			    	dismissDialog(REGION_SELECT_DIALOG);
 			    }
 			});
+			builder.setCancelable(false);
 			AlertDialog alert = builder.create();
 			return alert;
 		}
@@ -435,10 +436,9 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	}
 
 	private ArrayList<Region> getRegions(String filename) throws FileNotFoundException {
-		InputStream stream = null;
+		InputStream stream = new FileInputStream(filename);
 		Parser parser = new Parser();
 		File file = new File(filename);
-		stream = 
 		return parser.ParseRegions(filename, stream, this);
 	}
 
