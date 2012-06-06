@@ -26,7 +26,7 @@ public class Locator {
 	// Fields
 	// ===========================================================
 	private Activity activity;
-	
+
 	private Location bestLocation;
 	private LocationManager locationManager;
 	private LocationListener locationListener;
@@ -35,11 +35,13 @@ public class Locator {
 	// ===========================================================
 	// Constructors
 	// ===========================================================
-	public Locator() {
+	public Locator(MapViewActivity activity) {
+		this.activity = activity;
 		// Acquire a reference to the system Location Manager
 		locationListener = new MobileLocationListener();
+		locationManager = (LocationManager) activity
+				.getSystemService(Context.LOCATION_SERVICE);
 
-		
 	}
 
 	// ===========================================================
@@ -49,10 +51,6 @@ public class Locator {
 		return bestLocation;
 	}
 
-	public void setActivity(MapViewActivity activity) {
-		this.activity = activity;
-	}
-
 	// ===========================================================
 	// Methods from Parent
 	// ===========================================================
@@ -60,7 +58,7 @@ public class Locator {
 	// ===========================================================
 	// Methods from Interfaces
 	// ===========================================================
-	
+
 	// ===========================================================
 	// Methods
 	// ===========================================================
@@ -68,10 +66,10 @@ public class Locator {
 		this.activity = newActivity;
 		locationManager = (LocationManager) newActivity
 				.getSystemService(Context.LOCATION_SERVICE);
-		
-	}	
-	
-	public void updateOldLocation(){
+
+	}
+
+	public void updateOldLocation() {
 		Location currentLocation = locationManager
 				.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 		if (currentLocation == null) {
@@ -82,10 +80,10 @@ public class Locator {
 			updateLocation(currentLocation);
 		}
 	}
-	
+
 	public void startListening(Context context) {
 		if (!isLitening) {
-			
+
 			locationManager.requestLocationUpdates(
 					LocationManager.GPS_PROVIDER, ONE_MINUTE, 10f,
 					locationListener);
@@ -201,7 +199,12 @@ public class Locator {
 					+ "Accuracy: " + location.getAccuracy());
 			Log.v("Locator", "Timestamp: " + location.getTime());
 			updateLocation(location);
-			((MapViewActivity) activity).updateBestLocation();
+			((MapViewActivity) activity).runOnUiThread( new Runnable() {
+                public void run() {
+                	((MapViewActivity) activity).updateBestLocation();
+                }
+            });
+			
 		}
 
 		@Override

@@ -3,38 +3,29 @@ package flood.monitor.modules.kmlparser;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.w3c.dom.Document;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import com.google.android.maps.GeoPoint;
-import com.google.android.maps.Overlay;
-import com.google.android.maps.OverlayItem;
-
-import flood.monitor.R;
-import flood.monitor.overlay.CustomOverlay;
-import flood.monitor.overlay.CustomOverlayItem;
-
 import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.os.Handler;
 import android.util.Log;
+
+import com.google.android.maps.GeoPoint;
+
+import flood.monitor.overlay.Marker;
 
 public class Parser {
 
-	public ArrayList<CustomOverlayItem> Parse(String file, InputStream stream,
+	public ArrayList<Marker> Parse(String file, InputStream stream,
 			Context context) {
 
 		KMLHandler handler = new KMLHandler(context);
-		ArrayList<CustomOverlayItem> itemList = new ArrayList<CustomOverlayItem>(
+		ArrayList<Marker> itemList = new ArrayList<Marker>(
 				0);
 		try {
 
@@ -85,6 +76,8 @@ public class Parser {
 
 		private static final String DOCUMENT = "Document";
 		private static final String PLACEMARK = "Placemark";
+		private static final String DATE = "date";
+		private static final String COORDINATES = "coordinates";
 		private static final String NAME = "name";
 
 		private ArrayList<Region> options;
@@ -145,7 +138,7 @@ public class Parser {
 
 	private class KMLHandler extends DefaultHandler {
 
-		private ArrayList<CustomOverlayItem> mOverlay;
+		private ArrayList<Marker> mOverlay;
 
 		private String observationtime;
 		private String usercomment;
@@ -158,7 +151,7 @@ public class Parser {
 
 		private int severity;
 		private GeoPoint point;
-		private CustomOverlayItem overlayitem;
+		private Marker overlayitem;
 
 		private Context context;
 
@@ -185,7 +178,7 @@ public class Parser {
 				Attributes attributes) throws SAXException {
 
 			if (qName.equalsIgnoreCase(DOCUMENT)) {
-				mOverlay = new ArrayList<CustomOverlayItem>(0);
+				mOverlay = new ArrayList<Marker>(0);
 
 			} else if (qName.equalsIgnoreCase(PLACEMARK)) {
 
@@ -218,36 +211,10 @@ public class Parser {
 			if (qName.equalsIgnoreCase(DOCUMENT)) {
 
 			} else if (qName.equalsIgnoreCase(PLACEMARK)) {
-				overlayitem = new CustomOverlayItem(point, observationtime,
+				overlayitem = new Marker(point, observationtime,
 						usercomment);
-				Drawable icon = null;
-				switch (severity) {
-				case 4:
-					icon = context.getResources().getDrawable(
-							R.drawable.marker_green_large);
-					break;
-				case 5:
-					icon = context.getResources().getDrawable(
-							R.drawable.marker_green_yellow_large);
-					break;
-				case 6:
-					icon = context.getResources().getDrawable(
-							R.drawable.marker_yellow_large);
-					break;
-				case 7:
-					icon = context.getResources().getDrawable(
-							R.drawable.marker_orange_large);
-					break;
-				case 8:
-					icon = context.getResources().getDrawable(
-							R.drawable.marker_red_large);
-					break;
-				default:
-					break;
-				}
-				icon.setBounds(0, 0, icon.getIntrinsicWidth(),
-						icon.getIntrinsicHeight());
-				overlayitem.setMarker(icon);
+				
+				overlayitem.setMarker(null);
 				severity = 0;
 				mOverlay.add(overlayitem);
 
@@ -285,35 +252,8 @@ public class Parser {
 			temp = temp + input.replaceAll("\n", "").replaceAll("\t", "");
 		}
 
-		public ArrayList<CustomOverlayItem> getResult() {
-			return (ArrayList<CustomOverlayItem>) (mOverlay.clone());
+		public ArrayList<Marker> getResult() {
+			return (ArrayList<Marker>) (mOverlay.clone());
 		}
-	}
-
-	public class Region {
-		private String name;
-		private int regionId;
-
-		public Region(String name, int id) {
-			this.setName(name);
-			this.setRegionId(id);
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public void setName(String name) {
-			this.name = name;
-		}
-
-		public int getRegionId() {
-			return regionId;
-		}
-
-		public void setRegionId(int regionId) {
-			this.regionId = regionId;
-		}
-
 	}
 }

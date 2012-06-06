@@ -29,7 +29,7 @@ import com.google.android.maps.OverlayItem;
 import flood.monitor.MapViewActivity;
 import flood.monitor.R;
 
-public class CustomOverlayItem extends OverlayItem {
+public class Marker extends OverlayItem {
 
 	// ===========================================================
 	// Constants
@@ -38,24 +38,25 @@ public class CustomOverlayItem extends OverlayItem {
 	// ===========================================================
 	// Fields
 	// ===========================================================
-	private String severity;
 	private String observationTime;
 	private String userComment;
 	private String image;
+	private int severity;
 	private int coverType;
 	private int coverHeight;
 
 	// ===========================================================
 	// Constructors
 	// ===========================================================
-	public CustomOverlayItem(GeoPoint point, String observationTime, String userComment, String image, int coverType, int coverHeight) {
+	public Marker(GeoPoint point, String observationTime, String userComment, String image, int severity, int coverType, int coverHeight) {
 		super(point, observationTime, userComment);
+		this.severity = severity;
 		this.image = image;
 		this.coverType = coverType;
 		this.coverHeight =coverHeight;
 	}
 	
-	public CustomOverlayItem(GeoPoint point, String title, String snippet) {
+	public Marker(GeoPoint point, String title, String snippet) {
 		super(point, title, snippet);
 
 	}
@@ -63,11 +64,11 @@ public class CustomOverlayItem extends OverlayItem {
 	// Getter & Setter
 	// ===========================================================
 
-	public String getSeverity() {
+	public int getSeverity() {
 		return severity;
 	}
 
-	public void setSeverity(String severity) {
+	public void setSeverity(int severity) {
 		this.severity = severity;
 	}
 

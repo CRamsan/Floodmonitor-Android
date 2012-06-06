@@ -48,10 +48,9 @@ import flood.monitor.modules.Connector;
 import flood.monitor.modules.Locator;
 import flood.monitor.modules.kmlparser.MarkerManager;
 import flood.monitor.modules.kmlparser.Parser;
-import flood.monitor.modules.kmlparser.Parser.Region;
 import flood.monitor.modules.kmlparser.SQLliteManager;
-import flood.monitor.overlay.CustomOverlay;
-import flood.monitor.overlay.CustomOverlayItem;
+import flood.monitor.overlay.MarkerOverlay;
+import flood.monitor.overlay.MarkerOverlay;
 
 /**
  * MapViewActivity.java Purpose: Activity that represents the map

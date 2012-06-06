@@ -33,14 +33,11 @@ import android.widget.Toast;
 
 public class Connector {
 
-	public final String WORLD = "http://flood.cs.ndsu.nodak.edu/~ander773/flood/kmls/default.xml";
-	public final String REGION = "http://flood.cs.ndsu.nodak.edu/~ander773/flood/test/kmltest.php";
-	public final String DOWNLOAD_DIR = ".cache";
+	public static final String WORLD = "http://flood.cs.ndsu.nodak.edu/~ander773/flood/kmls/default.xml";
+	public static final String REGION = "http://flood.cs.ndsu.nodak.edu/~ander773/flood/test/kmltest.php";
+	public static final String DOWNLOAD_DIR = ".cache";
 	
-	private Connection conn;
-	private Statement stmt;
-
-	public File downloadXML(String urlLocation, String filename) {
+	public static File downloadXML(String urlLocation, String filename) {
 		File mediaStorageDir = new File(
 				Environment.getExternalStorageDirectory(), "FloodMonitor");
 		File file = new File(mediaStorageDir.getPath() + File.separator
@@ -78,73 +75,7 @@ public class Connector {
 		return file;
 	}
 
-	public boolean connect() {
-		try {
-			Class.forName("oracle.jdbc.driver.OracleDriver");
-			String username = "ramirezs";
-			String password = "ceC6CH";
-			conn = DriverManager.getConnection(
-					"jdbc:oracle:thin:@asuka.cs.ndsu.nodak.edu:1521:asuka",
-					username, password);
-			if (conn == null) {
-				System.out.println("Failed to set up connection");
-			} else {
-				System.out.println("Connection created");
-				stmt = conn.createStatement();
-				return true;
-			}
-		} catch (ClassNotFoundException e) {
-			System.out.println("Driver not found!\n");
-			e.printStackTrace(System.err);
-		} catch (SQLException e) {
-			e.printStackTrace(System.err);
-		}
-		return false;
-	}
-
-	public void disconnect() {
-		try {
-			stmt.close();
-			conn.close();
-			System.out.println("Connection closed");
-		} catch (SQLException e) {
-			e.printStackTrace(System.err);
-		}
-	}
-
-	public String executeQuery(String query) {
-		String resultString = "";
-		try {
-			ResultSet result = stmt.executeQuery(query);
-			ResultSetMetaData rmeta = result.getMetaData();
-
-			int colCount = rmeta.getColumnCount();
-			for (int i = 1; i <= colCount; i++) {
-				int size = rmeta.getColumnDisplaySize(i);
-				String name = rmeta.getColumnName(i);
-				resultString += name;
-				for (int j = name.length(); j < size; j++)
-					resultString += " ";
-			}
-			resultString += "\n";
-			while (result.next()) {
-				for (int i = 1; i <= colCount; i++) {
-					int size = rmeta.getColumnDisplaySize(i);
-					String value = result.getString(i);
-					resultString += value;
-					for (int j = value.length(); j < size; j++)
-						resultString += " ";
-				}
-				resultString += "\n";
-			}
-			result.close();
-		} catch (SQLException e) {
-			// e.printStackTrace(System.err);
-		}
-		return resultString;
-	}
-
-	public void UploadData(Context context, String latitude, String longitude,
+	public static void UploadData(Context context, String latitude, String longitude,
 			String hoursAgo, String minutesAgo, String runoff,
 			String coverDepth, String coverType, String comment, String email) {
 		try {
@@ -198,7 +129,7 @@ public class Connector {
 		}
 	}
 
-	public void UploadPicture(Context context, String file) {
+	public static void UploadPicture(Context context, String file) {
 		HttpURLConnection connection = null;
 		DataOutputStream outputStream = null;
 		DataInputStream inputStream = null;

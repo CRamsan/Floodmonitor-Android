@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -16,38 +17,27 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.graphics.drawable.Drawable;
-import android.location.Location;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.provider.MediaStore;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.Button;
 
-import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
-import com.google.android.maps.OverlayItem;
 
-import flood.monitor.abstracts.ModuleEventListener;
 import flood.monitor.modules.Connector;
 import flood.monitor.modules.Locator;
-import flood.monitor.modules.kmlparser.MarkerManager;
 import flood.monitor.modules.kmlparser.Parser;
-import flood.monitor.modules.kmlparser.Parser.Region;
-import flood.monitor.modules.kmlparser.SQLliteManager;
-import flood.monitor.overlay.CustomOverlay;
-import flood.monitor.overlay.CustomOverlayItem;
+import flood.monitor.modules.kmlparser.Region;
+import flood.monitor.overlay.Marker;
+import flood.monitor.overlay.MarkerOverlay;
 
 /**
  * MapViewActivity.java Purpose: Activity that represents the map
@@ -75,20 +65,20 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	// PREFERENCES
 	private final static String PREFS_NAME = "MapViewPref";
 	private final static String INSTALL_STATE = "Install_State";
-
+	private final static String REGIONS_DATA = "Regions_Array";
+	
 	// ===========================================================
 	// Fields
 	// ===========================================================
 	private Locator locator;
-	private CustomOverlay overlay;
-	private ArrayList<Region> regions;
+	private MarkerOverlay overlay;
+	private static ArrayList<Region> regions;
 
 	private ProgressDialog progressDialog;
 	private ProgressThread progressThread;
-	private Connector connector;
 
-	private MapViewActivity activity = this;
-
+	private MapViewActivity activity;
+	
 	private int markerState;
 	private boolean installedBefore;
 	private boolean worldLoaded;
@@ -107,8 +97,29 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		this.activity = this;
 		// The activity is launched or restarted after been killed.
 		setContentView(R.layout.map);
+		MapView mapView = (MapView) findViewById(R.id.mapview);
+		mapView.setBuiltInZoomControls(true);
+		
+		locator = new Locator(this);
+		locator.updateOldLocation();
+		Drawable drawable = this.getResources().getDrawable(
+				R.drawable.default_marker);
+		List<Overlay> mapOverlays = mapView.getOverlays();
+		overlay = new MarkerOverlay(drawable);
+		mapOverlays.add(overlay);
+		markerState = ENABLE_MARKER;
+		
+		Button buttonUploadImage = (Button) findViewById(R.id.buttonLock);
+		buttonUploadImage.setOnClickListener(new Button.OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				showDialog(DOWNLOAD_DIALOG);
+			}
+		});
+		
 		if (savedInstanceState == null) {
 			SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
 			installedBefore = settings.getBoolean(INSTALL_STATE, false);
@@ -275,30 +286,9 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	@Override
 	protected void onPrepareDialog(int id, Dialog dialog) {
 		switch (id) {
-		case DOWNLOAD_DIALOG: {
-			final Handler handler = new Handler() {
-				public void handleMessage(Message msg) {
-					int state = msg.arg1;
-					if (state == UPLOAD_COMPLETE) {
-						worldLoaded = true;
-						activity.runOnUiThread(new Runnable() {
-							public void run() {
-								dismissDialog(DOWNLOAD_DIALOG);
-								showDialog(REGION_SELECT_DIALOG);
-							}
-						});
-
-					}else if(state == UPLOAD_NOTCOMPLETED){
-						activity.runOnUiThread(new Runnable() {
-							public void run() {
-								dismissDialog(DOWNLOAD_DIALOG);
-							}
-						});
-					}
-				}
-			};
-			progressThread = new ProgressThread(handler);
-			progressThread.start();
+		case DOWNLOAD_DIALOG: {	
+		}
+		case REGION_SELECT_DIALOG: {
 		}
 		default: {
 		}
@@ -353,26 +343,35 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	}
 
 	private void onInitialize() {
-		MapView mapView = (MapView) findViewById(R.id.mapview);
-		mapView.setBuiltInZoomControls(true);
-		locator = new Locator();
-		locator.updateActivity(this);
-		locator.updateOldLocation();
-		Drawable drawable = this.getResources().getDrawable(
-				R.drawable.default_marker);
-		List<Overlay> mapOverlays = mapView.getOverlays();
-		overlay = new CustomOverlay(drawable);
-		overlay.updateActivity(this);
-		mapOverlays.add(overlay);
-		markerState = ENABLE_MARKER;
-		connector = new Connector();
 		showDialog(DOWNLOAD_DIALOG);
+		//showDialog(REGION_SELECT_DIALOG);
+		final Handler handler = new Handler() {
+			public void handleMessage(Message msg) {
+				int state = msg.arg1;
+				if (state == UPLOAD_COMPLETE) {
+					worldLoaded = true;
+					activity.runOnUiThread(new Runnable() {
+						public void run() {
+							dismissDialog(DOWNLOAD_DIALOG);
+							showDialog(REGION_SELECT_DIALOG);
+						}
+					});
 
+				}else if(state == UPLOAD_NOTCOMPLETED){
+					activity.runOnUiThread(new Runnable() {
+						public void run() {
+							dismissDialog(DOWNLOAD_DIALOG);
+						}
+					});
+				}
+			}
+		};
+		progressThread = new ProgressThread(handler);
+		progressThread.start();
 	}
 
 	private void onRecreate() {
-		locator.updateActivity(this);
-		overlay.updateActivity(this);
+
 	}
 
 	// ===========================================================
@@ -390,8 +389,8 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			Message msg1 = mHandler.obtainMessage();
 			msg1.arg1 = UPLOAD_RUNNING;
 			mHandler.sendMessage(msg1);
-			File worldToParse = connector.downloadXML(connector.WORLD, "world");
-			openAsset();
+			File worldToParse = Connector.downloadXML(Connector.WORLD, "world");
+	
 			try {
 				regions = getRegions(worldToParse.getPath());
 				Message msg2 = mHandler.obtainMessage();
@@ -412,12 +411,12 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	// Debug
 	// ===========================================================
 
-	private ArrayList<CustomOverlayItem> openAsset() {
+	/*private ArrayList<Marker> openAsset() {
 		String file = "";
 		InputStream stream = null;
 		AssetManager assetManager = getAssets();
 		Parser parser = new Parser();
-		ArrayList<CustomOverlayItem> itemList = new ArrayList<CustomOverlayItem>(
+		ArrayList<Marker> itemList = new ArrayList<Marker>(
 				0);
 		try {
 			stream = assetManager.open("sample.kml");
@@ -433,7 +432,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			}
 		}
 		return itemList;
-	}
+	}*/
 
 	private ArrayList<Region> getRegions(String filename) throws FileNotFoundException {
 		InputStream stream = new FileInputStream(filename);

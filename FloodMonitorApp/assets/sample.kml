@@ -1,148 +1,41 @@
-<kml xmlns="http://www.opengis.net/kml/2.2">
-	<Document>
-		<Placemark id="0">
-		  <styleUrl>#sever_4</styleUrl>
-		  <Point>
-		     <coordinates>-96.72801900000000,46.93281100000000</coordinates>
-		  </Point>
-		  <ExtendedData xmlns:mark="http://flood.cs.ndsu.nodak.edu">
-		    <mark:ObservationTime>2010-03-11 15:53:41</mark:ObservationTime>
-		    <mark:UploadTime>2010-03-11 15:53:41</mark:UploadTime>
-		    <mark:UploadTime>2010-03-11 15:53:41</mark:UploadTime>
-		    <mark:Email>_</mark:Email>
-		    <mark:PhoneNumber>555555</mark:PhoneNumber>
-		    <mark:Valid>t</mark:Valid>
-		    <mark:UserComment>Puddles on the road, nothing serious yet.</mark:UserComment>
-		    <mark:ImageUrl> http://flood.cs.ndsu.nodak.edu/pictures/35.jpg</mark:ImageUrl>
-		    <mark:CoverType>_</mark:CoverType>
-		    <mark:CoverHeight>1</mark:CoverHeight>
-		  </ExtendedData>
-		</Placemark>
-		<Placemark id="0">
-		  <styleUrl>#sever_4</styleUrl>
-		  <Point>
-		     <coordinates>-96.77861900000000,46.91281100000000</coordinates>
-		  </Point>
-		  <ExtendedData xmlns:mark="http://flood.cs.ndsu.nodak.edu">
-		    <mark:ObservationTime>2010-03-11 15:53:41</mark:ObservationTime>
-		    <mark:UploadTime>2010-03-11 15:53:41</mark:UploadTime>
-		    <mark:UploadTime>2010-03-11 15:53:41</mark:UploadTime>
-		    <mark:Email>_</mark:Email>
-		    <mark:PhoneNumber>555555</mark:PhoneNumber>
-		    <mark:Valid>t</mark:Valid>
-		    <mark:UserComment>Puddles on the road, nothing serious yet.</mark:UserComment>
-		    <mark:ImageUrl> http://flood.cs.ndsu.nodak.edu/pictures/35.jpg</mark:ImageUrl>
-		    <mark:CoverType>_</mark:CoverType>
-		    <mark:CoverHeight>1</mark:CoverHeight>
-		  </ExtendedData>
-		</Placemark>
-		<Placemark id="0">
-		  <styleUrl>#sever_4</styleUrl>
-		  <Point>
-		     <coordinates>-96.79107900000000,46.93211100000000</coordinates>
-		  </Point>
-		  <ExtendedData xmlns:mark="http://flood.cs.ndsu.nodak.edu">
-		    <mark:ObservationTime>2010-03-11 15:53:41</mark:ObservationTime>
-		    <mark:UploadTime>2010-03-11 15:53:41</mark:UploadTime>
-		    <mark:UploadTime>2010-03-11 15:53:41</mark:UploadTime>
-		    <mark:Email>_</mark:Email>
-		    <mark:PhoneNumber>555555</mark:PhoneNumber>
-		    <mark:Valid>t</mark:Valid>
-		    <mark:UserComment>Puddles on the road, nothing serious yet.</mark:UserComment>
-		    <mark:ImageUrl> http://flood.cs.ndsu.nodak.edu/pictures/35.jpg</mark:ImageUrl>
-		    <mark:CoverType>_</mark:CoverType>
-		    <mark:CoverHeight>1</mark:CoverHeight>
-		  </ExtendedData>
-		</Placemark>
-		<Placemark id="0">
-		  <styleUrl>#sever_4</styleUrl>
-		  <Point>
-		     <coordinates>-96.71801200000000,46.92285100000000</coordinates>
-		  </Point>
-		  <ExtendedData xmlns:mark="http://flood.cs.ndsu.nodak.edu">
-		    <mark:ObservationTime>2010-03-11 15:53:41</mark:ObservationTime>
-		    <mark:UploadTime>2010-03-11 15:53:41</mark:UploadTime>
-		    <mark:UploadTime>2010-03-11 15:53:41</mark:UploadTime>
-		    <mark:Email>_</mark:Email>
-		    <mark:PhoneNumber>555555</mark:PhoneNumber>
-		    <mark:Valid>t</mark:Valid>
-		    <mark:UserComment>Puddles on the road, nothing serious yet.</mark:UserComment>
-		    <mark:ImageUrl> http://flood.cs.ndsu.nodak.edu/pictures/35.jpg</mark:ImageUrl>
-		    <mark:CoverType>_</mark:CoverType>
-		    <mark:CoverHeight>1</mark:CoverHeight>
-		  </ExtendedData>
-		</Placemark>
-		<Placemark id="0">
-		  <styleUrl>#sever_4</styleUrl>
-		  <Point>
-		     <coordinates>-96.79811300000000,46.96181100000000</coordinates>
-		  </Point>
-		  <ExtendedData xmlns:mark="http://flood.cs.ndsu.nodak.edu">
-		    <mark:ObservationTime>2010-03-11 15:53:41</mark:ObservationTime>
-		    <mark:UploadTime>2010-03-11 15:53:41</mark:UploadTime>
-		    <mark:UploadTime>2010-03-11 15:53:41</mark:UploadTime>
-		    <mark:Email>_</mark:Email>
-		    <mark:PhoneNumber>555555</mark:PhoneNumber>
-		    <mark:Valid>t</mark:Valid>
-		    <mark:UserComment>Puddles on the road, nothing serious yet.</mark:UserComment>
-		    <mark:ImageUrl> http://flood.cs.ndsu.nodak.edu/pictures/35.jpg</mark:ImageUrl>
-		    <mark:CoverType>_</mark:CoverType>
-		    <mark:CoverHeight>1</mark:CoverHeight>
-		  </ExtendedData>
-		</Placemark>
-		<Placemark id="0">
-		  <styleUrl>#sever_4</styleUrl>
-		  <Point>
-		     <coordinates>-96.79441900000000,46.92281600000000</coordinates>
-		  </Point>
-		  <ExtendedData xmlns:mark="http://flood.cs.ndsu.nodak.edu">
-		    <mark:ObservationTime>2010-03-11 15:53:41</mark:ObservationTime>
-		    <mark:UploadTime>2010-03-11 15:53:41</mark:UploadTime>
-		    <mark:UploadTime>2010-03-11 15:53:41</mark:UploadTime>
-		    <mark:Email>_</mark:Email>
-		    <mark:PhoneNumber>555555</mark:PhoneNumber>
-		    <mark:Valid>t</mark:Valid>
-		    <mark:UserComment>Puddles on the road, nothing serious yet.</mark:UserComment>
-		    <mark:ImageUrl> http://flood.cs.ndsu.nodak.edu/pictures/35.jpg</mark:ImageUrl>
-		    <mark:CoverType>_</mark:CoverType>
-		    <mark:CoverHeight>1</mark:CoverHeight>
-		  </ExtendedData>
-		</Placemark>
-		<Placemark id="0">
-		  <styleUrl>#sever_4</styleUrl>
-		  <Point>
-		     <coordinates>-96.72803900000000,46.92981100000000</coordinates>
-		  </Point>
-		  <ExtendedData xmlns:mark="http://flood.cs.ndsu.nodak.edu">
-		    <mark:ObservationTime>2010-03-11 15:53:41</mark:ObservationTime>
-		    <mark:UploadTime>2010-03-11 15:53:41</mark:UploadTime>
-		    <mark:UploadTime>2010-03-11 15:53:41</mark:UploadTime>
-		    <mark:Email>_</mark:Email>
-		    <mark:PhoneNumber>555555</mark:PhoneNumber>
-		    <mark:Valid>t</mark:Valid>
-		    <mark:UserComment>Puddles on the road, nothing serious yet.</mark:UserComment>
-		    <mark:ImageUrl> http://flood.cs.ndsu.nodak.edu/pictures/35.jpg</mark:ImageUrl>
-		    <mark:CoverType>_</mark:CoverType>
-		    <mark:CoverHeight>1</mark:CoverHeight>
-		  </ExtendedData>
-		</Placemark>
-		<Placemark id="0">
-		  <styleUrl>#sever_4</styleUrl>
-		  <Point>
-		     <coordinates>-96.79201600000000,46.94231100000000</coordinates>
-		  </Point>
-		  <ExtendedData xmlns:mark="http://flood.cs.ndsu.nodak.edu">
-		    <mark:ObservationTime>2010-03-11 15:53:41</mark:ObservationTime>
-		    <mark:UploadTime>2010-03-11 15:53:41</mark:UploadTime>
-		    <mark:UploadTime>2010-03-11 15:53:41</mark:UploadTime>
-		    <mark:Email>_</mark:Email>
-		    <mark:PhoneNumber>555555</mark:PhoneNumber>
-		    <mark:Valid>t</mark:Valid>
-		    <mark:UserComment>Puddles on the road, nothing serious yet.</mark:UserComment>
-		    <mark:ImageUrl> http://flood.cs.ndsu.nodak.edu/pictures/35.jpg</mark:ImageUrl>
-		    <mark:CoverType>_</mark:CoverType>
-		    <mark:CoverHeight>1</mark:CoverHeight>
-		  </ExtendedData>
-		</Placemark>		
-	</Document>
-</kml> 
+This XML file does not appear to have any style information associated with it. The document tree is shown below.
+<kml xmlns="http://earth.google.com/kml/2.1">
+<Document>
+<Placemark id="6">
+<name>Minot Region</name>
+<Polygon>
+<extrude>1</extrude>
+<altitudeMode>relativeToGround</altitudeMode>
+<outerBoundaryIs>
+<LinearRing>
+<coordinates>
+-101.023,48.3574,0 -101.023,48.0793,0 -101.5119,48.0793,0 -101.5119,48.3574,0 -101.023,48.3574,0
+</coordinates>
+</LinearRing>
+</outerBoundaryIs>
+</Polygon>
+<ExtendedData xmlns:mark="http://flood.cs.ndsu.nodak.edu/">
+<mark:EventID>4</mark:EventID>
+<mark:EventName>2010 and 2011 Flood</mark:EventName>
+</ExtendedData>
+</Placemark>
+<Placemark id="7">
+<name>Fargo Region</name>
+<Polygon>
+<extrude>1</extrude>
+<altitudeMode>relativeToGround</altitudeMode>
+<outerBoundaryIs>
+<LinearRing>
+<coordinates>
+-96.3861,47.0534,0 -96.3861,46.625,0 -96.9794,46.625,0 -96.9794,47.0534,0 -96.3861,47.0534,0
+</coordinates>
+</LinearRing>
+</outerBoundaryIs>
+</Polygon>
+<ExtendedData xmlns:mark="http://flood.cs.ndsu.nodak.edu/">
+<mark:EventID>4</mark:EventID>
+<mark:EventName>2010 and 2011 Flood</mark:EventName>
+</ExtendedData>
+</Placemark>
+</Document>
+</kml>
