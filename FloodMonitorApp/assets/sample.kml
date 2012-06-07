@@ -1,41 +1,66 @@
-This XML file does not appear to have any style information associated with it. The document tree is shown below.
-<kml xmlns="http://earth.google.com/kml/2.1">
-<Document>
-<Placemark id="6">
+<server>
+<command>GetEvents</command>
+<response>
+<events>
+<event>
+<id>2</id>
+<name>Test Event</name>
+<kmlfile>http://flood.cs.ndsu.nodak.edu/~ander773/flood/kmls/Test_Event.xml</kmlfile>
+<active>0</active>
+<begindate>2012-04-01</begindate>
+<enddate>2012-04-28</enddate>
+<boundaries>
+<boundary>
+<id>5</id>
+<name>test</name>
+<northwest>-99.05950000000000,47.36950000000000</northwest>
+<southeast>-98.10920000000000,46.75580000000000</southeast>
+</boundary>
+</boundaries>
+</event>
+<event>
+<id>3</id>
+<name>Test</name>
+<kmlfile>http://flood.cs.ndsu.nodak.edu/~ander773/flood/kmls/Test.xml</kmlfile>
+<active>0</active>
+<begindate>2012-04-01</begindate>
+<enddate>2012-04-28</enddate>
+<boundaries>
+<boundary>
+<id>4</id>
+<name>Test 22</name>
+<northwest>-99.40010000000000,47.50320000000000</northwest>
+<southeast>-98.55410000000000,47.06730000000000</southeast>
+</boundary>
+<boundary>
+<id>3</id>
+<name>Rounded Bound</name>
+<northwest>-101.69070000000000,48.19620000000000</northwest>
+<southeast>-100.48220000000000,47.65890000000000</southeast>
+</boundary>
+</boundaries>
+</event><event>
+<id>4</id>
+<name>2010 and 2011 Flood</name>
+<kmlfile>http://flood.cs.ndsu.nodak.edu/~ander773/flood/kmls/2010_and_2011_Flood.xml</kmlfile>
+<active>1</active>
+<begindate>2010-03-01</begindate>
+<enddate>2011-10-31</enddate>
+<boundaries>
+<boundary>
+<id>6</id>
 <name>Minot Region</name>
-<Polygon>
-<extrude>1</extrude>
-<altitudeMode>relativeToGround</altitudeMode>
-<outerBoundaryIs>
-<LinearRing>
-<coordinates>
--101.023,48.3574,0 -101.023,48.0793,0 -101.5119,48.0793,0 -101.5119,48.3574,0 -101.023,48.3574,0
-</coordinates>
-</LinearRing>
-</outerBoundaryIs>
-</Polygon>
-<ExtendedData xmlns:mark="http://flood.cs.ndsu.nodak.edu/">
-<mark:EventID>4</mark:EventID>
-<mark:EventName>2010 and 2011 Flood</mark:EventName>
-</ExtendedData>
-</Placemark>
-<Placemark id="7">
+<northwest>-101.51190000000000,48.35740000000000</northwest>
+<southeast>-101.02300000000000,48.07930000000000</southeast>
+</boundary>
+<boundary>
+<id>7</id>
 <name>Fargo Region</name>
-<Polygon>
-<extrude>1</extrude>
-<altitudeMode>relativeToGround</altitudeMode>
-<outerBoundaryIs>
-<LinearRing>
-<coordinates>
--96.3861,47.0534,0 -96.3861,46.625,0 -96.9794,46.625,0 -96.9794,47.0534,0 -96.3861,47.0534,0
-</coordinates>
-</LinearRing>
-</outerBoundaryIs>
-</Polygon>
-<ExtendedData xmlns:mark="http://flood.cs.ndsu.nodak.edu/">
-<mark:EventID>4</mark:EventID>
-<mark:EventName>2010 and 2011 Flood</mark:EventName>
-</ExtendedData>
-</Placemark>
-</Document>
-</kml>
+<northwest>-96.97940000000000,47.05340000000000</northwest>
+<southeast>-96.38610000000000,46.62500000000000</southeast>
+</boundary>
+</boundaries>
+</event>
+</events>
+</response>
+</server>

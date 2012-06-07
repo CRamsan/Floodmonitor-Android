@@ -25,8 +25,7 @@ public class Parser {
 			Context context) {
 
 		KMLHandler handler = new KMLHandler(context);
-		ArrayList<Marker> itemList = new ArrayList<Marker>(
-				0);
+		ArrayList<Marker> itemList = new ArrayList<Marker>(0);
 		try {
 
 			SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -50,9 +49,9 @@ public class Parser {
 	public ArrayList<Region> ParseRegions(String file, InputStream stream,
 			Context context) {
 
-		XMLHandler handler = new XMLHandler(context);
+		RegionHandler handler = new RegionHandler(context);
 		String[] itemList;
-		
+
 		try {
 
 			SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -72,53 +71,113 @@ public class Parser {
 		return handler.getResult();
 	}
 
-	private class XMLHandler extends DefaultHandler {
+	private class RegionHandler extends DefaultHandler {
 
-		private static final String DOCUMENT = "Document";
-		private static final String PLACEMARK = "Placemark";
-		private static final String DATE = "date";
-		private static final String COORDINATES = "coordinates";
+		private static final String BOUNDARIES = "boundaries";
+		private static final String BOUNDARY_NAME = "name";
+		private static final String BOUNDARY_ID = "id";
+		private static final String EVENTS = "events";
+		private static final String EVENT = "event";
+
+		private static final String ID = "id";
 		private static final String NAME = "name";
+		private static final String FILE = "kmlfile";
+		private static final String ACTIVE = "active";
+		private static final String BEGINDATE = "begindate";
+		private static final String ENDDATE = "enddate";
+		private static final String BOUNDARY = "boundary";
+		private static final String NORTHWEST = "northwest";
+		private static final String SOUTHEAST = "northeast";
 
-		private ArrayList<Region> options;
-		private Context context;
+		private ArrayList<Region> regions;
+		private String northwest;
+		private String southeast;
+		private String temp;
+
+		private String originURL;
+		private String beginDate;
+		private String endDate;
 		private String name;
-		private int id;
-		private String temp = "";
+		private int regionId;
+		private int latitude;
+		private int longitud;
+		private boolean active;
 
-		public XMLHandler(Context context) {
+		public RegionHandler() {
 			super();
-			this.context = context;
+			this.temp = "";
 		}
 
 		@Override
 		public void startElement(String uri, String localName, String qName,
 				Attributes attributes) throws SAXException {
 
-			if (qName.equalsIgnoreCase(DOCUMENT)) {
-				options = new ArrayList<Region>(0);
+			if (qName.equalsIgnoreCase(EVENTS)) {
+				this.regions = new ArrayList<Region>(0);
+			} else if (qName.equalsIgnoreCase(EVENT)) {
 
-			} else if (qName.equalsIgnoreCase(PLACEMARK)) {
+			} else if (qName.equalsIgnoreCase(ID)) {
 
 			} else if (qName.equalsIgnoreCase(NAME)) {
+
+			} else if (qName.equalsIgnoreCase(FILE)) {
+
+			} else if (qName.equalsIgnoreCase(ACTIVE)) {
+
+			} else if (qName.equalsIgnoreCase(BEGINDATE)) {
+
+			} else if (qName.equalsIgnoreCase(ENDDATE)) {
+
+			} else if (qName.equalsIgnoreCase(BOUNDARIES)) {
+
+			} else if (qName.equalsIgnoreCase(BOUNDARY_ID)) {
+
+			} else if (qName.equalsIgnoreCase(BOUNDARY_NAME)) {
+
+			} else if (qName.equalsIgnoreCase(BOUNDARY)) {
+
+			} else if (qName.equalsIgnoreCase(NORTHWEST)) {
+
+			} else if (qName.equalsIgnoreCase(SOUTHEAST)) {
 
 			}
 
 			temp = "";
-			// Log.i(Parser.class.toString(), "Start Element :" + qName);
 		}
 
 		@Override
 		public void endElement(String uri, String localName, String qName)
 				throws SAXException {
 
-			if (qName.equalsIgnoreCase(DOCUMENT)) {
+			if (qName.equalsIgnoreCase(EVENTS)) {
 
-			} else if (qName.equalsIgnoreCase(PLACEMARK)) {
-				Region reg = new Region(name, id);
-				options.add(reg);
+			} else if (qName.equalsIgnoreCase(EVENT)) {
+				Region region = new Region(regionId, name, originURL, active, beginDate, endDate, latitude, longitud);
+				this.regions.add(region);
+			} else if (qName.equalsIgnoreCase(ID)) {
+				this.regionId = Integer.parseInt(temp);
 			} else if (qName.equalsIgnoreCase(NAME)) {
-				name = temp;
+				this.name = temp;
+			} else if (qName.equalsIgnoreCase(FILE)) {
+				this.originURL = temp;
+			} else if (qName.equalsIgnoreCase(ACTIVE)) {
+				this.active = Boolean.parseBoolean(temp);
+			} else if (qName.equalsIgnoreCase(BEGINDATE)) {
+				this.beginDate = temp;
+			} else if (qName.equalsIgnoreCase(ENDDATE)) {
+				this.endDate = temp;
+			} else if (qName.equalsIgnoreCase(BOUNDARIES)) {
+
+			} else if (qName.equalsIgnoreCase(BOUNDARY_ID)) {
+
+			} else if (qName.equalsIgnoreCase(BOUNDARY_NAME)) {
+
+			} else if (qName.equalsIgnoreCase(BOUNDARY)) {
+
+			} else if (qName.equalsIgnoreCase(NORTHWEST)) {
+				this.northwest = temp;
+			} else if (qName.equalsIgnoreCase(SOUTHEAST)) {
+				this.southeast = temp;
 			}
 
 			temp = "";
@@ -132,7 +191,7 @@ public class Parser {
 		}
 
 		public ArrayList<Region> getResult() {
-			return options;
+			return regions;
 		}
 	}
 
@@ -211,9 +270,8 @@ public class Parser {
 			if (qName.equalsIgnoreCase(DOCUMENT)) {
 
 			} else if (qName.equalsIgnoreCase(PLACEMARK)) {
-				overlayitem = new Marker(point, observationtime,
-						usercomment);
-				
+				overlayitem = new Marker(point, observationtime, usercomment);
+
 				overlayitem.setMarker(null);
 				severity = 0;
 				mOverlay.add(overlayitem);
