@@ -10,16 +10,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 import java.net.URLEncoder;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
@@ -33,21 +27,53 @@ import android.widget.Toast;
 
 public class Connector {
 
-	public static final String WORLD = "http://flood.cs.ndsu.nodak.edu/~ander773/flood/kmls/default.xml";
+	public static final String WORLD = "http://flood.cs.ndsu.nodak.edu/~ander773/flood/server/index.php";
 	public static final String REGION = "http://flood.cs.ndsu.nodak.edu/~ander773/flood/test/kmltest.php";
 	public static final String DOWNLOAD_DIR = ".cache";
-	
-	public static File downloadXML(String urlLocation, String filename) {
+	private final static int REQUEST_DOWNLOAD_EVENTS = 500;
+	private final static int REQUEST_DOWNLOAD_REGIONS = 600;
+	private final static int REQUEST_DOWNLOAD_MARKERS = 700;
+
+	public static File requestInformation(int requestCode, int id,
+			String filename) {
 		File mediaStorageDir = new File(
 				Environment.getExternalStorageDirectory(), "FloodMonitor");
 		File file = new File(mediaStorageDir.getPath() + File.separator
 				+ DOWNLOAD_DIR + File.separator + filename);
+		OutputStreamWriter request = null;
+		String response = null;
+		String parameters = "";
+
+		switch (requestCode) {
+		case REQUEST_DOWNLOAD_EVENTS:
+			parameters = "data=<phone><command>GetEvents</command></phone>";
+			break;
+		case REQUEST_DOWNLOAD_REGIONS:
+			parameters = "<phone><command>GetMarkerFileByRegionID</command><params><id>"
+					+ id + "</id></params></phone>";
+			break;
+		case REQUEST_DOWNLOAD_MARKERS:
+			parameters = "data=<phone><command>GetEvents</command></phone>";
+			break;
+		default:
+			break;
+		}
+
 		try {
-			URL url = new URL(urlLocation);
+			URL url = new URL(WORLD);
 
 			long startTime = System.currentTimeMillis();
 			/* Open a connection to that URL. */
-			URLConnection ucon = url.openConnection();
+			HttpURLConnection ucon = (HttpURLConnection) url.openConnection();
+			ucon.setDoOutput(true);
+			ucon.setRequestProperty("Content-Type",
+					"application/x-www-form-urlencoded");
+			ucon.setRequestMethod("POST");
+
+			request = new OutputStreamWriter(ucon.getOutputStream());
+			request.write(parameters);
+			request.flush();
+			request.close();
 
 			/*
 			 * Define InputStreams to read from the URLConnection.
@@ -75,9 +101,50 @@ public class Connector {
 		return file;
 	}
 
-	public static void UploadData(Context context, String latitude, String longitude,
-			String hoursAgo, String minutesAgo, String runoff,
-			String coverDepth, String coverType, String comment, String email) {
+	public static File downloadXML(String urlLocation, String filename) {
+		File mediaStorageDir = new File(
+				Environment.getExternalStorageDirectory(), "FloodMonitor");
+		File file = new File(mediaStorageDir.getPath() + File.separator
+				+ DOWNLOAD_DIR + File.separator + filename);
+		OutputStreamWriter request = null;
+
+		try {
+			URL url = new URL(urlLocation);
+
+			long startTime = System.currentTimeMillis();
+			/* Open a connection to that URL. */
+			HttpURLConnection ucon = (HttpURLConnection) url.openConnection();
+
+			/*
+			 * Define InputStreams to read from the URLConnection.
+			 */
+			InputStream is = ucon.getInputStream();
+			BufferedInputStream bis = new BufferedInputStream(is);
+
+			/*
+			 * Read bytes to the Buffer until there is nothing more to read(-1).
+			 */
+			ByteArrayBuffer baf = new ByteArrayBuffer(50);
+			int current = 0;
+			while ((current = bis.read()) != -1) {
+				baf.append((byte) current);
+			}
+
+			/* Convert the Bytes read to a String. */
+			FileOutputStream fos = new FileOutputStream(file);
+			fos.write(baf.toByteArray());
+			fos.close();
+
+		} catch (IOException e) {
+			Log.d("Connector", "Error: " + e);
+		}
+		return file;
+	}
+
+	public static void UploadData(Context context, String latitude,
+			String longitude, String hoursAgo, String minutesAgo,
+			String runoff, String coverDepth, String coverType, String comment,
+			String email) {
 		try {
 			URL siteUrl = new URL(
 					"http://192.168.0.100/plogger/plog-admin/plog-mobupload.php");

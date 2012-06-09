@@ -39,7 +39,8 @@
 <southeast>-100.48220000000000,47.65890000000000</southeast>
 </boundary>
 </boundaries>
-</event><event>
+</event>
+<event>
 <id>4</id>
 <name>2010 and 2011 Flood</name>
 <kmlfile>http://flood.cs.ndsu.nodak.edu/~ander773/flood/kmls/2010_and_2011_Flood.xml</kmlfile>

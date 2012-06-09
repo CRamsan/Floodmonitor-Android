@@ -3,17 +3,17 @@
 
     <item
         android:id="@+id/menuItemRefresh"
-        android:showAsAction="ifRoom|withText"
+        android:showAsAction="never|withText"
         android:title="Refresh">
     </item>
     <item
         android:id="@+id/menuItemUpload"
-        android:showAsAction="always|withText"
+        android:showAsAction="withText|always"
         android:title="Upload">
     </item>
     <item
         android:id="@+id/menuItemPlaceMarker"
-        android:showAsAction="always|withText"
+        android:showAsAction="withText|always"
         android:title="Place Marker">
     </item>
     <item

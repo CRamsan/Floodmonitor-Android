@@ -46,11 +46,9 @@ public class Parser {
 		return itemList;
 	}
 
-	public ArrayList<Region> ParseRegions(String file, InputStream stream,
-			Context context) {
+	public ArrayList<Region> ParseRegions(String file, InputStream stream) {
 
-		RegionHandler handler = new RegionHandler(context);
-		String[] itemList;
+		RegionHandler handler = new RegionHandler();
 
 		try {
 
@@ -69,6 +67,157 @@ public class Parser {
 			Log.i(Parser.class.toString(), message);
 		}
 		return handler.getResult();
+	}
+
+	public ArrayList<Event> ParseEvent(String file, InputStream stream) {
+
+		EventHandler handler = new EventHandler();
+
+		try {
+
+			SAXParserFactory factory = SAXParserFactory.newInstance();
+			SAXParser saxParser = factory.newSAXParser();
+			saxParser.parse(stream, handler);
+
+		} catch (SAXException e) {
+			String message = e.getMessage();
+			Log.i(Parser.class.toString(), message);
+		} catch (ParserConfigurationException e) {
+			String message = e.getMessage();
+			Log.i(Parser.class.toString(), message);
+		} catch (IOException e) {
+			String message = e.getMessage();
+			Log.i(Parser.class.toString(), message);
+		}
+		return handler.getResult();
+	}
+
+	private class EventHandler extends DefaultHandler {
+
+		private static final String EVENTS = "events";
+		private static final String EVENT = "event";
+
+		private static final String ID = "id";
+		private static final String NAME = "name";
+		private static final String FILE = "kmlfile";
+		private static final String ACTIVE = "active";
+		private static final String BEGINDATE = "begindate";
+		private static final String ENDDATE = "enddate";
+		private static final String BOUNDARIES = "boundaries";
+		private static final String BOUNDARY = "boundary";
+		private static final String NORTHWEST = "northwest";
+		private static final String SOUTHEAST = "northeast";
+
+		private int northWest;
+		private int southEast;
+		private int boundary_id;
+		private String boundary_name;
+
+		private ArrayList<Event> events;
+		private ArrayList<Region> regions;
+		private boolean boundaries;
+		private String temp;
+
+		private String originURL;
+		private String beginDate;
+		private String endDate;
+		private String name;
+		private int regionId;
+		private boolean active;
+
+		public EventHandler() {
+			super();
+			this.temp = "";
+			boundaries = false;
+		}
+
+		@Override
+		public void startElement(String uri, String localName, String qName,
+				Attributes attributes) throws SAXException {
+
+			if (qName.equalsIgnoreCase(EVENTS)) {
+				this.events = new ArrayList<Event>(0);
+			} else if (qName.equalsIgnoreCase(EVENT)) {
+
+			} else if (qName.equalsIgnoreCase(ID)) {
+
+			} else if (qName.equalsIgnoreCase(NAME)) {
+
+			} else if (qName.equalsIgnoreCase(FILE)) {
+
+			} else if (qName.equalsIgnoreCase(ACTIVE)) {
+
+			} else if (qName.equalsIgnoreCase(BEGINDATE)) {
+
+			} else if (qName.equalsIgnoreCase(ENDDATE)) {
+
+			} else if (qName.equalsIgnoreCase(BOUNDARIES)) {
+				this.regions = new ArrayList<Region>(0);
+				boundaries = true;
+			} else if (qName.equalsIgnoreCase(BOUNDARY)) {
+
+			} else if (qName.equalsIgnoreCase(NORTHWEST)) {
+
+			} else if (qName.equalsIgnoreCase(SOUTHEAST)) {
+
+			}
+			temp = "";
+		}
+
+		@Override
+		public void endElement(String uri, String localName, String qName)
+				throws SAXException {
+
+			if (qName.equalsIgnoreCase(EVENTS)) {
+
+			} else if (qName.equalsIgnoreCase(EVENT)) {
+				Event event = new Event(regionId, name, originURL, active,
+						beginDate, endDate, regions);
+				this.events.add(event);
+			} else if (qName.equalsIgnoreCase(ID)) {
+				if (!boundaries)
+					this.regionId = Integer.parseInt(temp);
+				else
+					this.boundary_id = Integer.parseInt(temp);
+			} else if (qName.equalsIgnoreCase(NAME)) {
+				if (!boundaries)
+					this.name = temp;
+				else
+					this.boundary_name = temp;
+			} else if (qName.equalsIgnoreCase(FILE)) {
+				this.originURL = temp;
+			} else if (qName.equalsIgnoreCase(ACTIVE)) {
+				this.active = Boolean.parseBoolean(temp);
+			} else if (qName.equalsIgnoreCase(BEGINDATE)) {
+				this.beginDate = temp;
+			} else if (qName.equalsIgnoreCase(ENDDATE)) {
+				this.endDate = temp;
+			} else if (qName.equalsIgnoreCase(BOUNDARIES)) {
+				boundaries = false;
+			} else if (qName.equalsIgnoreCase(BOUNDARY)) {
+				Region region = new Region(boundary_id, boundary_name,
+						northWest, southEast);
+				this.regions.add(region);
+			} else if (qName.equalsIgnoreCase(NORTHWEST)) {
+				this.northWest = (int) (Double.parseDouble(temp.substring(0,
+						temp.indexOf(","))) * 1000000);
+			} else if (qName.equalsIgnoreCase(SOUTHEAST)) {
+				this.southEast = (int) (Double.parseDouble(temp.substring(temp
+						.indexOf(",") + 1)) * 1000000);
+			}
+			temp = "";
+		}
+
+		@Override
+		public void characters(char ch[], int start, int length)
+				throws SAXException {
+			String input = new String(ch, start, length);
+			temp = temp + input.replaceAll("\n", "").replaceAll("\t", "");
+		}
+
+		public ArrayList<Event> getResult() {
+			return events;
+		}
 	}
 
 	private class RegionHandler extends DefaultHandler {
@@ -152,7 +301,8 @@ public class Parser {
 			if (qName.equalsIgnoreCase(EVENTS)) {
 
 			} else if (qName.equalsIgnoreCase(EVENT)) {
-				Region region = new Region(regionId, name, originURL, active, beginDate, endDate, latitude, longitud);
+				Region region = new Region(regionId, name, originURL, latitude,
+						longitud);
 				this.regions.add(region);
 			} else if (qName.equalsIgnoreCase(ID)) {
 				this.regionId = Integer.parseInt(temp);

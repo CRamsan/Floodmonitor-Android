@@ -20,13 +20,13 @@
         android:visibility="gone" />
 
     <Button
-        android1:id="@+id/buttonLock"
-        android1:layout_width="wrap_content"
-        android1:layout_height="wrap_content"
-        android1:layout_alignParentRight="true"
-        android1:layout_alignParentTop="true"
-        android1:layout_marginRight="16dp"
-        android1:layout_marginTop="32dp"
-        android1:text="Button" />
+        android:id="@+id/buttonLock"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginRight="18dp"
+        android:layout_marginTop="26dp"
+        android:text="O" />
 
 </RelativeLayout>
