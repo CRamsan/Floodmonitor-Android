@@ -123,7 +123,7 @@ public class MarkerOverlay extends ItemizedOverlay<OverlayItem> {
 		}
 		
 		if (currentLocationMarker != null) {
-			addOverlay(currentLocationMarker);
+			addOverlayItem(currentLocationMarker);
 		}
 		populate();
 	}
@@ -258,18 +258,25 @@ public class MarkerOverlay extends ItemizedOverlay<OverlayItem> {
 		this.activity = newActivity;
 	}
 	
-	public void addOverlay(Marker overlay) {
-		mOverlays.add(overlay);
+	public void addOverlayItem(Marker overlayItem) {
+		mOverlays.add(overlayItem);
 		populate();
 	}
 
+	public void addOverlay(ArrayList<Marker> overlay) {
+		for(int i = 0; i < overlay.size(); i++){
+			mOverlays.add(overlay.get(i));	
+		}
+		populate();
+	}
+	
 	public void updateBestLocation(Location location) {
 		mOverlays.remove(currentLocationMarker);
 		currentLocationMarker = new Marker(new GeoPoint(
 				(int) (location.getLatitude() * 1000000),
 				(int) (location.getLongitude() * 1000000)), "You are here",
 				"Description...");
-		addOverlay(currentLocationMarker);
+		addOverlayItem(currentLocationMarker);
 		populate();
 	}
 

@@ -28,6 +28,7 @@ import com.google.android.maps.OverlayItem;
 
 import flood.monitor.MapViewActivity;
 import flood.monitor.R;
+import flood.monitor.modules.kmlparser.Region;
 
 public class Marker extends OverlayItem {
 
@@ -42,8 +43,10 @@ public class Marker extends OverlayItem {
 	private String userComment;
 	private String image;
 	private int severity;
+	private String id;
 	private int coverType;
 	private int coverHeight;
+	private Region region;
 
 	// ===========================================================
 	// Constructors
@@ -110,6 +113,22 @@ public class Marker extends OverlayItem {
 
 	public void setCoverHeight(int coverHeight) {
 		this.coverHeight = coverHeight;
+	}
+
+	public Region getRegion() {
+		return region;
+	}
+
+	public void setRegion(Region region) {
+		this.region = region;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 
 	// ===========================================================

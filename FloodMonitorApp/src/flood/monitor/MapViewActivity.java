@@ -18,6 +18,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.graphics.drawable.Drawable;
+import android.hardware.Camera.Size;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -28,6 +29,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
@@ -56,22 +58,25 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	// STATES
 	private final static int ENABLE_MARKER = 0;
 	private final static int ENABLE_UPLOAD = 1;
-	// UPLOAD STATES
-	private final static int UPLOAD_RUNNING = 0;
-	private final static int UPLOAD_COMPLETE = 1;
-	private final static int UPLOAD_NOTCOMPLETED = 2;
+	// PROCESS STATES
+	private final static int PROCESS_RUNNING = 0;
+	private final static int PROCESS_COMPLETE = 1;
+	private final static int PROCESS_FAILED = 2;
 	// REQUEST CODES
-	private final static int UPLOAD_REQUEST = 100;
-	private final static int DOWNLOAD_DIALOG = 200;
-	private final static int EVENT_SELECT_DIALOG = 300;
+	private final static int PROCESS_REQUEST = 100;
 	private final static int REQUEST_DOWNLOAD_EVENTS = 500;
 	private final static int REQUEST_DOWNLOAD_REGIONS = 600;
 	private final static int REQUEST_DOWNLOAD_MARKERS = 700;
+	// DIALOGS ID
+	private final static int EVENT_DOWNLOAD_DIALOG = 200;
+	private final static int EVENT_SELECT_DIALOG = 300;
+	private final static int REGION_DOWNLOAD_DIALOG = 350;
+	private final static int MARKER_DOWNLOAD_DIALOG = 3750;
 	// PREFERENCES
 	private final static String PREFS_NAME = "MapViewPref";
 	private final static String INSTALL_STATE = "Install_State";
 	private final static String REGIONS_DATA = "Regions_Array";
-	
+
 	// ===========================================================
 	// Fields
 	// ===========================================================
@@ -79,15 +84,11 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	private MarkerOverlay overlay;
 	private static ArrayList<Event> events;
 	private int eventIndex;
-	
-	private ProgressDialog progressDialog;
-	private ProgressThread progressThread;
 
 	private MapViewActivity activity;
-	
+
 	private int markerState;
 	private boolean installedBefore;
-	private boolean eventsLoaded;
 
 	// ===========================================================
 	// Constructors
@@ -104,13 +105,13 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	public void onCreate(Bundle savedInstanceState) {
 		// The activity is launched or restarted after been killed.
 		super.onCreate(savedInstanceState);
-		//This is used to share the contect with other inner classes
+		// This is used to share the contect with other inner classes
 		this.activity = this;
 
 		setContentView(R.layout.map);
 		MapView mapView = (MapView) findViewById(R.id.mapview);
 		mapView.setBuiltInZoomControls(true);
-		
+
 		locator = new Locator(this);
 		locator.updateOldLocation();
 		Drawable drawable = this.getResources().getDrawable(
@@ -119,15 +120,15 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		overlay = new MarkerOverlay(drawable);
 		mapOverlays.add(overlay);
 		markerState = ENABLE_MARKER;
-		
+
 		Button buttonUploadImage = (Button) findViewById(R.id.buttonLock);
 		buttonUploadImage.setOnClickListener(new Button.OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-				showDialog(DOWNLOAD_DIALOG);
+				showDialog(EVENT_DOWNLOAD_DIALOG);
 			}
 		});
-		
+
 		if (savedInstanceState == null) {
 			SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
 			installedBefore = settings.getBoolean(INSTALL_STATE, false);
@@ -138,10 +139,6 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		} else {
 			onRecreate();
 		}
-		
-		ActionBar actionBar = getActionBar();
-		actionBar.setSubtitle("Flood Minneapolis 2010");
-
 	}
 
 	@Override
@@ -222,7 +219,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 					.getLatitude());
 			intent.putExtra("longitude", overlay.getMarkerLocation()
 					.getLongitude());
-			startActivityForResult(intent, UPLOAD_REQUEST);
+			startActivityForResult(intent, PROCESS_REQUEST);
 			return true;
 		case R.id.menuItemSettings:// Settings
 			intent = new Intent(MapViewActivity.this, SettingsActivity.class);
@@ -266,8 +263,8 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
-		case DOWNLOAD_DIALOG: {
-			progressDialog = new ProgressDialog(this);
+		case EVENT_DOWNLOAD_DIALOG: {
+			ProgressDialog progressDialog = new ProgressDialog(this);
 			progressDialog.setMessage("Getting list of current events");
 			progressDialog.setIndeterminate(true);
 			progressDialog.setCancelable(false);
@@ -275,21 +272,32 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		}
 		case EVENT_SELECT_DIALOG: {
 			CharSequence[] items = new String[events.size()];
-			for(int i  = 0; i < events.size(); i++){
+			for (int i = 0; i < events.size(); i++) {
 				items[i] = events.get(i).getName();
 			}
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setTitle("Pick an event");
 			builder.setItems(items, new DialogInterface.OnClickListener() {
-			    public void onClick(DialogInterface dialog, int item) {
-			    	eventIndex = item;
-			    	getActionBar().setSubtitle(events.get(eventIndex).getName());
-			    	dismissDialog(EVENT_SELECT_DIALOG);
-			    }
+				public void onClick(DialogInterface dialog, int item) {
+					eventIndex = item;
+					getActionBar()
+							.setSubtitle(events.get(eventIndex).getName());
+					dismissDialog(EVENT_SELECT_DIALOG);
+					downloadRegionsDialog();
+				}
 			});
 			builder.setCancelable(false);
 			AlertDialog alert = builder.create();
 			return alert;
+		}
+		case REGION_DOWNLOAD_DIALOG: {
+			ProgressDialog progressDialog = new ProgressDialog(this);
+			progressDialog.setMessage("Getting data of this event");
+			progressDialog.setIndeterminate(true);
+			progressDialog.setCancelable(false);
+			return progressDialog;
+		}
+		case MARKER_DOWNLOAD_DIALOG: {
 		}
 		default: {
 			return null;
@@ -300,9 +308,14 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	@Override
 	protected void onPrepareDialog(int id, Dialog dialog) {
 		switch (id) {
-		case DOWNLOAD_DIALOG: {	
+		case EVENT_DOWNLOAD_DIALOG: {
+
 		}
 		case EVENT_SELECT_DIALOG: {
+		}
+		case REGION_DOWNLOAD_DIALOG: {
+		}
+		case MARKER_DOWNLOAD_DIALOG: {
 		}
 		default: {
 		}
@@ -313,7 +326,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 
-		if (requestCode == UPLOAD_REQUEST) {
+		if (requestCode == PROCESS_REQUEST) {
 			markerState = ENABLE_MARKER;
 			overlay.stopDragMarker();
 			invalidateOptionsMenu();
@@ -342,6 +355,66 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	// ===========================================================
 	// Methods
 	// ===========================================================
+	private void downloadEventDialog() {
+
+		final Handler downloadEventDialoghandler = new Handler() {
+			public void handleMessage(Message msg) {
+				int state = msg.arg1;
+				if (state == PROCESS_COMPLETE) {
+					activity.runOnUiThread(new Runnable() {
+						public void run() {
+							dismissDialog(EVENT_DOWNLOAD_DIALOG);
+							showDialog(EVENT_SELECT_DIALOG);
+						}
+					});
+
+				} else if (state == PROCESS_FAILED) {
+					activity.runOnUiThread(new Runnable() {
+						public void run() {
+							dismissDialog(EVENT_DOWNLOAD_DIALOG);
+							Toast.makeText(activity,
+									"Download of events failed", 500).show();
+						}
+					});
+				}
+			}
+		};
+
+		showDialog(EVENT_DOWNLOAD_DIALOG);
+		ProgressThread progressThread = new ProgressThread(
+				downloadEventDialoghandler, REQUEST_DOWNLOAD_EVENTS);
+		progressThread.start();
+	}
+
+	private void downloadRegionsDialog() {
+		final Handler downloadRegionsDialogHandler = new Handler() {
+			public void handleMessage(Message msg) {
+				int state = msg.arg1;
+				if (state == PROCESS_COMPLETE) {
+					activity.runOnUiThread(new Runnable() {
+						public void run() {
+						}
+					});
+				} else if (state == PROCESS_RUNNING) {
+
+				} else if (state == PROCESS_FAILED) {
+					activity.runOnUiThread(new Runnable() {
+						public void run() {
+							dismissDialog(REGION_DOWNLOAD_DIALOG);
+							Toast.makeText(activity,
+									"Download of regions failed", 500).show();
+						}
+					});
+				}
+			}
+		};
+
+		showDialog(REGION_DOWNLOAD_DIALOG);
+		ProgressThread progressThread = new ProgressThread(
+				downloadRegionsDialogHandler, REQUEST_DOWNLOAD_REGIONS);
+		progressThread.start();
+	}
+
 	public void updateBestLocation() {
 		overlay.updateBestLocation(locator.getBestLocation());
 		((MapView) findViewById(R.id.mapview)).invalidate();
@@ -357,13 +430,17 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	}
 
 	private void onInitialize() {
-		showDialog(DOWNLOAD_DIALOG);
-		progressThread = new ProgressThread(initHandler, REQUEST_DOWNLOAD_EVENTS);
-		progressThread.start();
+		downloadEventDialog();
 	}
 
 	private void onRecreate() {
 
+	}
+
+	private void downloadAllRegions(Event event) {
+		for (int i = 0; i < event.getRegions().size(); i++) {
+
+		}
 	}
 
 	// ===========================================================
@@ -373,6 +450,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	private class ProgressThread extends Thread {
 		private Handler mHandler;
 		private int request;
+
 		public ProgressThread(Handler h, int request) {
 			this.mHandler = h;
 			this.request = request;
@@ -380,125 +458,77 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 
 		public void run() {
 			Message msg1 = mHandler.obtainMessage();
-			msg1.arg1 = UPLOAD_RUNNING;
+			msg1.arg1 = PROCESS_RUNNING;
 			mHandler.sendMessage(msg1);
-			File worldToParse = null;
-			
+
 			switch (request) {
 			case REQUEST_DOWNLOAD_EVENTS:
-				worldToParse = Connector.requestInformation(REQUEST_DOWNLOAD_EVENTS, 0, ".events");
+				File eventsFile = Connector.downloadEvents();
+				try {
+					events = getEvents(eventsFile.getPath());
+					Message msg2 = mHandler.obtainMessage();
+					msg2.arg1 = PROCESS_COMPLETE;
+					mHandler.sendMessage(msg2);
+				} catch (FileNotFoundException e) {
+					Message msg3 = mHandler.obtainMessage();
+					msg3.arg1 = PROCESS_FAILED;
+					mHandler.sendMessage(msg3);
+					e.printStackTrace();
+				}
 				break;
 			case REQUEST_DOWNLOAD_REGIONS:
-				//worldToParse = Connector.getEvents(Connector.WORLD, ".regions");
+				File regionFiles[] = Connector.downloadRegions(events
+						.get(eventIndex));
+				for (int i = 0; i < regionFiles.length; i++) {
+					try {
+						overlay.addOverlay(getMarkers(regionFiles[i].getPath()));
+					} catch (FileNotFoundException e) {
+
+						e.printStackTrace();
+					}
+				}
 				break;
 			case REQUEST_DOWNLOAD_MARKERS:
-				
+
 				break;
 
 			default:
 				break;
 			}
-			
-			try {
-				events = getEvents(worldToParse.getPath());
-				Message msg2 = mHandler.obtainMessage();
-				msg2.arg1 = UPLOAD_COMPLETE;
-				mHandler.sendMessage(msg2);
-			} catch (FileNotFoundException e) {
-				Message msg3 = mHandler.obtainMessage();
-				msg3.arg1 = UPLOAD_NOTCOMPLETED;
-				mHandler.sendMessage(msg3);
-				e.printStackTrace();
-			}
 
-			
 		}
 	}
 
-	final Handler initHandler = new Handler() {
-		public void handleMessage(Message msg) {
-			int state = msg.arg1;
-			if (state == UPLOAD_COMPLETE) {
-				eventsLoaded= true;
-				activity.runOnUiThread(new Runnable() {
-					public void run() {
-						dismissDialog(DOWNLOAD_DIALOG);
-						showDialog(EVENT_SELECT_DIALOG);
-					}
-				});
-
-			}else if(state == UPLOAD_NOTCOMPLETED){
-				activity.runOnUiThread(new Runnable() {
-					public void run() {
-						dismissDialog(DOWNLOAD_DIALOG);
-					}
-				});
-			}
-		}
-	};
-	
-	final Handler downloadHandler = new Handler() {
-		public void handleMessage(Message msg) {
-			int state = msg.arg1;
-			if (state == UPLOAD_COMPLETE) {
-				eventsLoaded= true;
-				activity.runOnUiThread(new Runnable() {
-					public void run() {
-						dismissDialog(DOWNLOAD_DIALOG);
-						showDialog(EVENT_SELECT_DIALOG);
-					}
-				});
-
-			}else if(state == UPLOAD_NOTCOMPLETED){
-				activity.runOnUiThread(new Runnable() {
-					public void run() {
-						dismissDialog(DOWNLOAD_DIALOG);
-					}
-				});
-			}
-		}
-	};
 	// ===========================================================
 	// Debug
 	// ===========================================================
 
-	/*private ArrayList<Marker> openAsset() {
-		String file = "";
-		InputStream stream = null;
-		AssetManager assetManager = getAssets();
-		Parser parser = new Parser();
-		ArrayList<Marker> itemList = new ArrayList<Marker>(
-				0);
-		try {
-			stream = assetManager.open("sample.kml");
-			itemList = parser.Parse(file, stream, this);
-		} catch (IOException e) {
-			// handle
-		} finally {
-			if (stream != null) {
-				try {
-					stream.close();
-				} catch (IOException e) {
-				}
-			}
-		}
-		return itemList;
-	}*/
+	/*
+	 * private ArrayList<Marker> openAsset() { String file = ""; InputStream
+	 * stream = null; AssetManager assetManager = getAssets(); Parser parser =
+	 * new Parser(); ArrayList<Marker> itemList = new ArrayList<Marker>( 0); try
+	 * { stream = assetManager.open("sample.kml"); itemList = parser.Parse(file,
+	 * stream, this); } catch (IOException e) { // handle } finally { if (stream
+	 * != null) { try { stream.close(); } catch (IOException e) { } } } return
+	 * itemList; }
+	 */
 
-	private ArrayList<Region> getRegions(String filename) throws FileNotFoundException {
+	private ArrayList<Marker> getMarkers(String filename)
+			throws FileNotFoundException {
 		InputStream stream = new FileInputStream(filename);
 		Parser parser = new Parser();
 		File file = new File(filename);
-		return parser.ParseRegions(filename, stream);
+		return parser.ParseMarkers(filename, stream);
 	}
 
-	private ArrayList<Event> getEvents(String filename) throws FileNotFoundException {
+	private ArrayList<Event> getEvents(String filename)
+			throws FileNotFoundException {
 		InputStream stream = new FileInputStream(filename);
 		Parser parser = new Parser();
 		File file = new File(filename);
-		return parser.ParseEvent(filename, stream);
+		return parser.ParseEvents(filename, stream);
 	}
-	
+
 	private void loadWorld() {
 
 	}

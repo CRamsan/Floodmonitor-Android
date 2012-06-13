@@ -2,8 +2,9 @@ package flood.monitor.modules.kmlparser;
 
 public class Region {
 
-	private String originURL;
+	private String kml;
 	private String name;
+	private Event event;
 	private int[] edges;
 	private int regionId;
 	private int latitude;
@@ -11,8 +12,8 @@ public class Region {
 	private int nw;
 	private int se;
 
-	public Region(int regionId, String name, String originURL, int latitude, int longitud) {
-		this.setOriginURL(originURL);
+	public Region(int regionId, String name, String kml, int latitude, int longitud) {
+		this.setKml(kml);
 		this.setName(name);
 		this.setRegionId(regionId);
 		this.setLatitude(latitude);
@@ -26,12 +27,12 @@ public class Region {
 		this.se = se;
 	}
 	
-	public String getOriginURL() {
-		return originURL;
+	public String getKml() {
+		return kml;
 	}
 
-	public void setOriginURL(String originURL) {
-		this.originURL = originURL;
+	public void setKml(String kml) {
+		this.kml = kml;
 	}
 
 	public String getName() {
@@ -74,5 +75,11 @@ public class Region {
 		this.longitud = longitud;
 	}
 
-	
+	public Event getEvent() {
+		return event;
+	}
+
+	public void setEvent(Event event) {
+		this.event = event;
+	}	
 }

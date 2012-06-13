@@ -1,8 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="hello">Hello World, FloodMonitorActivity!</string>
-    <string name="app_name">FloodMonitor</string>
-    <string name="upload">Upload</string>
-
-</resources>
+    <string name="app_name">Flood Monitor</string>
+    <string name="text_Upload">Upload</string>
+    <string name="text_PickAnEvent">Pick an event</string>
+    <string name="text_PlaceMarker">Place marker</string>
+    <string name="text_Refresh">Refresh</string>
+    <string name="text_Settings">Settings</string>
+    <string name="text_Help">Help</string>
+    <string name="text_About">About</string>
+    <string name="text_Exit">Exit</string>
+    <string name="text_Cancel">Cancel</string>
+    <string name="text_AboutURL">http://mouseriverflood2011.net/info.html</string>
+    <string name="pref_GPSLocation">GPS &amp; Location</string>
+    <string name="pref_GPSEnabled_title">GPS Enabled</string>
+    <string name="pref_UpdateInterval_title">update interval</string>
+    <string name="pref_UpdateInterval_summary">Define how often location updates will be performed</string>
+    <string name="pref_UpdateNow_title">Update now</string>
+    <string name="pref_UpdateNow_summary">Press here to update your location</string>
+    <string name="pref_DataStorage">Data &amp; Storage</string>
+    <string name="pref_CLearCache_title">Clear cache</string>
+    <string name="pref_CLearCache_summary">Removes all the pictures and data downloaded</string>
+    <string name="pref_CacheSize_title">Cache size</string>
+    <string name="pref_CacheSize_summary">Size in MB for the cache</string>
+    <string name="pref_CacheSizeDialog_title">Cache size</string>
+    <string name="pref_CacheSizeDialog_message">Choose a value in MB for the cache. A picture usually is between 2&#82113 MB</string>
+</resources>

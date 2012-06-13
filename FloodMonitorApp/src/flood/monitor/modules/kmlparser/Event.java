@@ -9,17 +9,15 @@ public class Event {
 	private String name;
 	private int regionId;
 	private boolean active;
-	private String kml;
 
 	private ArrayList<Region> regions;
 	
-	public Event(int regionId, String name, String kml, boolean active, String beginDate, String endDate, ArrayList<Region> regions) {
+	public Event(int regionId, String name, boolean active, String beginDate, String endDate, ArrayList<Region> regions) {
 		this.beginDate = beginDate;
 		this.endDate = endDate;
 		this.name = name;
 		this.regionId = regionId;
 		this.active = active;
-		this.kml = kml;
 		this.regions = regions;
 	}
 
@@ -66,6 +64,10 @@ public class Event {
 	public ArrayList<Region> getRegions() {
 		return regions;
 	}
+	
+	public Region getRegion(int index) {
+		return regions.get(index);
+	}
 
 	public void setRegions(ArrayList<Region> regions) {
 		this.regions = regions;
@@ -73,13 +75,5 @@ public class Event {
 
 	public void addRegion(Region region) {
 		this.regions.add(region);
-	}
-	
-	public String getKml() {
-		return kml;
-	}
-
-	public void setKml(String kml) {
-		this.kml = kml;
 	}
 }

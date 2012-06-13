@@ -24,7 +24,7 @@ public class Parser {
 	public ArrayList<Marker> Parse(String file, InputStream stream,
 			Context context) {
 
-		KMLHandler handler = new KMLHandler(context);
+		KMLHandler handler = new KMLHandler();
 		ArrayList<Marker> itemList = new ArrayList<Marker>(0);
 		try {
 
@@ -46,9 +46,9 @@ public class Parser {
 		return itemList;
 	}
 
-	public ArrayList<Region> ParseRegions(String file, InputStream stream) {
+	public ArrayList<Marker> ParseMarkers(String file, InputStream stream) {
 
-		RegionHandler handler = new RegionHandler();
+		KMLHandler handler = new KMLHandler();
 
 		try {
 
@@ -69,7 +69,7 @@ public class Parser {
 		return handler.getResult();
 	}
 
-	public ArrayList<Event> ParseEvent(String file, InputStream stream) {
+	public ArrayList<Event> ParseEvents(String file, InputStream stream) {
 
 		EventHandler handler = new EventHandler();
 
@@ -171,7 +171,7 @@ public class Parser {
 			if (qName.equalsIgnoreCase(EVENTS)) {
 
 			} else if (qName.equalsIgnoreCase(EVENT)) {
-				Event event = new Event(regionId, name, originURL, active,
+				Event event = new Event(regionId, name, active,
 						beginDate, endDate, regions);
 				this.events.add(event);
 			} else if (qName.equalsIgnoreCase(ID)) {
@@ -362,8 +362,6 @@ public class Parser {
 		private GeoPoint point;
 		private Marker overlayitem;
 
-		private Context context;
-
 		private static final String DOCUMENT = "Document";
 		private static final String PLACEMARK = "Placemark";
 		private static final String SEVERITY = "styleUrl";
@@ -377,9 +375,8 @@ public class Parser {
 
 		private String temp = "";
 
-		public KMLHandler(Context context) {
+		public KMLHandler() {
 			super();
-			this.context = context;
 		}
 
 		@Override
@@ -461,7 +458,7 @@ public class Parser {
 		}
 
 		public ArrayList<Marker> getResult() {
-			return (ArrayList<Marker>) (mOverlay.clone());
+			return mOverlay;
 		}
 	}
 }

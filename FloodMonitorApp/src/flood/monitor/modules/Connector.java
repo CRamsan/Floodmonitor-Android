@@ -14,11 +14,17 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.http.util.ByteArrayBuffer;
+
+import flood.monitor.modules.kmlparser.Event;
+import flood.monitor.modules.kmlparser.Region;
+import flood.monitor.overlay.Marker;
 
 import android.content.Context;
 import android.os.Environment;
@@ -27,42 +33,23 @@ import android.widget.Toast;
 
 public class Connector {
 
-	public static final String WORLD = "http://flood.cs.ndsu.nodak.edu/~ander773/flood/server/index.php";
-	public static final String REGION = "http://flood.cs.ndsu.nodak.edu/~ander773/flood/test/kmltest.php";
+	public static final String XML_COMMUNICATOR = "http://flood.cs.ndsu.nodak.edu/~ander773/flood/server/index.php";
 	public static final String DOWNLOAD_DIR = ".cache";
-	private final static int REQUEST_DOWNLOAD_EVENTS = 500;
-	private final static int REQUEST_DOWNLOAD_REGIONS = 600;
-	private final static int REQUEST_DOWNLOAD_MARKERS = 700;
 
-	public static File requestInformation(int requestCode, int id,
-			String filename) {
+	public static File downloadEvents() {
+		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss")
+				.format(new Date());
+		String filename = "events" + timeStamp + ".xml";
 		File mediaStorageDir = new File(
 				Environment.getExternalStorageDirectory(), "FloodMonitor");
 		File file = new File(mediaStorageDir.getPath() + File.separator
 				+ DOWNLOAD_DIR + File.separator + filename);
 		OutputStreamWriter request = null;
-		String response = null;
-		String parameters = "";
-
-		switch (requestCode) {
-		case REQUEST_DOWNLOAD_EVENTS:
-			parameters = "data=<phone><command>GetEvents</command></phone>";
-			break;
-		case REQUEST_DOWNLOAD_REGIONS:
-			parameters = "<phone><command>GetMarkerFileByRegionID</command><params><id>"
-					+ id + "</id></params></phone>";
-			break;
-		case REQUEST_DOWNLOAD_MARKERS:
-			parameters = "data=<phone><command>GetEvents</command></phone>";
-			break;
-		default:
-			break;
-		}
+		String parameters = "data=<phone><command>GetEvents</command></phone>";
 
 		try {
-			URL url = new URL(WORLD);
+			URL url = new URL(XML_COMMUNICATOR);
 
-			long startTime = System.currentTimeMillis();
 			/* Open a connection to that URL. */
 			HttpURLConnection ucon = (HttpURLConnection) url.openConnection();
 			ucon.setDoOutput(true);
@@ -101,46 +88,95 @@ public class Connector {
 		return file;
 	}
 
-	public static File downloadXML(String urlLocation, String filename) {
+	public static File[] downloadRegions(Event event) {
 		File mediaStorageDir = new File(
 				Environment.getExternalStorageDirectory(), "FloodMonitor");
-		File file = new File(mediaStorageDir.getPath() + File.separator
-				+ DOWNLOAD_DIR + File.separator + filename);
-		OutputStreamWriter request = null;
+		String subDir = event.getName();
+		File[] files = new File[event.getRegions().size()];
+		
+		for (int i = 0; i < event.getRegions().size(); i++) {
+			File file = new File(mediaStorageDir.getPath() + File.separator
+					+ DOWNLOAD_DIR + File.separator + subDir + File.separator
+					+ event.getRegions().get(i).getName() + ".kml");
 
-		try {
-			URL url = new URL(urlLocation);
+			try {
+				URL url = new URL(event.getRegions().get(i).getKml());
 
-			long startTime = System.currentTimeMillis();
-			/* Open a connection to that URL. */
-			HttpURLConnection ucon = (HttpURLConnection) url.openConnection();
+				/* Open a connection to that URL. */
+				HttpURLConnection ucon = (HttpURLConnection) url
+						.openConnection();
 
-			/*
-			 * Define InputStreams to read from the URLConnection.
-			 */
-			InputStream is = ucon.getInputStream();
-			BufferedInputStream bis = new BufferedInputStream(is);
+				/*
+				 * Define InputStreams to read from the URLConnection.
+				 */
+				InputStream is = ucon.getInputStream();
+				BufferedInputStream bis = new BufferedInputStream(is);
 
-			/*
-			 * Read bytes to the Buffer until there is nothing more to read(-1).
-			 */
-			ByteArrayBuffer baf = new ByteArrayBuffer(50);
-			int current = 0;
-			while ((current = bis.read()) != -1) {
-				baf.append((byte) current);
+				/*
+				 * Read bytes to the Buffer until there is nothing more to
+				 * read(-1).
+				 */
+				ByteArrayBuffer baf = new ByteArrayBuffer(50);
+				int current = 0;
+				while ((current = bis.read()) != -1) {
+					baf.append((byte) current);
+				}
+
+				/* Convert the Bytes read to a String. */
+				FileOutputStream fos = new FileOutputStream(file);
+				fos.write(baf.toByteArray());
+				fos.close();
+				files[i] = file;
+
+			} catch (IOException e) {
+				Log.d("Connector", "Error: " + e);
 			}
-
-			/* Convert the Bytes read to a String. */
-			FileOutputStream fos = new FileOutputStream(file);
-			fos.write(baf.toByteArray());
-			fos.close();
-
-		} catch (IOException e) {
-			Log.d("Connector", "Error: " + e);
 		}
-		return file;
+		return files;
 	}
 
+	public static File downloadPicture(Marker marker, int id) {
+		File mediaStorageDir = new File(
+				Environment.getExternalStorageDirectory(), "FloodMonitor");
+		String subDir = marker.getRegion().getEvent().getName() + File.separator + marker.getRegion().getName();
+			File file = new File(mediaStorageDir.getPath() + File.separator
+					+ DOWNLOAD_DIR + File.separator + subDir + File.separator
+					+ marker.getId());
+
+			try {
+				URL url = new URL(marker.getImage());
+
+				/* Open a connection to that URL. */
+				HttpURLConnection ucon = (HttpURLConnection) url
+						.openConnection();
+
+				/*
+				 * Define InputStreams to read from the URLConnection.
+				 */
+				InputStream is = ucon.getInputStream();
+				BufferedInputStream bis = new BufferedInputStream(is);
+
+				/*
+				 * Read bytes to the Buffer until there is nothing more to
+				 * read(-1).
+				 */
+				ByteArrayBuffer baf = new ByteArrayBuffer(50);
+				int current = 0;
+				while ((current = bis.read()) != -1) {
+					baf.append((byte) current);
+				}
+
+				/* Convert the Bytes read to a String. */
+				FileOutputStream fos = new FileOutputStream(file);
+				fos.write(baf.toByteArray());
+				fos.close();
+
+			} catch (IOException e) {
+				Log.d("Connector", "Error: " + e);
+			}
+		return file;
+	}
+	
 	public static void UploadData(Context context, String latitude,
 			String longitude, String hoursAgo, String minutesAgo,
 			String runoff, String coverDepth, String coverType, String comment,

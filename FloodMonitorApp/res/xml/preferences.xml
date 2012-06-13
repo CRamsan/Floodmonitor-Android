@@ -1,42 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen
-        xmlns:android="http://schemas.android.com/apk/res/android">
-        
-    <PreferenceCategory 
-        android:title="First Category"
-        android:key="first_category">
-        
-        <CheckBoxPreference 
-            android:key="perform_updates"
-            android:summary="Enable or disable data updates"
-            android:title="Enable updates" 
-            android:defaultValue="true"
-        />
-        
-        <ListPreference 
-            android:key="updates_interval"
-            android:title="Updates interval"
-            android:summary="Define how often updates will be performed"
-            android:defaultValue="1000" 
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:title="@string/pref_GPSLocation" >
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="pref_GPSEnabled"
+            android:title="@string/pref_GPSEnabled_title" />
+
+        <ListPreference
+            android:dependency="pref_GPSEnabled"
             android:entries="@array/updateInterval"
             android:entryValues="@array/updateIntervalValues"
-            android:dependency="perform_updates"
-        />    
-            
+            android:key="updates_interval"
+            android:summary="@string/pref_UpdateInterval_summary"
+            android:title="@string/pref_UpdateInterval_title" />
+
+        <Preference
+            android:dependency="pref_GPSEnabled"
+            android:key="pref_UpdateNow"
+            android:summary="@string/pref_UpdateNow_summary"
+            android:title="@string/pref_UpdateNow_title" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/pref_DataStorage" >
+        <Preference
+            android:key="pref_ClearCache"
+            android:summary="@string/pref_CLearCache_summary"
+            android:title="@string/pref_CLearCache_title" />
+        <EditTextPreference android:title="@string/pref_CacheSize_title" android:key="pref_CacheSize" android:summary="@string/pref_CacheSize_summary" android:dialogMessage="@string/pref_CacheSizeDialog_message" android:dialogTitle="@string/pref_CacheSizeDialog_title"/>
     </PreferenceCategory>
 
-    <PreferenceCategory 
-        android:title="Second Category"
-        android:key="second_category">
-
-        <EditTextPreference
-            android:key="welcome_message"
-            android:title="Welcome Message" 
-            android:summary="Define the Welcome message to be shown"
-            android:dialogTitle="Welcome Message"
-            android:dialogMessage="Provide a message"    
-            android:defaultValue="Default welcome message" />
-
-    </PreferenceCategory>           
 </PreferenceScreen>
-
