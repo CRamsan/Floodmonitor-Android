@@ -222,7 +222,7 @@ public class MarkerDetailtsActivity  extends Activity {
 	 if (resultCode == RESULT_OK){
 	  Uri targetUri = data.getData();
 	  file = getRealPathFromURI(targetUri);
-	  TextView path = (TextView)findViewById(R.id.pathView);
+	  TextView path = (TextView)findViewById(9);
 	  path.setText("File: " + file);
 	 }
 	}

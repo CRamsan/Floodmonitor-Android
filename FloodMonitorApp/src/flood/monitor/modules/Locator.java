@@ -1,11 +1,5 @@
 package flood.monitor.modules;
 
-import java.util.ArrayList;
-
-import com.google.android.maps.OverlayItem;
-
-import flood.monitor.MapViewActivity;
-
 import android.app.Activity;
 import android.content.Context;
 import android.location.Location;
@@ -14,7 +8,7 @@ import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.os.Bundle;
 import android.util.Log;
-import flood.monitor.abstracts.*;
+import flood.monitor.MapViewActivity;
 
 public class Locator {
 	// ===========================================================

@@ -41,9 +41,9 @@ public class MarkerOverlay extends ItemizedOverlay<OverlayItem> {
 	// ===========================================================
 	// Fields
 	// ===========================================================
-	private ArrayList<Marker> mOverlays = new ArrayList<Marker>();
+	private ArrayList<OverlayItem> mOverlays = new ArrayList<OverlayItem>();
 	private Marker currentLocationMarker;
-	private Marker uploadLocationMarker;
+	private OverlayItem uploadLocationMarker;
 
 	private Drawable defaultDrawable;
 	
@@ -65,16 +65,13 @@ public class MarkerOverlay extends ItemizedOverlay<OverlayItem> {
 
 	public MarkerOverlay(Drawable defaultMarker) {
 		super(boundCenterBottom(defaultMarker));
-		this.mOverlays = new ArrayList<Marker>(0);
+		this.mOverlays = new ArrayList<OverlayItem>(0);
 	}
 
 	public MarkerOverlay(Drawable defaultMarker, MapViewActivity activity) {
 		super(boundCenterBottom(defaultMarker));
-		this.isMarking = false;this.defaultDrawable = defaultMarker;
-
-		dragImage = (ImageView) activity.findViewById(R.id.drag);
-		xDragImageOffset = dragImage.getDrawable().getIntrinsicWidth() / 2;
-		yDragImageOffset = dragImage.getDrawable().getIntrinsicHeight();
+		this.isMarking = false;
+		this.defaultDrawable = activity.getResources().getDrawable(R.drawable.marker_yellow_large);
 	}
 
 	// ===========================================================
@@ -88,12 +85,12 @@ public class MarkerOverlay extends ItemizedOverlay<OverlayItem> {
 		return temp;
 	}
 
-	public void setOverlay(ArrayList<Marker> overlay) {
+	public void setOverlay(ArrayList<OverlayItem> overlay) {
 		mOverlays = overlay;
 		
-		for(Marker marker : overlay){
+		for(OverlayItem marker : overlay){
 			Drawable icon = null;
-			int severity = marker.getSeverity();
+			int severity = ((Marker) marker).getSeverity();
 			switch (severity) {
 			case 4:
 				icon = activity.getResources().getDrawable(
@@ -163,7 +160,7 @@ public class MarkerOverlay extends ItemizedOverlay<OverlayItem> {
 
 		Context mContext = activity;
 		LayoutInflater inflater = (LayoutInflater) mContext
-				.getSystemService(activity.LAYOUT_INFLATER_SERVICE);
+				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		View layout = inflater.inflate(R.layout.markerdialog,
 				(ViewGroup) (activity).findViewById(R.id.markerLayout));
 
@@ -195,7 +192,7 @@ public class MarkerOverlay extends ItemizedOverlay<OverlayItem> {
 			if (action == MotionEvent.ACTION_DOWN) {
 				Point p = new Point(0, 0);
 
-				((MapView) activity.findViewById(R.layout.map)).getProjection().toPixels(uploadLocationMarker.getPoint(),
+				((MapView) activity.findViewById(R.id.mapview)).getProjection().toPixels(uploadLocationMarker.getPoint(),
 						p);
 
 				if (hitTest(uploadLocationMarker, defaultDrawable, x - p.x, y
@@ -229,7 +226,7 @@ public class MarkerOverlay extends ItemizedOverlay<OverlayItem> {
 
 				Marker toDrop = new Marker(pt,
 						uploadLocationMarker.getTitle(),
-						uploadLocationMarker.getSnippet());
+						uploadLocationMarker.getSnippet(), null, 0, 0, 0);
 
 				mOverlays.remove(uploadLocationMarker);
 				mOverlays.add(toDrop);
@@ -256,16 +253,52 @@ public class MarkerOverlay extends ItemizedOverlay<OverlayItem> {
 	// ===========================================================
 	public void updateActivity(Activity newActivity) {
 		this.activity = newActivity;
+		this.defaultDrawable = activity.getResources().getDrawable(R.drawable.marker_yellow_large);
+		dragImage = (ImageView) activity.findViewById(R.id.drag);
+		xDragImageOffset = dragImage.getDrawable().getIntrinsicWidth() / 2;
+		yDragImageOffset = dragImage.getDrawable().getIntrinsicHeight();
 	}
 	
-	public void addOverlayItem(Marker overlayItem) {
+	public void addOverlayMarker(Marker overlayItem) {
+		Drawable icon = null;
+		switch (overlayItem.getSeverity()) {
+		case 4:
+			icon = activity.getResources().getDrawable(
+					R.drawable.marker_green_large);
+			break;
+		case 5:
+			icon = activity.getResources().getDrawable(
+					R.drawable.marker_green_yellow_large);
+			break;
+		case 6:
+			icon = activity.getResources().getDrawable(
+					R.drawable.marker_yellow_large);
+			break;
+		case 7:
+			icon = activity.getResources().getDrawable(
+					R.drawable.marker_orange_large);
+			break;
+		case 8:
+			icon = activity.getResources().getDrawable(
+					R.drawable.marker_red_large);
+			break;
+		default:
+			break;
+		}
+		icon.setBounds(0, 0, icon.getIntrinsicWidth(),
+				icon.getIntrinsicHeight());
+		overlayItem.setMarker(icon);
+		mOverlays.add(overlayItem);
+	}
+
+	public void addOverlayItem(OverlayItem overlayItem) {
 		mOverlays.add(overlayItem);
 		populate();
 	}
-
+	
 	public void addOverlay(ArrayList<Marker> overlay) {
 		for(int i = 0; i < overlay.size(); i++){
-			mOverlays.add(overlay.get(i));	
+			this.addOverlayMarker(overlay.get(i));	
 		}
 		populate();
 	}
@@ -275,16 +308,16 @@ public class MarkerOverlay extends ItemizedOverlay<OverlayItem> {
 		currentLocationMarker = new Marker(new GeoPoint(
 				(int) (location.getLatitude() * 1000000),
 				(int) (location.getLongitude() * 1000000)), "You are here",
-				"Description...");
+				"Description...", null, 0,0,0);
 		addOverlayItem(currentLocationMarker);
 		populate();
 	}
 
 	public void initiateDragMarker(Location location) {
-		uploadLocationMarker = new Marker(new GeoPoint(
+		uploadLocationMarker = new OverlayItem(new GeoPoint(
 				(int) (location.getLatitude()  * 1000000),
 				(int) (location.getLongitude() * 1000000)), "", "");
-		mOverlays.add(uploadLocationMarker);
+		addOverlayItem(uploadLocationMarker);
 		populate();
 		isMarking = true;
 	}

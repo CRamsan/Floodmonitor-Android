@@ -352,7 +352,7 @@ public class Parser {
 		private String observationtime;
 		private String usercomment;
 		private String image;
-		private char covertype;
+		private int covertype;
 		private int coverHeight;
 
 		private int latitude;
@@ -417,7 +417,7 @@ public class Parser {
 			if (qName.equalsIgnoreCase(DOCUMENT)) {
 
 			} else if (qName.equalsIgnoreCase(PLACEMARK)) {
-				overlayitem = new Marker(point, observationtime, usercomment);
+				overlayitem = new Marker(point, observationtime, usercomment, image, severity, covertype, coverHeight );
 
 				overlayitem.setMarker(null);
 				severity = 0;

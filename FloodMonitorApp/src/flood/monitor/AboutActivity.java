@@ -1,17 +1,8 @@
 package flood.monitor;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.net.ConnectivityManager;
 import android.os.Bundle;
-import android.view.View;
 import android.webkit.WebView;
-import android.widget.Button;
 
 public class AboutActivity extends Activity {
 

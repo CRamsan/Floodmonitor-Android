@@ -1,31 +1,10 @@
 package flood.monitor;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
-import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.AssetManager;
-import android.graphics.drawable.Drawable;
-import android.location.Location;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.provider.MediaStore;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -34,23 +13,6 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import com.google.android.maps.GeoPoint;
-import com.google.android.maps.MapActivity;
-import com.google.android.maps.MapView;
-import com.google.android.maps.Overlay;
-import com.google.android.maps.OverlayItem;
-
-import flood.monitor.abstracts.ModuleEventListener;
-import flood.monitor.modules.Connector;
-import flood.monitor.modules.Locator;
-import flood.monitor.modules.kmlparser.MarkerManager;
-import flood.monitor.modules.kmlparser.Parser;
-import flood.monitor.modules.kmlparser.SQLliteManager;
-import flood.monitor.overlay.MarkerOverlay;
-import flood.monitor.overlay.MarkerOverlay;
 
 /**
  * MapViewActivity.java Purpose: Activity that represents the map

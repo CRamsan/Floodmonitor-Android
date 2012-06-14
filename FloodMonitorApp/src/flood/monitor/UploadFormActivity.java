@@ -105,8 +105,8 @@ public class UploadFormActivity extends Activity {
 		if (location != null) {
 			latitude = (int) (location.getDouble("latitude"));
 			longitude = (int) (location.getDouble("longitude"));
-			EditText latText = (EditText) findViewById(R.id.latitudeEditText);
-			EditText lonText = (EditText) findViewById(R.id.longitudeEditText);
+			TextView latText = (TextView) findViewById(R.id.latitudeValueView);
+			TextView lonText = (TextView) findViewById(R.id.longitudeValueView);
 			latText.setText(Integer.toString(latitude));
 			lonText.setText(Integer.toString(longitude));
 		}
@@ -155,8 +155,6 @@ public class UploadFormActivity extends Activity {
 		// Save UI state changes to the savedInstanceState.
 		// This bundle will be passed to onCreate if the process is
 		// killed and restarted.
-		savedInstanceState.putString("FilePathView",
-				(String) ((TextView) findViewById(R.id.pathView)).getText());
 		savedInstanceState.putString("FilePathVar",file);
 		super.onSaveInstanceState(savedInstanceState);
 	}
@@ -166,8 +164,8 @@ public class UploadFormActivity extends Activity {
 		super.onRestoreInstanceState(savedInstanceState);
 		// Restore UI state from the savedInstanceState.
 		// This bundle has also been passed to onCreate.
-		TextView path = (TextView) findViewById(R.id.pathView);
-		path.setText(savedInstanceState.getString("FilePathView"));
+		TextView path = (TextView) findViewById(R.id.textFileName);
+		path.setText(savedInstanceState.getString("FilePathVar"));
 		file = savedInstanceState.getString("FilePathVar");
 	}
 
@@ -179,8 +177,8 @@ public class UploadFormActivity extends Activity {
 			if (resultCode == RESULT_OK) {
 				Uri targetUri = data.getData();
 				file = getRealPathFromURI(targetUri);
-				TextView path = (TextView) findViewById(R.id.pathView);
-				path.setText("File: " + file);
+				TextView path = (TextView) findViewById(R.id.textFileName);
+				path.setText(file);
 			}
 		}
 
@@ -196,8 +194,8 @@ public class UploadFormActivity extends Activity {
 			if (resultCode == RESULT_OK) {
 				try {
 					// file = fileUri.getEncodedPath();
-					TextView path = (TextView) findViewById(R.id.pathView);
-					path.setText("File: " + file);
+					TextView path = (TextView) findViewById(R.id.textFileName);
+					path.setText(file);
 					// Image captured and saved to fileUri specified in the
 					// Intent
 					Toast.makeText(this, "Image saved to:\n" + file,

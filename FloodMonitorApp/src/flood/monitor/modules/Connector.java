@@ -22,14 +22,12 @@ import java.util.Set;
 
 import org.apache.http.util.ByteArrayBuffer;
 
-import flood.monitor.modules.kmlparser.Event;
-import flood.monitor.modules.kmlparser.Region;
-import flood.monitor.overlay.Marker;
-
 import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
+import flood.monitor.modules.kmlparser.Event;
+import flood.monitor.overlay.Marker;
 
 public class Connector {
 
@@ -42,6 +40,12 @@ public class Connector {
 		String filename = "events" + timeStamp + ".xml";
 		File mediaStorageDir = new File(
 				Environment.getExternalStorageDirectory(), "FloodMonitor");
+		if (!mediaStorageDir.exists()) {
+			if (!mediaStorageDir.mkdirs()) {
+				Log.d("MyCameraApp", "failed to create directory");
+				return null;
+			}
+		}
 		File file = new File(mediaStorageDir.getPath() + File.separator
 				+ DOWNLOAD_DIR + File.separator + filename);
 		OutputStreamWriter request = null;
@@ -92,57 +96,65 @@ public class Connector {
 		File mediaStorageDir = new File(
 				Environment.getExternalStorageDirectory(), "FloodMonitor");
 		String subDir = event.getName();
-		File[] files = new File[event.getRegions().size()];
+		//File[] files = new File[event.getRegions().size()];
+
+		File fileasd = new File("/mnt/sdcard/FloodMonitor/markers.xml"); 
+		File[] files = {fileasd};
 		
+		return files;
+		/*
 		for (int i = 0; i < event.getRegions().size(); i++) {
 			File file = new File(mediaStorageDir.getPath() + File.separator
 					+ DOWNLOAD_DIR + File.separator + subDir + File.separator
 					+ event.getRegions().get(i).getName() + ".kml");
+			if (!file.exists()) {
 
-			try {
-				URL url = new URL(event.getRegions().get(i).getKml());
+				try {
+					URL url = new URL(event.getRegions().get(i).getKml());
 
-				/* Open a connection to that URL. */
-				HttpURLConnection ucon = (HttpURLConnection) url
-						.openConnection();
+					/* Open a connection to that URL. */
+					/*HttpURLConnection ucon = (HttpURLConnection) url
+							.openConnection();
 
-				/*
-				 * Define InputStreams to read from the URLConnection.
-				 */
-				InputStream is = ucon.getInputStream();
-				BufferedInputStream bis = new BufferedInputStream(is);
+					/*
+					 * Define InputStreams to read from the URLConnection.
+					 */
+					/*InputStream is = ucon.getInputStream();
+					BufferedInputStream bis = new BufferedInputStream(is);
 
-				/*
-				 * Read bytes to the Buffer until there is nothing more to
-				 * read(-1).
-				 */
-				ByteArrayBuffer baf = new ByteArrayBuffer(50);
-				int current = 0;
-				while ((current = bis.read()) != -1) {
-					baf.append((byte) current);
+					/*
+					 * Read bytes to the Buffer until there is nothing more to
+					 * read(-1).
+					 */
+					/*ByteArrayBuffer baf = new ByteArrayBuffer(50);
+					int current = 0;
+					while ((current = bis.read()) != -1) {
+						baf.append((byte) current);
+					}
+
+					/* Convert the Bytes read to a String. */
+					/*FileOutputStream fos = new FileOutputStream(file);
+					fos.write(baf.toByteArray());
+					fos.close();
+					files[i] = file;
+
+				} catch (IOException e) {
+					Log.d("Connector", "Error: " + e);
 				}
-
-				/* Convert the Bytes read to a String. */
-				FileOutputStream fos = new FileOutputStream(file);
-				fos.write(baf.toByteArray());
-				fos.close();
-				files[i] = file;
-
-			} catch (IOException e) {
-				Log.d("Connector", "Error: " + e);
 			}
 		}
-		return files;
+		return files;*/
 	}
 
 	public static File downloadPicture(Marker marker, int id) {
 		File mediaStorageDir = new File(
 				Environment.getExternalStorageDirectory(), "FloodMonitor");
-		String subDir = marker.getRegion().getEvent().getName() + File.separator + marker.getRegion().getName();
-			File file = new File(mediaStorageDir.getPath() + File.separator
-					+ DOWNLOAD_DIR + File.separator + subDir + File.separator
-					+ marker.getId());
-
+		String subDir = marker.getRegion().getEvent().getName()
+				+ File.separator + marker.getRegion().getName();
+		File file = new File(mediaStorageDir.getPath() + File.separator
+				+ DOWNLOAD_DIR + File.separator + subDir + File.separator
+				+ marker.getId());
+		if (!file.exists()) {
 			try {
 				URL url = new URL(marker.getImage());
 
@@ -174,9 +186,10 @@ public class Connector {
 			} catch (IOException e) {
 				Log.d("Connector", "Error: " + e);
 			}
+		}
 		return file;
 	}
-	
+
 	public static void UploadData(Context context, String latitude,
 			String longitude, String hoursAgo, String minutesAgo,
 			String runoff, String coverDepth, String coverType, String comment,

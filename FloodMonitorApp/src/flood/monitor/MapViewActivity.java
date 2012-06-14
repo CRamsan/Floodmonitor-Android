@@ -3,22 +3,17 @@ package flood.monitor;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.app.ActionBar;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.AssetManager;
 import android.graphics.drawable.Drawable;
-import android.hardware.Camera.Size;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -39,7 +34,6 @@ import flood.monitor.modules.Connector;
 import flood.monitor.modules.Locator;
 import flood.monitor.modules.kmlparser.Event;
 import flood.monitor.modules.kmlparser.Parser;
-import flood.monitor.modules.kmlparser.Region;
 import flood.monitor.overlay.Marker;
 import flood.monitor.overlay.MarkerOverlay;
 
@@ -119,6 +113,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		List<Overlay> mapOverlays = mapView.getOverlays();
 		overlay = new MarkerOverlay(drawable);
 		mapOverlays.add(overlay);
+		overlay.updateActivity(this);
 		markerState = ENABLE_MARKER;
 
 		Button buttonUploadImage = (Button) findViewById(R.id.buttonLock);
@@ -393,6 +388,9 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 				if (state == PROCESS_COMPLETE) {
 					activity.runOnUiThread(new Runnable() {
 						public void run() {
+							dismissDialog(REGION_DOWNLOAD_DIALOG);
+							MapView mapView = (MapView) findViewById(R.id.mapview);
+							mapView.invalidate();
 						}
 					});
 				} else if (state == PROCESS_RUNNING) {
@@ -487,6 +485,9 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 						e.printStackTrace();
 					}
 				}
+				Message msg2 = mHandler.obtainMessage();
+				msg2.arg1 = PROCESS_COMPLETE;
+				mHandler.sendMessage(msg2);
 				break;
 			case REQUEST_DOWNLOAD_MARKERS:
 
