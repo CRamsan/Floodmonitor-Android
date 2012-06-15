@@ -42,7 +42,7 @@
         </activity>
         <activity
             android:name=".AboutActivity"
-            android:theme="@style/ThemeSelectorDialog" >
+            android:theme="@style/ThemeSelector" >
         </activity>
     </application>
 

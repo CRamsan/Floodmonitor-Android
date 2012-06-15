@@ -42,7 +42,8 @@ public class MarkerOverlay extends ItemizedOverlay<OverlayItem> {
 	// Fields
 	// ===========================================================
 	private ArrayList<OverlayItem> mOverlays = new ArrayList<OverlayItem>();
-	private Marker currentLocationMarker;
+
+	private OverlayItem currentLocationMarker;
 	private OverlayItem uploadLocationMarker;
 
 	private Drawable defaultDrawable;
@@ -71,7 +72,10 @@ public class MarkerOverlay extends ItemizedOverlay<OverlayItem> {
 	public MarkerOverlay(Drawable defaultMarker, MapViewActivity activity) {
 		super(boundCenterBottom(defaultMarker));
 		this.isMarking = false;
-		this.defaultDrawable = activity.getResources().getDrawable(R.drawable.marker_yellow_large);
+		this.defaultDrawable = defaultMarker;
+		dragImage = (ImageView) activity.findViewById(R.id.drag);
+		xDragImageOffset = dragImage.getDrawable().getIntrinsicWidth() / 2;
+		yDragImageOffset = dragImage.getDrawable().getIntrinsicHeight();
 	}
 
 	// ===========================================================
@@ -85,6 +89,15 @@ public class MarkerOverlay extends ItemizedOverlay<OverlayItem> {
 		return temp;
 	}
 
+	public ArrayList<OverlayItem> getmOverlays() {
+		return mOverlays;
+	}
+
+	public void setmOverlays(ArrayList<OverlayItem> mOverlays) {
+		this.mOverlays = mOverlays;
+	}
+
+	
 	public void setOverlay(ArrayList<OverlayItem> overlay) {
 		mOverlays = overlay;
 		
@@ -150,6 +163,11 @@ public class MarkerOverlay extends ItemizedOverlay<OverlayItem> {
 	@Override
 	protected boolean onTap(int index) {
 		OverlayItem item = mOverlays.get(index);
+		
+		if(item == currentLocationMarker || item == uploadLocationMarker){
+			return true;
+		}
+		
 		/*
 		 * AlertDialog.Builder dialog = new AlertDialog.Builder(context);
 		 * dialog.setTitle(item.getTitle());
@@ -254,9 +272,7 @@ public class MarkerOverlay extends ItemizedOverlay<OverlayItem> {
 	public void updateActivity(Activity newActivity) {
 		this.activity = newActivity;
 		this.defaultDrawable = activity.getResources().getDrawable(R.drawable.marker_yellow_large);
-		dragImage = (ImageView) activity.findViewById(R.id.drag);
-		xDragImageOffset = dragImage.getDrawable().getIntrinsicWidth() / 2;
-		yDragImageOffset = dragImage.getDrawable().getIntrinsicHeight();
+
 	}
 	
 	public void addOverlayMarker(Marker overlayItem) {

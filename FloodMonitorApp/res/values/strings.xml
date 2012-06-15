@@ -24,7 +24,7 @@
     <string name="text_AboutURL">http://mouseriverflood2011.net/info.html</string>
     <string name="pref_GPSLocation">GPS &amp; Location</string>
     <string name="pref_GPSEnabled_title">GPS Enabled</string>
-    <string name="pref_UpdateInterval_title">update interval</string>
+    <string name="pref_UpdateInterval_title">Update interval</string>
     <string name="pref_UpdateInterval_summary">Define how often location updates will be performed</string>
     <string name="pref_UpdateNow_title">Update now</string>
     <string name="pref_UpdateNow_summary">Press here to update your location</string>
@@ -34,6 +34,6 @@
     <string name="pref_CacheSize_title">Cache size</string>
     <string name="pref_CacheSize_summary">Size in MB for the cache</string>
     <string name="pref_CacheSizeDialog_title">Cache size</string>
-    <string name="pref_CacheSizeDialog_message">Choose a value in MB for the cache. A picture usually is between 2 and 3 MB</string>
+    <string name="pref_CacheSizeDialog_message">Choose a value in MB for the cache. A picture usually is 50 KB and you can store around 200 pictures in 10MB</string>
 
 </resources>

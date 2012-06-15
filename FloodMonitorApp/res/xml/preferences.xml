@@ -26,7 +26,7 @@
             android:key="pref_ClearCache"
             android:summary="@string/pref_CLearCache_summary"
             android:title="@string/pref_CLearCache_title" />
-        <EditTextPreference android:title="@string/pref_CacheSize_title" android:key="pref_CacheSize" android:summary="@string/pref_CacheSize_summary" android:dialogMessage="@string/pref_CacheSizeDialog_message" android:dialogTitle="@string/pref_CacheSizeDialog_title"/>
+        <EditTextPreference android:title="@string/pref_CacheSize_title" android:key="pref_CacheSize" android:summary="@string/pref_CacheSize_summary" android:dialogMessage="@string/pref_CacheSizeDialog_message" android:dialogTitle="@string/pref_CacheSizeDialog_title" android:defaultValue="@string/pref_DefaultCacheSize"/>
     </PreferenceCategory>
 
 </PreferenceScreen>

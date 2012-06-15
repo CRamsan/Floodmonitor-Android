@@ -29,6 +29,7 @@ import android.widget.Toast;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
+import com.google.android.maps.OverlayItem;
 
 import flood.monitor.modules.Connector;
 import flood.monitor.modules.Locator;
@@ -70,12 +71,14 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	private final static String PREFS_NAME = "MapViewPref";
 	private final static String INSTALL_STATE = "Install_State";
 	private final static String REGIONS_DATA = "Regions_Array";
+	private final static String MARKER_STATE = "markerState";
+	private final static String SUBTITLE_TEXT = "subtitleText";
 
 	// ===========================================================
 	// Fields
 	// ===========================================================
 	private Locator locator;
-	private MarkerOverlay overlay;
+	private static MarkerOverlay overlay;
 	private static ArrayList<Event> events;
 	private int eventIndex;
 
@@ -103,18 +106,17 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		this.activity = this;
 
 		setContentView(R.layout.map);
-		MapView mapView = (MapView) findViewById(R.id.mapview);
-		mapView.setBuiltInZoomControls(true);
 
 		locator = new Locator(this);
 		locator.updateOldLocation();
-		Drawable drawable = this.getResources().getDrawable(
-				R.drawable.default_marker);
-		List<Overlay> mapOverlays = mapView.getOverlays();
-		overlay = new MarkerOverlay(drawable);
-		mapOverlays.add(overlay);
-		overlay.updateActivity(this);
-		markerState = ENABLE_MARKER;
+
+		if (savedInstanceState != null) {
+			markerState = savedInstanceState.getInt("MARKER_STATE");
+			getActionBar().setSubtitle(
+					savedInstanceState.getCharSequence(SUBTITLE_TEXT));
+		} else {
+			markerState = ENABLE_MARKER;
+		}
 
 		Button buttonUploadImage = (Button) findViewById(R.id.buttonLock);
 		buttonUploadImage.setOnClickListener(new Button.OnClickListener() {
@@ -245,6 +247,9 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			invalidateOptionsMenu();
 			((MapView) findViewById(R.id.mapview)).invalidate();
 			return true;
+		case android.R.id.home:
+			downloadEventDialog();
+			return true;			
 		default:
 			return super.onOptionsItemSelected(item);
 		}
@@ -331,6 +336,9 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
+		savedInstanceState.putInt(MARKER_STATE, markerState);
+		savedInstanceState.putCharSequence(SUBTITLE_TEXT, getActionBar()
+				.getSubtitle());
 		super.onSaveInstanceState(savedInstanceState);
 	}
 
@@ -428,11 +436,23 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	}
 
 	private void onInitialize() {
+		MapView mapView = (MapView) findViewById(R.id.mapview);
+		mapView.setBuiltInZoomControls(true);
+		Drawable drawable = this.getResources().getDrawable(
+				R.drawable.default_marker);
+		List<Overlay> mapOverlays = mapView.getOverlays();
+		overlay = new MarkerOverlay(drawable);
+		mapOverlays.add(overlay);
+		overlay.updateActivity(this);
 		downloadEventDialog();
 	}
 
 	private void onRecreate() {
-
+		MapView mapView = (MapView) findViewById(R.id.mapview);
+		mapView.setBuiltInZoomControls(true);
+		List<Overlay> mapOverlays = mapView.getOverlays();
+		mapOverlays.add(overlay);
+		overlay.updateActivity(this);
 	}
 
 	private void downloadAllRegions(Event event) {
