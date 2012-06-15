@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -14,6 +15,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -111,9 +113,13 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		locator.updateOldLocation();
 
 		if (savedInstanceState != null) {
-			markerState = savedInstanceState.getInt("MARKER_STATE");
-			getActionBar().setSubtitle(
-					savedInstanceState.getCharSequence(SUBTITLE_TEXT));
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+				markerState = savedInstanceState.getInt("MARKER_STATE");
+				getActionBar().setSubtitle(
+						savedInstanceState.getCharSequence(SUBTITLE_TEXT));
+			} else {
+
+			}
 		} else {
 			markerState = ENABLE_MARKER;
 		}
@@ -122,7 +128,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		buttonUploadImage.setOnClickListener(new Button.OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-				showDialog(EVENT_DOWNLOAD_DIALOG);
+				locator.updateListening(activity);
 			}
 		});
 
@@ -147,7 +153,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		invalidateOptionsMenu();
+		ActivityUtil.updateOptionsMenu(this);
 		locator.startListening(this);
 		// The activity has become visible (it is now "resumed").
 	}
@@ -194,11 +200,17 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		switch (markerState) {
 		case ENABLE_MARKER:
-			menu.removeItem(R.id.menuItemUpload);
-			menu.removeItem(R.id.menuItemCancel);
+			menu.findItem(R.id.menuItemUpload).setVisible(false);
+			menu.findItem(R.id.menuItemCancel).setVisible(false);
+			menu.findItem(R.id.menuItemPlaceMarker).setVisible(true);
+			//menu.removeItem(R.id.menuItemUpload);
+			//menu.removeItem(R.id.menuItemCancel);
 			return true;
 		case ENABLE_UPLOAD:
-			menu.removeItem(R.id.menuItemPlaceMarker);
+			menu.findItem(R.id.menuItemUpload).setVisible(true);
+			menu.findItem(R.id.menuItemCancel).setVisible(true);
+			menu.findItem(R.id.menuItemPlaceMarker).setVisible(false);
+			//menu.removeItem(R.id.menuItemPlaceMarker);
 			return true;
 		default:
 			return true;
@@ -222,13 +234,10 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			intent = new Intent(MapViewActivity.this, SettingsActivity.class);
 			startActivity(intent);
 			return true;
-		case R.id.menuItemRefresh:// Refresh
-			locator.updateListening(this);
-			return true;
 		case R.id.menuItemPlaceMarker:// PlaceMarker
 			markerState = ENABLE_UPLOAD;
 			overlay.initiateDragMarker(locator.getBestLocation());
-			invalidateOptionsMenu();
+			ActivityUtil.updateOptionsMenu(this);
 			return true;
 		case R.id.menuItemExit:// Exit
 			finish();
@@ -244,12 +253,12 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		case R.id.menuItemCancel: // Cancel
 			markerState = ENABLE_MARKER;
 			overlay.stopDragMarker();
-			invalidateOptionsMenu();
+			ActivityUtil.updateOptionsMenu(this);
 			((MapView) findViewById(R.id.mapview)).invalidate();
 			return true;
 		case android.R.id.home:
 			downloadEventDialog();
-			return true;			
+			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
@@ -280,8 +289,13 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			builder.setItems(items, new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int item) {
 					eventIndex = item;
-					getActionBar()
-							.setSubtitle(events.get(eventIndex).getName());
+					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+						getActionBar().setSubtitle(
+								events.get(eventIndex).getName());
+
+					} else {
+
+					}
 					dismissDialog(EVENT_SELECT_DIALOG);
 					downloadRegionsDialog();
 				}
@@ -329,16 +343,22 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		if (requestCode == PROCESS_REQUEST) {
 			markerState = ENABLE_MARKER;
 			overlay.stopDragMarker();
-			invalidateOptionsMenu();
+			ActivityUtil.updateOptionsMenu(this);
 			((MapView) findViewById(R.id.mapview)).invalidate();
 		}
 	}
 
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
-		savedInstanceState.putInt(MARKER_STATE, markerState);
-		savedInstanceState.putCharSequence(SUBTITLE_TEXT, getActionBar()
-				.getSubtitle());
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			savedInstanceState.putInt(MARKER_STATE, markerState);
+			savedInstanceState.putCharSequence(SUBTITLE_TEXT, getActionBar()
+					.getSubtitle());
+		} else {
+
+		}
+
 		super.onSaveInstanceState(savedInstanceState);
 	}
 
@@ -552,5 +572,16 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 
 	private void loadWorld() {
 
+	}
+
+	public static class ActivityUtil {
+
+		public static void updateOptionsMenu(Activity activity) {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+				activity.invalidateOptionsMenu();
+			} else {
+
+			}
+		}
 	}
 }

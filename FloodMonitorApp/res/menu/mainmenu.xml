@@ -2,28 +2,39 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
-        android:id="@+id/item1"
-        android:showAsAction="always|withText"
-        android:title="Upload">
+        android:id="@+id/menuItemPlaceMarker"
+        android:showAsAction="withText|always"
+        android:title="@string/text_PlaceMarker">
     </item>
     <item
-        android:id="@+id/item2"
-        android:showAsAction="withText"
-        android:title="Settings">
+        android:id="@+id/menuItemUpload"
+        android:showAsAction="withText|always"
+        android:title="@string/text_Upload">
     </item>
     <item
-        android:id="@+id/item3"
-        android:showAsAction="withText"
-        android:title="Help">
+        android:id="@+id/menuItemCancel"
+        android:showAsAction="withText|always"
+        android:title="@string/text_Cancel">
     </item>
     <item
-        android:id="@+id/item4"
+        android:id="@+id/menuItemSettings"
         android:showAsAction="withText"
-        android:title="About">
+        android:title="@string/text_Settings">
     </item>
     <item
-        android:id="@+id/item5"
+        android:id="@+id/menuItemHelp"
         android:showAsAction="withText"
-        android:title="Exit">
+        android:title="@string/text_Help">
     </item>
+    <item
+        android:id="@+id/menuItemAbout"
+        android:showAsAction="withText"
+        android:title="@string/text_About">
+    </item>
+    <item
+        android:id="@+id/menuItemExit"
+        android:showAsAction="withText"
+        android:title="@string/text_Exit">
+    </item>
+
 </menu>
