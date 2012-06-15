@@ -439,7 +439,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		MapView mapView = (MapView) findViewById(R.id.mapview);
 		mapView.setBuiltInZoomControls(true);
 		Drawable drawable = this.getResources().getDrawable(
-				R.drawable.default_marker);
+				R.drawable.marker_blue);
 		List<Overlay> mapOverlays = mapView.getOverlays();
 		overlay = new MarkerOverlay(drawable);
 		mapOverlays.add(overlay);

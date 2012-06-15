@@ -5,7 +5,7 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:src="@drawable/default_marker"
+        android:src="@drawable/ic_launcher"
         android:padding="10dp"
         android:textSize="16sp" >
     </ImageButton>

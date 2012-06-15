@@ -40,8 +40,15 @@ public class Connector {
 		String filename = "events" + timeStamp + ".xml";
 		File mediaStorageDir = new File(
 				Environment.getExternalStorageDirectory(), "FloodMonitor");
+		File downloadDir = new File(mediaStorageDir.getPath()+File.separator+DOWNLOAD_DIR);
 		if (!mediaStorageDir.exists()) {
 			if (!mediaStorageDir.mkdirs()) {
+				Log.d("MyCameraApp", "failed to create directory");
+				return null;
+			}
+		}
+		if (!downloadDir.exists()) {
+			if (!downloadDir.mkdirs()) {
 				Log.d("MyCameraApp", "failed to create directory");
 				return null;
 			}
@@ -99,6 +106,46 @@ public class Connector {
 		//File[] files = new File[event.getRegions().size()];
 
 		File fileasd = new File("/mnt/sdcard/FloodMonitor/markers.xml"); 
+		
+		
+		
+		OutputStreamWriter request = null;
+
+		try {
+			URL url = new URL("http://www.cesarandres.com/markers.xml");
+
+			/* Open a connection to that URL. */
+			HttpURLConnection ucon = (HttpURLConnection) url.openConnection();
+			ucon.setDoOutput(true);
+
+			request = new OutputStreamWriter(ucon.getOutputStream());
+			request.flush();
+			request.close();
+
+			/*
+			 * Define InputStreams to read from the URLConnection.
+			 */
+			InputStream is = ucon.getInputStream();
+			BufferedInputStream bis = new BufferedInputStream(is);
+
+			/*
+			 * Read bytes to the Buffer until there is nothing more to read(-1).
+			 */
+			ByteArrayBuffer baf = new ByteArrayBuffer(50);
+			int current = 0;
+			while ((current = bis.read()) != -1) {
+				baf.append((byte) current);
+			}
+
+			/* Convert the Bytes read to a String. */
+			FileOutputStream fos = new FileOutputStream(fileasd);
+			fos.write(baf.toByteArray());
+			fos.close();
+
+		} catch (IOException e) {
+			Log.d("Connector", "Error: " + e);
+		}
+		
 		File[] files = {fileasd};
 		
 		return files;

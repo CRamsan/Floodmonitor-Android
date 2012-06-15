@@ -48,7 +48,6 @@ public class MarkerOverlay extends ItemizedOverlay<OverlayItem> {
 	private OverlayItem uploadLocationMarker;
 
 	private Drawable defaultDrawable;
-
 	private Drawable uploadDrawable;
 	private ImageView dragImage = null;
 	private MarkerManager manager;
@@ -69,15 +68,6 @@ public class MarkerOverlay extends ItemizedOverlay<OverlayItem> {
 	public MarkerOverlay(Drawable defaultMarker) {
 		super(boundCenterBottom(defaultMarker));
 		this.mOverlays = new ArrayList<OverlayItem>(0);
-	}
-
-	public MarkerOverlay(Drawable defaultMarker, MapViewActivity activity) {
-		super(boundCenterBottom(defaultMarker));
-		this.isMarking = false;
-		this.defaultDrawable = defaultMarker;
-		dragImage = (ImageView) activity.findViewById(R.id.drag);
-		xDragImageOffset = dragImage.getDrawable().getIntrinsicWidth() / 2;
-		yDragImageOffset = dragImage.getDrawable().getIntrinsicHeight();
 	}
 
 	// ===========================================================
@@ -220,6 +210,11 @@ public class MarkerOverlay extends ItemizedOverlay<OverlayItem> {
 				Marker toDrop = new Marker(pt, uploadLocationMarker.getTitle(),
 						uploadLocationMarker.getSnippet(), null, 0, 0, 0);
 
+				Drawable icon = uploadDrawable;
+				icon.setBounds(-icon.getIntrinsicWidth() /2, -icon.getIntrinsicHeight(),
+						icon.getIntrinsicWidth()/2, 0);
+				toDrop  .setMarker(icon);
+				
 				mOverlays.remove(uploadLocationMarker);
 				mOverlays.add(toDrop);
 				populate();
@@ -252,7 +247,9 @@ public class MarkerOverlay extends ItemizedOverlay<OverlayItem> {
 	public void updateActivity(Activity newActivity) {
 		this.activity = newActivity;
 		this.defaultDrawable = activity.getResources().getDrawable(
-				R.drawable.default_marker);
+				R.drawable.marker_blue);
+		this.uploadDrawable = activity.getResources().getDrawable(
+				R.drawable.marker_white);
 		dragImage = (ImageView) activity.findViewById(R.id.drag);
 		xDragImageOffset = dragImage.getDrawable().getIntrinsicWidth() / 2;
 		yDragImageOffset = dragImage.getDrawable().getIntrinsicHeight();
@@ -264,23 +261,23 @@ public class MarkerOverlay extends ItemizedOverlay<OverlayItem> {
 		switch (overlayItem.getSeverity()) {
 		case 4:
 			icon = activity.getResources().getDrawable(
-					R.drawable.marker_green_large);
+					R.drawable.marker_blue);
 			break;
 		case 5:
 			icon = activity.getResources().getDrawable(
-					R.drawable.marker_green_yellow_large);
+					R.drawable.marker_green);
 			break;
 		case 6:
 			icon = activity.getResources().getDrawable(
-					R.drawable.marker_yellow_large);
+					R.drawable.marker_yellow);
 			break;
 		case 7:
 			icon = activity.getResources().getDrawable(
-					R.drawable.marker_orange_large);
+					R.drawable.marker_orange);
 			break;
 		case 8:
 			icon = activity.getResources().getDrawable(
-					R.drawable.marker_red_large);
+					R.drawable.marker_red);
 			break;
 		default:
 			break;
@@ -293,7 +290,7 @@ public class MarkerOverlay extends ItemizedOverlay<OverlayItem> {
 
 	public void addOverlayItem(OverlayItem overlayItem) {
 		mOverlays.add(overlayItem);
-		populate();
+		//populate();
 	}
 
 	public void addOverlay(ArrayList<Marker> overlay) {
@@ -309,6 +306,10 @@ public class MarkerOverlay extends ItemizedOverlay<OverlayItem> {
 				(int) (location.getLatitude() * 1000000),
 				(int) (location.getLongitude() * 1000000)), "You are here",
 				"Description...", null, 0, 0, 0);
+		Drawable icon = activity.getResources().getDrawable(R.drawable.location);
+		icon.setBounds(-icon.getIntrinsicWidth() /2, -icon.getIntrinsicHeight(),
+				icon.getIntrinsicWidth()/2, 0);
+		currentLocationMarker.setMarker(icon);
 		addOverlayItem(currentLocationMarker);
 		populate();
 	}
@@ -317,7 +318,7 @@ public class MarkerOverlay extends ItemizedOverlay<OverlayItem> {
 		uploadLocationMarker = new OverlayItem(new GeoPoint(
 				(int) (location.getLatitude() * 1000000),
 				(int) (location.getLongitude() * 1000000)), "", "");
-		Drawable icon = activity.getResources().getDrawable(R.drawable.marker);
+		Drawable icon = activity.getResources().getDrawable(R.drawable.marker_white);
 		icon.setBounds(-icon.getIntrinsicWidth() /2, -icon.getIntrinsicHeight(),
 				icon.getIntrinsicWidth()/2, 0);
 		uploadDrawable = icon;
