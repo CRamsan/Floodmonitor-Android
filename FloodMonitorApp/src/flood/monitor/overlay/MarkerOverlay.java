@@ -102,34 +102,7 @@ public class MarkerOverlay extends ItemizedOverlay<OverlayItem> {
 		mOverlays = overlay;
 		
 		for(OverlayItem marker : overlay){
-			Drawable icon = null;
-			int severity = ((Marker) marker).getSeverity();
-			switch (severity) {
-			case 4:
-				icon = activity.getResources().getDrawable(
-						R.drawable.marker_green_large);
-				break;
-			case 5:
-				icon = activity.getResources().getDrawable(
-						R.drawable.marker_green_yellow_large);
-				break;
-			case 6:
-				icon = activity.getResources().getDrawable(
-						R.drawable.marker_yellow_large);
-				break;
-			case 7:
-				icon = activity.getResources().getDrawable(
-						R.drawable.marker_orange_large);
-				break;
-			case 8:
-				icon = activity.getResources().getDrawable(
-						R.drawable.marker_red_large);
-				break;
-			default:
-				break;
-			}
-			icon.setBounds(0, 0, icon.getIntrinsicWidth(),
-					icon.getIntrinsicHeight());
+			addOverlayMarker((Marker) marker);
 		}
 		
 		if (currentLocationMarker != null) {
