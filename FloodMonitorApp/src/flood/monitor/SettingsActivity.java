@@ -2,9 +2,9 @@ package flood.monitor;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.preference.PreferenceFragment;
+import android.preference.PreferenceActivity;
 
-public class SettingsActivity extends Activity {
+public class SettingsActivity extends PreferenceActivity{
 
 	// ===========================================================
 	// Constants
@@ -30,8 +30,7 @@ public class SettingsActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		// The activity is launched or restarted after been killed.
 		// Display the fragment as the main content.
-		getFragmentManager().beginTransaction().replace(android.R.id.content,
-                new PrefsFragment()).commit();
+		 addPreferencesFromResource(R.xml.preferences);
 	}
 
 	@Override
@@ -82,18 +81,7 @@ public class SettingsActivity extends Activity {
 	// ===========================================================
 	// Inner and Anonymous Classes
 	// ===========================================================
-
-	public static class PrefsFragment extends PreferenceFragment {
-
-		@Override
-		public void onCreate(Bundle savedInstanceState) {
-			super.onCreate(savedInstanceState);
-
-			// Load the preferences from an XML resource
-			addPreferencesFromResource(R.xml.preferences);
-		}
-	}
-
+	
 	// ===========================================================
 	// Debug
 	// ===========================================================

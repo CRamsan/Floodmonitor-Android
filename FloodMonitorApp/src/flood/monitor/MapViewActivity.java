@@ -15,6 +15,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -26,9 +27,12 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
+import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
@@ -112,36 +116,69 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		locator = new Locator(this);
 		locator.updateOldLocation();
 
-		if (savedInstanceState != null) {
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-				markerState = savedInstanceState.getInt("MARKER_STATE");
-				getActionBar().setSubtitle(
-						savedInstanceState.getCharSequence(SUBTITLE_TEXT));
-			} else {
-
-			}
-		} else {
-			markerState = ENABLE_MARKER;
-		}
-
-		Button buttonUploadImage = (Button) findViewById(R.id.buttonLock);
-		buttonUploadImage.setOnClickListener(new Button.OnClickListener() {
+		ImageButton buttonLock = (ImageButton) findViewById(R.id.buttonLock);
+		buttonLock.setOnClickListener(new Button.OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
 				locator.updateListening(activity);
+				focus(locator.getBestLocation(), 14);
 			}
 		});
 
-		if (savedInstanceState == null) {
+		ImageButton addMarker = (ImageButton) findViewById(R.id.buttonAddMarker);
+		addMarker.setOnClickListener(new Button.OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				markerState = ENABLE_UPLOAD;
+				overlay.initiateDragMarker(locator.getBestLocation());
+				updateButton();
+				((MapView) findViewById(R.id.mapview)).invalidate();
+			}
+		});
+
+		ImageButton cancelMarker = (ImageButton) findViewById(R.id.buttoCancelMarker);
+		cancelMarker.setOnClickListener(new Button.OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				markerState = ENABLE_MARKER;
+				overlay.stopDragMarker();
+				updateButton();
+				((MapView) findViewById(R.id.mapview)).invalidate();
+
+			}
+		});
+
+		ImageButton uploadMarker = (ImageButton) findViewById(R.id.buttonUploadMarker);
+		uploadMarker.setOnClickListener(new Button.OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				Intent intent = new Intent(MapViewActivity.this,
+						UploadFormActivity.class);
+				intent.putExtra("latitude", overlay.getMarkerLocation()
+						.getLatitude());
+				intent.putExtra("longitude", overlay.getMarkerLocation()
+						.getLongitude());
+				startActivityForResult(intent, PROCESS_REQUEST);
+			}
+		});
+
+		if (savedInstanceState != null) {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+				getActionBar().setSubtitle(
+						savedInstanceState.getCharSequence(SUBTITLE_TEXT));
+			}
+			markerState = savedInstanceState.getInt(MARKER_STATE);
+			onRecreate();
+		} else {
+			markerState = ENABLE_MARKER;
 			SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
 			installedBefore = settings.getBoolean(INSTALL_STATE, false);
 			if (installedBefore) {
 				onInstall();
 			}
 			onInitialize();
-		} else {
-			onRecreate();
 		}
+		updateButton();
 	}
 
 	@Override
@@ -153,7 +190,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		ActivityUtil.updateOptionsMenu(this);
+		updateButton();
 		locator.startListening(this);
 		// The activity has become visible (it is now "resumed").
 	}
@@ -162,7 +199,8 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	protected void onPause() {
 		super.onPause();
 		// Another activity is taking focus (this activity is about to be
-		// "paused").
+		// "paused").xmlns:android="http://schemas.android.com/apk/res/android"
+
 	}
 
 	@Override
@@ -181,7 +219,8 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		// The activity is been brought back to the front.
+		overlay.stopDragMarker();
+
 	}
 
 	@Override
@@ -197,47 +236,13 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	}
 
 	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
-		switch (markerState) {
-		case ENABLE_MARKER:
-			menu.findItem(R.id.menuItemUpload).setVisible(false);
-			menu.findItem(R.id.menuItemCancel).setVisible(false);
-			menu.findItem(R.id.menuItemPlaceMarker).setVisible(true);
-			//menu.removeItem(R.id.menuItemUpload);
-			//menu.removeItem(R.id.menuItemCancel);
-			return true;
-		case ENABLE_UPLOAD:
-			menu.findItem(R.id.menuItemUpload).setVisible(true);
-			menu.findItem(R.id.menuItemCancel).setVisible(true);
-			menu.findItem(R.id.menuItemPlaceMarker).setVisible(false);
-			//menu.removeItem(R.id.menuItemPlaceMarker);
-			return true;
-		default:
-			return true;
-		}
-	}
-
-	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle item selection
 		Intent intent = null;
 		switch (item.getItemId()) {
-		case R.id.menuItemUpload:// Upload
-			intent = new Intent(MapViewActivity.this, UploadFormActivity.class);
-			intent.putExtra("latitude", overlay.getMarkerLocation()
-					.getLatitude());
-			intent.putExtra("longitude", overlay.getMarkerLocation()
-					.getLongitude());
-			startActivityForResult(intent, PROCESS_REQUEST);
-			return true;
 		case R.id.menuItemSettings:// Settings
 			intent = new Intent(MapViewActivity.this, SettingsActivity.class);
 			startActivity(intent);
-			return true;
-		case R.id.menuItemPlaceMarker:// PlaceMarker
-			markerState = ENABLE_UPLOAD;
-			overlay.initiateDragMarker(locator.getBestLocation());
-			ActivityUtil.updateOptionsMenu(this);
 			return true;
 		case R.id.menuItemExit:// Exit
 			finish();
@@ -249,12 +254,6 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		case R.id.menuItemHelp: // Help
 			intent = new Intent(MapViewActivity.this, HelpActivity.class);
 			startActivity(intent);
-			return true;
-		case R.id.menuItemCancel: // Cancel
-			markerState = ENABLE_MARKER;
-			overlay.stopDragMarker();
-			ActivityUtil.updateOptionsMenu(this);
-			((MapView) findViewById(R.id.mapview)).invalidate();
 			return true;
 		case android.R.id.home:
 			downloadEventDialog();
@@ -343,7 +342,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		if (requestCode == PROCESS_REQUEST) {
 			markerState = ENABLE_MARKER;
 			overlay.stopDragMarker();
-			ActivityUtil.updateOptionsMenu(this);
+			updateButton();
 			((MapView) findViewById(R.id.mapview)).invalidate();
 		}
 	}
@@ -352,12 +351,10 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	public void onSaveInstanceState(Bundle savedInstanceState) {
 
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-			savedInstanceState.putInt(MARKER_STATE, markerState);
 			savedInstanceState.putCharSequence(SUBTITLE_TEXT, getActionBar()
 					.getSubtitle());
-		} else {
-
 		}
+		savedInstanceState.putInt(MARKER_STATE, markerState);
 
 		super.onSaveInstanceState(savedInstanceState);
 	}
@@ -417,8 +414,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 					activity.runOnUiThread(new Runnable() {
 						public void run() {
 							dismissDialog(REGION_DOWNLOAD_DIALOG);
-							MapView mapView = (MapView) findViewById(R.id.mapview);
-							mapView.invalidate();
+							focus(locator.getBestLocation(), 11);
 						}
 					});
 				} else if (state == PROCESS_RUNNING) {
@@ -443,7 +439,6 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 
 	public void updateBestLocation() {
 		overlay.updateBestLocation(locator.getBestLocation());
-		((MapView) findViewById(R.id.mapview)).invalidate();
 	}
 
 	private void onInstall() {
@@ -458,6 +453,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	private void onInitialize() {
 		MapView mapView = (MapView) findViewById(R.id.mapview);
 		mapView.setBuiltInZoomControls(true);
+		mapView.setSatellite(false);
 		Drawable drawable = this.getResources().getDrawable(
 				R.drawable.marker_blue);
 		List<Overlay> mapOverlays = mapView.getOverlays();
@@ -473,6 +469,10 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		List<Overlay> mapOverlays = mapView.getOverlays();
 		mapOverlays.add(overlay);
 		overlay.updateActivity(this);
+		if (markerState == ENABLE_UPLOAD) {
+			overlay.initiateDragMarker(locator.getBestLocation());
+			((MapView) findViewById(R.id.mapview)).invalidate();
+		}
 	}
 
 	private void downloadAllRegions(Event event) {
@@ -570,8 +570,29 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		return parser.ParseEvents(filename, stream);
 	}
 
-	private void loadWorld() {
+	private void focus(Location locationToZoom, int level) {
+		MapView map = ((MapView) findViewById(R.id.mapview));
+		MapController mc = map.getController();
+		mc.animateTo(new GeoPoint(
+				(int) (locationToZoom.getLatitude() * 1000000),
+				(int) (locationToZoom.getLongitude() * 1000000)));
+		mc.setZoom(level);
+		map.invalidate();
+	}
 
+	private void updateButton() {
+		switch (markerState) {
+		case ENABLE_MARKER:
+			findViewById(R.id.buttonUploadMarker).setVisibility(View.GONE);
+			findViewById(R.id.buttoCancelMarker).setVisibility(View.GONE);
+			findViewById(R.id.buttonAddMarker).setVisibility(View.VISIBLE);
+			break;
+		case ENABLE_UPLOAD:
+			findViewById(R.id.buttonUploadMarker).setVisibility(View.VISIBLE);
+			findViewById(R.id.buttoCancelMarker).setVisibility(View.VISIBLE);
+			findViewById(R.id.buttonAddMarker).setVisibility(View.GONE);
+			break;
+		}
 	}
 
 	public static class ActivityUtil {

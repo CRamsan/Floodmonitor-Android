@@ -157,6 +157,7 @@ public class MarkerOverlay extends ItemizedOverlay<OverlayItem> {
 		builder = new AlertDialog.Builder(mContext);
 		builder.setView(layout);
 		alertDialog = builder.create();
+		alertDialog.setCanceledOnTouchOutside(true);
 		alertDialog.show();
 		return true;
 	}

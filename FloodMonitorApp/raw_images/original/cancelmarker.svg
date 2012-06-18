@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="744.09448819"
+   height="1052.3622047"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.3.1 r9886"
+   sodipodi:docname="cancelmarker.svg">
+  <defs
+     id="defs4">
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       id="perspective3776" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.24748737"
+     inkscape:cx="-2051.3505"
+     inkscape:cy="157.82088"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1916"
+     inkscape:window-height="1060"
+     inkscape:window-x="1600"
+     inkscape:window-y="18"
+     inkscape:window-maximized="0" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       style="opacity:0.88429756999999998;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:35;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-start:none"
+       d="m 297.73214,23.955357 c -1.68543,-0.01017 -3.375,0.009 -5.0625,0.03125 C 224.03982,24.454719 160.74269,55.321954 118.13839,96.205357 53.542957,157.80838 24.210995,238.86576 22.794643,318.23661 c -0.651082,42.48567 8.406313,80.98484 29.125,112.71875 -0.343752,-2.2e-4 -0.687498,2.2e-4 -1.03125,0 81.173107,186.57269 145.488617,7.38312 243.499997,559.75 97.43584,-553.67088 168.96717,-372.90853 253.4375,-559.375 -1.15656,0.003 -2.31219,0.0283 -3.46875,0.0312 -0.32292,-2.5e-4 -0.64583,2.5e-4 -0.96875,0 9.11269,-10.06578 15.83492,-23.42357 19.84375,-43.28125 17.90473,-92.73454 -1.87902,-192.30904 -68.84375,-270.75 -37.88791,-44.103076 -93.95627,-80.802898 -161.5625,-90.687503 -11.56823,-1.733366 -23.29572,-2.616297 -35.09375,-2.6875 z"
+       id="path3796"
+       inkscape:connector-curvature="0" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:35;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="path3984"
+       sodipodi:cx="351.53308"
+       sodipodi:cy="299.79852"
+       sodipodi:rx="86.873116"
+       sodipodi:ry="95.964493"
+       d="m 438.4062,299.79852 a 86.873116,95.964493 0 1 1 -173.74623,0 86.873116,95.964493 0 1 1 173.74623,0 z"
+       transform="matrix(0.76852701,0,0,0.76852701,26.434935,69.06894)" />
+    <rect
+       style="fill:#ff000c;fill-opacity:1;stroke:#ff0008;stroke-width:92.50499725;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="rect2999"
+       width="5.2433882"
+       height="310.02548"
+       x="-783.06104"
+       y="27.18087"
+       transform="matrix(-0.70710678,-0.70710678,-0.70710678,0.70710678,0,0)" />
+    <rect
+       style="fill:#ff000c;fill-opacity:1;stroke:#ff0006;stroke-width:92.50499724999998818;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="rect2999-4"
+       width="5.2433882"
+       height="310.02548"
+       x="-184.37398"
+       y="-935.21661"
+       transform="matrix(0.70710678,-0.70710678,-0.70710678,-0.70710678,0,0)" />
+  </g>
+</svg>
