@@ -325,6 +325,11 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 
 		}
 		case EVENT_SELECT_DIALOG: {
+			if (eventIndex == -1) {
+				dialog.setCancelable(false);
+			} else {
+				dialog.setCancelable(true);
+			}
 		}
 		case REGION_DOWNLOAD_DIALOG: {
 		}
@@ -460,6 +465,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		overlay = new MarkerOverlay(drawable);
 		mapOverlays.add(overlay);
 		overlay.updateActivity(this);
+		eventIndex = -1;
 		downloadEventDialog();
 	}
 

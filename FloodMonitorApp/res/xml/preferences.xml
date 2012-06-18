@@ -26,7 +26,20 @@
             android:key="pref_ClearCache"
             android:summary="@string/pref_CLearCache_summary"
             android:title="@string/pref_CLearCache_title" />
-        <EditTextPreference android:title="@string/pref_CacheSize_title" android:key="pref_CacheSize" android:summary="@string/pref_CacheSize_summary" android:dialogMessage="@string/pref_CacheSizeDialog_message" android:dialogTitle="@string/pref_CacheSizeDialog_title" android:defaultValue="@string/pref_DefaultCacheSize"/>
+
+        <EditTextPreference
+            android:defaultValue="@string/pref_DefaultCacheSize"
+            android:dialogMessage="@string/pref_CacheSizeDialog_message"
+            android:dialogTitle="@string/pref_CacheSizeDialog_title"
+            android:key="pref_CacheSize"
+            android:summary="@string/pref_CacheSize_summary"
+            android:title="@string/pref_CacheSize_title" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/pref_Visuals" >
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="pref_UseSatellite"
+            android:title="@string/pref_UseSatellite_title" />
     </PreferenceCategory>
 
 </PreferenceScreen>
