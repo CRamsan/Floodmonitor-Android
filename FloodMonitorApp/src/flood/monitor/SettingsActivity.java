@@ -1,10 +1,17 @@
 package flood.monitor;
 
-import android.app.Activity;
-import android.os.Bundle;
-import android.preference.PreferenceActivity;
+import com.google.android.maps.MapActivity;
+import com.google.android.maps.MapController;
 
-public class SettingsActivity extends PreferenceActivity{
+import android.app.Activity;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.preference.CheckBoxPreference;
+import android.preference.Preference;
+import android.preference.PreferenceActivity;
+import android.preference.PreferenceManager;
+
+public class SettingsActivity extends PreferenceActivity {
 
 	// ===========================================================
 	// Constants
@@ -30,7 +37,8 @@ public class SettingsActivity extends PreferenceActivity{
 		super.onCreate(savedInstanceState);
 		// The activity is launched or restarted after been killed.
 		// Display the fragment as the main content.
-		 addPreferencesFromResource(R.xml.preferences);
+		addPreferencesFromResource(R.xml.preferences);
+
 	}
 
 	@Override
@@ -77,11 +85,11 @@ public class SettingsActivity extends PreferenceActivity{
 	// ===========================================================
 	// Methods
 	// ===========================================================
-
+	
 	// ===========================================================
 	// Inner and Anonymous Classes
 	// ===========================================================
-	
+
 	// ===========================================================
 	// Debug
 	// ===========================================================

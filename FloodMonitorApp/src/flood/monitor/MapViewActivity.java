@@ -57,28 +57,32 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	// Constants
 	// ===========================================================
 	// STATES
-	private final static int ENABLE_MARKER = 0;
-	private final static int ENABLE_UPLOAD = 1;
+	public final static int ENABLE_MARKER = 0;
+	public final static int ENABLE_UPLOAD = 1;
+	public final static int MAP_EVENT_LEVEL = 0;
+	public final static int MAP_EVENT_REGION = 1;
+	public final static int MAP_EVENT_MARKER = 2;
 	// PROCESS STATES
-	private final static int PROCESS_RUNNING = 0;
-	private final static int PROCESS_COMPLETE = 1;
-	private final static int PROCESS_FAILED = 2;
+	public final static int PROCESS_RUNNING = 0;
+	public final static int PROCESS_COMPLETE = 1;
+	public final static int PROCESS_FAILED = 2;
 	// REQUEST CODES
-	private final static int PROCESS_REQUEST = 100;
-	private final static int REQUEST_DOWNLOAD_EVENTS = 500;
-	private final static int REQUEST_DOWNLOAD_REGIONS = 600;
-	private final static int REQUEST_DOWNLOAD_MARKERS = 700;
+	public final static int PROCESS_REQUEST = 100;
+	public final static int REQUEST_DOWNLOAD_EVENTS = 500;
+	public final static int REQUEST_DOWNLOAD_REGIONS = 600;
+	public final static int REQUEST_DOWNLOAD_MARKERS = 700;
 	// DIALOGS ID
-	private final static int EVENT_DOWNLOAD_DIALOG = 200;
-	private final static int EVENT_SELECT_DIALOG = 300;
-	private final static int REGION_DOWNLOAD_DIALOG = 350;
-	private final static int MARKER_DOWNLOAD_DIALOG = 3750;
+	public final static int EVENT_DOWNLOAD_DIALOG = 200;
+	public final static int EVENT_SELECT_DIALOG = 300;
+	public final static int REGION_DOWNLOAD_DIALOG = 350;
+	public final static int MARKER_DOWNLOAD_DIALOG = 3750;
 	// PREFERENCES
-	private final static String PREFS_NAME = "MapViewPref";
-	private final static String INSTALL_STATE = "Install_State";
-	private final static String REGIONS_DATA = "Regions_Array";
-	private final static String MARKER_STATE = "markerState";
-	private final static String SUBTITLE_TEXT = "subtitleText";
+	public final static String PREFS_NAME = "MapViewPref";
+	public final static String INSTALL_STATE = "Install_State";
+	public final static String MAP_STATE = "Map_State";
+	public final static String REGIONS_DATA = "Regions_Array";
+	public final static String MARKER_STATE = "markerState";
+	public final static String SUBTITLE_TEXT = "subtitleText";
 
 	// ===========================================================
 	// Fields
@@ -198,9 +202,8 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	@Override
 	protected void onPause() {
 		super.onPause();
-		// Another activity is taking focus (this activity is about to be
-		// "paused").xmlns:android="http://schemas.android.com/apk/res/android"
-
+		// Another activity is taking focus (this activity is about to
+		// be"paused")
 	}
 
 	@Override

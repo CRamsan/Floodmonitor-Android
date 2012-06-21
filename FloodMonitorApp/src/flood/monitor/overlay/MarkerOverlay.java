@@ -149,7 +149,7 @@ public class MarkerOverlay extends ItemizedOverlay<OverlayItem> {
 		TextView text = (TextView) layout.findViewById(R.id.textView1);
 		text.setText(item.getTitle());
 		ImageView image = (ImageView) layout.findViewById(R.id.imageView1);
-		String pathToFile = "/mnt/sdcard/FloodMonitor/.cache/cute_cat.jpg";
+		String pathToFile = "/mnt/sdcard/FloodMonitor/.cache/cute_cat.jpeg";
 		image.setImageBitmap(BitmapFactory.decodeFile(pathToFile));
 		TextView text2 = (TextView) layout.findViewById(R.id.textView2);
 		text2.setText(item.getSnippet());
