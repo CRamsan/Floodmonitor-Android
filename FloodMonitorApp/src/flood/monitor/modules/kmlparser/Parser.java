@@ -106,10 +106,10 @@ public class Parser {
 		private static final String BOUNDARIES = "boundaries";
 		private static final String BOUNDARY = "boundary";
 		private static final String NORTHWEST = "northwest";
-		private static final String SOUTHEAST = "northeast";
+		private static final String SOUTHEAST = "southeast";
 
-		private int northWest;
-		private int southEast;
+		private GeoPoint northWest;
+		private GeoPoint southEast;
 		private int boundary_id;
 		private String boundary_name;
 
@@ -171,8 +171,8 @@ public class Parser {
 			if (qName.equalsIgnoreCase(EVENTS)) {
 
 			} else if (qName.equalsIgnoreCase(EVENT)) {
-				Event event = new Event(regionId, name, active,
-						beginDate, endDate, regions);
+				Event event = new Event(regionId, name, active, beginDate,
+						endDate, regions);
 				this.events.add(event);
 			} else if (qName.equalsIgnoreCase(ID)) {
 				if (!boundaries)
@@ -199,11 +199,13 @@ public class Parser {
 						northWest, southEast);
 				this.regions.add(region);
 			} else if (qName.equalsIgnoreCase(NORTHWEST)) {
-				this.northWest = (int) (Double.parseDouble(temp.substring(0,
-						temp.indexOf(","))) * 1000000);
+				int lat = (int) (Double.parseDouble(temp.substring(0, temp.indexOf(",")))  * 1000000);
+				int lon = (int) (Double.parseDouble(temp.substring(temp.indexOf(",") + 1)) * 1000000);
+				this.northWest = new GeoPoint(lat, lon);
 			} else if (qName.equalsIgnoreCase(SOUTHEAST)) {
-				this.southEast = (int) (Double.parseDouble(temp.substring(temp
-						.indexOf(",") + 1)) * 1000000);
+				int lat = (int) (Double.parseDouble(temp.substring(0, temp.indexOf(",")))  * 1000000);
+				int lon = (int) (Double.parseDouble(temp.substring(temp.indexOf(",") + 1)) * 1000000);
+				this.southEast = new GeoPoint(lat, lon);
 			}
 			temp = "";
 		}
@@ -417,7 +419,8 @@ public class Parser {
 			if (qName.equalsIgnoreCase(DOCUMENT)) {
 
 			} else if (qName.equalsIgnoreCase(PLACEMARK)) {
-				overlayitem = new Marker(point, observationtime, usercomment, image, severity, covertype, coverHeight );
+				overlayitem = new Marker(point, observationtime, usercomment,
+						image, severity, covertype, coverHeight);
 
 				overlayitem.setMarker(null);
 				severity = 0;

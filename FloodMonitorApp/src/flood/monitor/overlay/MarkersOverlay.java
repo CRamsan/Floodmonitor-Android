@@ -33,7 +33,7 @@ import flood.monitor.R;
 import flood.monitor.abstracts.ModuleEventListener;
 import flood.monitor.modules.kmlparser.MarkerManager;
 
-public class MarkerOverlay extends ItemizedOverlay<OverlayItem> {
+public class MarkersOverlay extends ItemizedOverlay<OverlayItem> {
 
 	// ===========================================================
 	// Constants
@@ -65,7 +65,7 @@ public class MarkerOverlay extends ItemizedOverlay<OverlayItem> {
 	// Constructors
 	// ===========================================================
 
-	public MarkerOverlay(Drawable defaultMarker) {
+	public MarkersOverlay(Drawable defaultMarker) {
 		super(boundCenterBottom(defaultMarker));
 		this.mOverlays = new ArrayList<OverlayItem>(0);
 	}

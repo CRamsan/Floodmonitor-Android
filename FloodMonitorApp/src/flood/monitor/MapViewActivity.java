@@ -16,6 +16,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -41,8 +42,9 @@ import flood.monitor.modules.Connector;
 import flood.monitor.modules.Locator;
 import flood.monitor.modules.kmlparser.Event;
 import flood.monitor.modules.kmlparser.Parser;
+import flood.monitor.overlay.EventsOverlay;
 import flood.monitor.overlay.Marker;
-import flood.monitor.overlay.MarkerOverlay;
+import flood.monitor.overlay.MarkersOverlay;
 
 /**
  * MapViewActivity.java Purpose: Activity that represents the map
@@ -88,9 +90,8 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	// Fields
 	// ===========================================================
 	private Locator locator;
-	private static MarkerOverlay overlay;
-	private static ArrayList<Event> events;
-	private int eventIndex;
+	private static MarkersOverlay overlayMarker;
+	private static EventsOverlay eventsMarker;
 
 	private MapViewActivity activity;
 
@@ -134,7 +135,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			@Override
 			public void onClick(View arg0) {
 				markerState = ENABLE_UPLOAD;
-				overlay.initiateDragMarker(locator.getBestLocation());
+				overlayMarker.initiateDragMarker(locator.getBestLocation());
 				updateButton();
 				((MapView) findViewById(R.id.mapview)).invalidate();
 			}
@@ -145,7 +146,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			@Override
 			public void onClick(View arg0) {
 				markerState = ENABLE_MARKER;
-				overlay.stopDragMarker();
+				overlayMarker.stopDragMarker();
 				updateButton();
 				((MapView) findViewById(R.id.mapview)).invalidate();
 
@@ -158,9 +159,9 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			public void onClick(View arg0) {
 				Intent intent = new Intent(MapViewActivity.this,
 						UploadFormActivity.class);
-				intent.putExtra("latitude", overlay.getMarkerLocation()
+				intent.putExtra("latitude", overlayMarker.getMarkerLocation()
 						.getLatitude());
-				intent.putExtra("longitude", overlay.getMarkerLocation()
+				intent.putExtra("longitude", overlayMarker.getMarkerLocation()
 						.getLongitude());
 				startActivityForResult(intent, PROCESS_REQUEST);
 			}
@@ -222,7 +223,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		overlay.stopDragMarker();
+		overlayMarker.stopDragMarker();
 
 	}
 
@@ -282,29 +283,24 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			return progressDialog;
 		}
 		case EVENT_SELECT_DIALOG: {
-			CharSequence[] items = new String[events.size()];
-			for (int i = 0; i < events.size(); i++) {
-				items[i] = events.get(i).getName();
-			}
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setTitle("Pick an event");
-			builder.setItems(items, new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int item) {
-					eventIndex = item;
-					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-						getActionBar().setSubtitle(
-								events.get(eventIndex).getName());
-
-					} else {
-
-					}
-					dismissDialog(EVENT_SELECT_DIALOG);
-					downloadRegionsDialog();
-				}
-			});
-			builder.setCancelable(false);
-			AlertDialog alert = builder.create();
-			return alert;
+			/*
+			 * CharSequence[] items = new String[events.size()]; for (int i = 0;
+			 * i < events.size(); i++) { items[i] = events.get(i).getName(); }
+			 * AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			 * builder.setTitle("Pick an event"); builder.setItems(items, new
+			 * DialogInterface.OnClickListener() { public void
+			 * onClick(DialogInterface dialog, int item) {
+			 * eventsMarker.setEventIndex(item); if (Build.VERSION.SDK_INT >=
+			 * Build.VERSION_CODES.HONEYCOMB) { getActionBar().setSubtitle(
+			 * events.get(eventsMarker.getEventIndex()).getName());
+			 * 
+			 * } else {
+			 * 
+			 * } dismissDialog(EVENT_SELECT_DIALOG); downloadRegionsDialog(); }
+			 * }); builder.setCancelable(false); AlertDialog alert =
+			 * builder.create(); return alert;
+			 */
+			return null;
 		}
 		case REGION_DOWNLOAD_DIALOG: {
 			ProgressDialog progressDialog = new ProgressDialog(this);
@@ -328,7 +324,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 
 		}
 		case EVENT_SELECT_DIALOG: {
-			if (eventIndex == -1) {
+			if (eventsMarker == null) {
 				dialog.setCancelable(false);
 			} else {
 				dialog.setCancelable(true);
@@ -349,7 +345,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 
 		if (requestCode == PROCESS_REQUEST) {
 			markerState = ENABLE_MARKER;
-			overlay.stopDragMarker();
+			overlayMarker.stopDragMarker();
 			updateButton();
 			((MapView) findViewById(R.id.mapview)).invalidate();
 		}
@@ -383,35 +379,21 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	// ===========================================================
 	// Methods
 	// ===========================================================
+
+	private void addOverlay(Overlay overlay) {
+		MapView mapView = (MapView) findViewById(R.id.mapview);
+		List<Overlay> mapOverlays = mapView.getOverlays();
+		mapOverlays.add(overlay);
+	}
+
+	private void removeOverlay() {
+		MapView mapView = (MapView) findViewById(R.id.mapview);
+		List<Overlay> mapOverlays = mapView.getOverlays();
+		mapOverlays.remove(overlayMarker);
+	}
+
 	private void downloadEventDialog() {
-
-		final Handler downloadEventDialoghandler = new Handler() {
-			public void handleMessage(Message msg) {
-				int state = msg.arg1;
-				if (state == PROCESS_COMPLETE) {
-					activity.runOnUiThread(new Runnable() {
-						public void run() {
-							dismissDialog(EVENT_DOWNLOAD_DIALOG);
-							showDialog(EVENT_SELECT_DIALOG);
-						}
-					});
-
-				} else if (state == PROCESS_FAILED) {
-					activity.runOnUiThread(new Runnable() {
-						public void run() {
-							dismissDialog(EVENT_DOWNLOAD_DIALOG);
-							Toast.makeText(activity,
-									"Download of events failed", 500).show();
-						}
-					});
-				}
-			}
-		};
-
-		showDialog(EVENT_DOWNLOAD_DIALOG);
-		ProgressThread progressThread = new ProgressThread(
-				downloadEventDialoghandler, REQUEST_DOWNLOAD_EVENTS);
-		progressThread.start();
+		new DownloadEventsTask().execute();
 	}
 
 	private void downloadRegionsDialog() {
@@ -439,14 +421,17 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			}
 		};
 
-		showDialog(REGION_DOWNLOAD_DIALOG);
 		ProgressThread progressThread = new ProgressThread(
 				downloadRegionsDialogHandler, REQUEST_DOWNLOAD_REGIONS);
 		progressThread.start();
 	}
 
+	public void loadEvents() {
+
+	}
+
 	public void updateBestLocation() {
-		overlay.updateBestLocation(locator.getBestLocation());
+		overlayMarker.updateBestLocation(locator.getBestLocation());
 	}
 
 	private void onInstall() {
@@ -465,10 +450,9 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		Drawable drawable = this.getResources().getDrawable(
 				R.drawable.marker_blue);
 		List<Overlay> mapOverlays = mapView.getOverlays();
-		overlay = new MarkerOverlay(drawable);
-		mapOverlays.add(overlay);
-		overlay.updateActivity(this);
-		eventIndex = -1;
+		overlayMarker = new MarkersOverlay(drawable);
+		mapOverlays.add(overlayMarker);
+		overlayMarker.updateActivity(this);
 		downloadEventDialog();
 	}
 
@@ -476,10 +460,10 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		MapView mapView = (MapView) findViewById(R.id.mapview);
 		mapView.setBuiltInZoomControls(true);
 		List<Overlay> mapOverlays = mapView.getOverlays();
-		mapOverlays.add(overlay);
-		overlay.updateActivity(this);
+		mapOverlays.add(overlayMarker);
+		overlayMarker.updateActivity(this);
 		if (markerState == ENABLE_UPLOAD) {
-			overlay.initiateDragMarker(locator.getBestLocation());
+			overlayMarker.initiateDragMarker(locator.getBestLocation());
 			((MapView) findViewById(R.id.mapview)).invalidate();
 		}
 	}
@@ -493,6 +477,33 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	// ===========================================================
 	// Inner and Anonymous Classes
 	// ===========================================================
+
+	private class DownloadEventsTask extends AsyncTask<Void, Void, Void> {
+		@Override
+		protected void onPreExecute() {
+			showDialog(EVENT_DOWNLOAD_DIALOG);
+		}
+
+		@Override
+		protected Void doInBackground(Void... params) {
+			File eventsFile = Connector.downloadEvents();
+			try {
+				ArrayList<Event> events = getEvents(eventsFile.getPath());
+				eventsMarker = new EventsOverlay(events);
+				addOverlay(eventsMarker);
+				eventsMarker.updateActivity(activity);
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void none) {
+			dismissDialog(EVENT_DOWNLOAD_DIALOG);
+			loadEvents();
+		}
+	}
 
 	private class ProgressThread extends Thread {
 		private Handler mHandler;
@@ -512,7 +523,8 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			case REQUEST_DOWNLOAD_EVENTS:
 				File eventsFile = Connector.downloadEvents();
 				try {
-					events = getEvents(eventsFile.getPath());
+					ArrayList<Event> events = getEvents(eventsFile.getPath());
+					eventsMarker = new EventsOverlay(events);
 					Message msg2 = mHandler.obtainMessage();
 					msg2.arg1 = PROCESS_COMPLETE;
 					mHandler.sendMessage(msg2);
@@ -524,11 +536,12 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 				}
 				break;
 			case REQUEST_DOWNLOAD_REGIONS:
-				File regionFiles[] = Connector.downloadRegions(events
-						.get(eventIndex));
+				File regionFiles[] = Connector.downloadRegions(eventsMarker
+						.getEvents().get(eventsMarker.getEventIndex()));
 				for (int i = 0; i < regionFiles.length; i++) {
 					try {
-						overlay.addOverlay(getMarkers(regionFiles[i].getPath()));
+						overlayMarker.addOverlay(getMarkers(regionFiles[i]
+								.getPath()));
 					} catch (FileNotFoundException e) {
 
 						e.printStackTrace();
