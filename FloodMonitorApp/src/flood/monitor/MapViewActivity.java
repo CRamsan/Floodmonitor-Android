@@ -11,9 +11,15 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.AsyncTask;
@@ -21,17 +27,23 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.View.OnTouchListener;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.maps.GeoPoint;
+import com.google.android.maps.ItemizedOverlay;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
@@ -41,6 +53,7 @@ import com.google.android.maps.OverlayItem;
 import flood.monitor.modules.Connector;
 import flood.monitor.modules.Locator;
 import flood.monitor.modules.kmlparser.Event;
+import flood.monitor.modules.kmlparser.MarkerManager;
 import flood.monitor.modules.kmlparser.Parser;
 import flood.monitor.overlay.EventsOverlay;
 import flood.monitor.overlay.Marker;
@@ -431,7 +444,8 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	}
 
 	public void updateBestLocation() {
-		overlayMarker.updateBestLocation(locator.getBestLocation());
+		//overlayMarker.updateBestLocation(locator.getBestLocation());
+		eventsMarker.updateBestLocation(locator.getBestLocation());
 	}
 
 	private void onInstall() {
@@ -447,25 +461,25 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		MapView mapView = (MapView) findViewById(R.id.mapview);
 		mapView.setBuiltInZoomControls(true);
 		mapView.setSatellite(false);
-		Drawable drawable = this.getResources().getDrawable(
+		/*Drawable drawable = this.getResources().getDrawable(
 				R.drawable.marker_blue);
 		List<Overlay> mapOverlays = mapView.getOverlays();
 		overlayMarker = new MarkersOverlay(drawable);
 		mapOverlays.add(overlayMarker);
-		overlayMarker.updateActivity(this);
+		overlayMarker.updateActivity(this);*/
 		downloadEventDialog();
 	}
 
 	private void onRecreate() {
 		MapView mapView = (MapView) findViewById(R.id.mapview);
 		mapView.setBuiltInZoomControls(true);
-		List<Overlay> mapOverlays = mapView.getOverlays();
-		mapOverlays.add(overlayMarker);
+		/*List<Overlay> mapOverlays = mapView.getOverlays();
+		mapOverlays.add(overlayMarker); 
 		overlayMarker.updateActivity(this);
 		if (markerState == ENABLE_UPLOAD) {
 			overlayMarker.initiateDragMarker(locator.getBestLocation());
 			((MapView) findViewById(R.id.mapview)).invalidate();
-		}
+		}*/
 	}
 
 	private void downloadAllRegions(Event event) {
@@ -561,7 +575,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 
 		}
 	}
-
+	
 	// ===========================================================
 	// Debug
 	// ===========================================================

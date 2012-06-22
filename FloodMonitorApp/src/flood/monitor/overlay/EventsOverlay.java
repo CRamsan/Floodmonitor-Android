@@ -10,6 +10,7 @@ import android.graphics.Path;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -17,6 +18,7 @@ import android.widget.ImageView;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
+import com.google.android.maps.OverlayItem;
 import com.google.android.maps.Projection;
 
 import flood.monitor.R;
@@ -35,6 +37,7 @@ public class EventsOverlay extends Overlay {
 	private static ArrayList<Event> events;
 	private Activity activity;
 	private int eventIndex;
+	private OverlayItem currentLocationMarker;
 
 	// ===========================================================
 	// Constructors
@@ -71,27 +74,26 @@ public class EventsOverlay extends Overlay {
 		Paint mPaint = new Paint();
 		mPaint.setColor(Color.RED);
 		mPaint.setStyle(Paint.Style.FILL_AND_STROKE);
-		mPaint.setStrokeJoin(Paint.Join.ROUND);
-		mPaint.setStrokeCap(Paint.Cap.ROUND);
-		mPaint.setStrokeWidth(2);
+		mPaint.setAlpha(55);
 
 		Point nw = new Point();
-		Point ne = new Point();
 		Point se = new Point();
-		Point sw = new Point();
 
 		for (int i = 0; i < events.size(); i++) {
 			Event event = events.get(i);
 			((MapView) activity.findViewById(R.id.mapview)).getProjection()
 					.toPixels(event.getNw(), nw);
 			((MapView) activity.findViewById(R.id.mapview)).getProjection()
-					.toPixels(event.getNe(), ne);
+					.toPixels(event.getSe(), se);
+			canvas.drawRect(nw.x, nw.y, se.x, se.y, mPaint);
+			// canvas.drawRect(50, 50, 122, 532, mPaint);
+		}
+
+		if (currentLocationMarker != null) {
+			Point center = new Point();
 			((MapView) activity.findViewById(R.id.mapview)).getProjection()
-					.toPixels(event.getSe(), sw);
-			((MapView) activity.findViewById(R.id.mapview)).getProjection()
-					.toPixels(event.getSw(), se);
-			//canvas.drawRect(nw.x, nw.y, se.x, se.y, mPaint);
-			canvas.drawRect(50, 50, 122, 532, mPaint);
+					.toPixels(currentLocationMarker.getPoint(), center);
+			canvas.drawCircle(center.x, center.y, 15, mPaint);
 		}
 
 	}
@@ -115,7 +117,14 @@ public class EventsOverlay extends Overlay {
 		this.activity = newActivity;
 	}
 
-	private boolean checkHit(){
+	public void updateBestLocation(Location location) {
+		currentLocationMarker = new Marker(new GeoPoint(
+				(int) (location.getLatitude() * 1000000),
+				(int) (location.getLongitude() * 1000000)), "You are here",
+				"Description...", null, 0, 0, 0);
+	}
+
+	private boolean checkHit() {
 		return false;
 	}
 }

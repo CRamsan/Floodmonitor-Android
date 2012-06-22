@@ -199,12 +199,12 @@ public class Parser {
 						northWest, southEast);
 				this.regions.add(region);
 			} else if (qName.equalsIgnoreCase(NORTHWEST)) {
-				int lat = (int) (Double.parseDouble(temp.substring(0, temp.indexOf(",")))  * 1000000);
-				int lon = (int) (Double.parseDouble(temp.substring(temp.indexOf(",") + 1)) * 1000000);
+				int lon = (int) (Double.parseDouble(temp.substring(0, temp.indexOf(",")))  * 1000000);
+				int lat = (int) (Double.parseDouble(temp.substring(temp.indexOf(",") + 1)) * 1000000);
 				this.northWest = new GeoPoint(lat, lon);
 			} else if (qName.equalsIgnoreCase(SOUTHEAST)) {
-				int lat = (int) (Double.parseDouble(temp.substring(0, temp.indexOf(",")))  * 1000000);
-				int lon = (int) (Double.parseDouble(temp.substring(temp.indexOf(",") + 1)) * 1000000);
+				int lon = (int) (Double.parseDouble(temp.substring(0, temp.indexOf(",")))  * 1000000);
+				int lat = (int) (Double.parseDouble(temp.substring(temp.indexOf(",") + 1)) * 1000000);
 				this.southEast = new GeoPoint(lat, lon);
 			}
 			temp = "";
