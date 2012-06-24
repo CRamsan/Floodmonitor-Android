@@ -27,6 +27,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -74,9 +76,9 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	// STATES
 	public final static int ENABLE_MARKER = 0;
 	public final static int ENABLE_UPLOAD = 1;
-	public final static int MAP_EVENT_LEVEL = 0;
-	public final static int MAP_EVENT_REGION = 1;
-	public final static int MAP_EVENT_MARKER = 2;
+	public final static int MAP_LEVEL_EVENT = 0;
+	public final static int MAP_LEVEL_REGION = 1;
+	public final static int MAP_LEVEL_MARKER = 2;
 	// PROCESS STATES
 	public final static int PROCESS_RUNNING = 0;
 	public final static int PROCESS_COMPLETE = 1;
@@ -107,8 +109,10 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	private static EventsOverlay eventsMarker;
 
 	private MapViewActivity activity;
+	private LimitedMapView limitedMapView;
 
 	private int markerState;
+	public int mapLevel;
 	private boolean installedBefore;
 
 	// ===========================================================
@@ -130,6 +134,9 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		this.activity = this;
 
 		setContentView(R.layout.map);
+
+		limitedMapView = (LimitedMapView) findViewById(R.id.mapview);
+		limitedMapView.updateActivity(this);
 
 		locator = new Locator(this);
 		locator.updateOldLocation();
@@ -180,13 +187,10 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			}
 		});
 
+		downloadEventDialog();
+		
 		if (savedInstanceState != null) {
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-				getActionBar().setSubtitle(
-						savedInstanceState.getCharSequence(SUBTITLE_TEXT));
-			}
 			markerState = savedInstanceState.getInt(MARKER_STATE);
-			onRecreate();
 		} else {
 			markerState = ENABLE_MARKER;
 			SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
@@ -194,9 +198,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			if (installedBefore) {
 				onInstall();
 			}
-			onInitialize();
 		}
-		updateButton();
 	}
 
 	@Override
@@ -236,8 +238,15 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		overlayMarker.stopDragMarker();
-
+		switch (mapLevel) {
+		case MapViewActivity.MAP_LEVEL_EVENT:
+			break;
+		case MapViewActivity.MAP_LEVEL_REGION:
+			break;
+		case MapViewActivity.MAP_LEVEL_MARKER:
+			overlayMarker.stopDragMarker();
+			break;
+		}
 	}
 
 	@Override
@@ -444,7 +453,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	}
 
 	public void updateBestLocation() {
-		//overlayMarker.updateBestLocation(locator.getBestLocation());
+		// overlayMarker.updateBestLocation(locator.getBestLocation());
 		eventsMarker.updateBestLocation(locator.getBestLocation());
 	}
 
@@ -455,31 +464,6 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		editor.putBoolean(INSTALL_STATE, installedBefore);
 		editor.commit();
 		// create DB
-	}
-
-	private void onInitialize() {
-		MapView mapView = (MapView) findViewById(R.id.mapview);
-		mapView.setBuiltInZoomControls(true);
-		mapView.setSatellite(false);
-		/*Drawable drawable = this.getResources().getDrawable(
-				R.drawable.marker_blue);
-		List<Overlay> mapOverlays = mapView.getOverlays();
-		overlayMarker = new MarkersOverlay(drawable);
-		mapOverlays.add(overlayMarker);
-		overlayMarker.updateActivity(this);*/
-		downloadEventDialog();
-	}
-
-	private void onRecreate() {
-		MapView mapView = (MapView) findViewById(R.id.mapview);
-		mapView.setBuiltInZoomControls(true);
-		/*List<Overlay> mapOverlays = mapView.getOverlays();
-		mapOverlays.add(overlayMarker); 
-		overlayMarker.updateActivity(this);
-		if (markerState == ENABLE_UPLOAD) {
-			overlayMarker.initiateDragMarker(locator.getBestLocation());
-			((MapView) findViewById(R.id.mapview)).invalidate();
-		}*/
 	}
 
 	private void downloadAllRegions(Event event) {
@@ -503,7 +487,12 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			File eventsFile = Connector.downloadEvents();
 			try {
 				ArrayList<Event> events = getEvents(eventsFile.getPath());
-				eventsMarker = new EventsOverlay(events);
+				DisplayMetrics displaymetrics = new DisplayMetrics();
+				activity.getWindowManager().getDefaultDisplay()
+						.getMetrics(displaymetrics);
+				int height = displaymetrics.heightPixels;
+				int width = displaymetrics.widthPixels;
+				eventsMarker = new EventsOverlay(events, height, width);
 				addOverlay(eventsMarker);
 				eventsMarker.updateActivity(activity);
 			} catch (FileNotFoundException e) {
@@ -516,6 +505,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		protected void onPostExecute(Void none) {
 			dismissDialog(EVENT_DOWNLOAD_DIALOG);
 			loadEvents();
+			mapLevel = MAP_LEVEL_EVENT;
 		}
 	}
 
@@ -535,19 +525,16 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 
 			switch (request) {
 			case REQUEST_DOWNLOAD_EVENTS:
-				File eventsFile = Connector.downloadEvents();
-				try {
-					ArrayList<Event> events = getEvents(eventsFile.getPath());
-					eventsMarker = new EventsOverlay(events);
-					Message msg2 = mHandler.obtainMessage();
-					msg2.arg1 = PROCESS_COMPLETE;
-					mHandler.sendMessage(msg2);
-				} catch (FileNotFoundException e) {
-					Message msg3 = mHandler.obtainMessage();
-					msg3.arg1 = PROCESS_FAILED;
-					mHandler.sendMessage(msg3);
-					e.printStackTrace();
-				}
+				/*
+				 * File eventsFile = Connector.downloadEvents(); try {
+				 * ArrayList<Event> events = getEvents(eventsFile.getPath());
+				 * eventsMarker = new EventsOverlay(events); Message msg2 =
+				 * mHandler.obtainMessage(); msg2.arg1 = PROCESS_COMPLETE;
+				 * mHandler.sendMessage(msg2); } catch (FileNotFoundException e)
+				 * { Message msg3 = mHandler.obtainMessage(); msg3.arg1 =
+				 * PROCESS_FAILED; mHandler.sendMessage(msg3);
+				 * e.printStackTrace(); }
+				 */
 				break;
 			case REQUEST_DOWNLOAD_REGIONS:
 				File regionFiles[] = Connector.downloadRegions(eventsMarker
@@ -575,7 +562,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 
 		}
 	}
-	
+
 	// ===========================================================
 	// Debug
 	// ===========================================================

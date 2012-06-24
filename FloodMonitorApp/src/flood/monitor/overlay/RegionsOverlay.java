@@ -11,7 +11,6 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
-import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -26,7 +25,7 @@ import flood.monitor.R;
 import flood.monitor.modules.kmlparser.Event;
 import flood.monitor.modules.kmlparser.Region;
 
-public class EventsOverlay extends Overlay {
+public class RegionsOverlay extends Overlay {
 
 	// ===========================================================
 	// Constants
@@ -35,24 +34,16 @@ public class EventsOverlay extends Overlay {
 	// ===========================================================
 	// Fields
 	// ===========================================================
-	private static ArrayList<Event> events;
+	private static ArrayList<Region> regions;
 	private Activity activity;
 	private int eventIndex;
 	private OverlayItem currentLocationMarker;
 
-	private int height = 0;
-	private int width = 0;
-	private int x;
-	private int y;
-	private boolean moved;
-
 	// ===========================================================
 	// Constructors
 	// ===========================================================
-	public EventsOverlay(ArrayList<Event> events, int height, int width) {
-		this.events = events;
-		this.height = height;
-		this.width = width;
+	public RegionsOverlay(ArrayList<Region> regions) {
+		this.regions = regions;
 	}
 
 	// ===========================================================
@@ -66,12 +57,12 @@ public class EventsOverlay extends Overlay {
 		this.eventIndex = eventIndex;
 	}
 
-	public static ArrayList<Event> getEvents() {
-		return events;
+	public static ArrayList<Region> getRegions() {
+		return regions;
 	}
 
-	public static void setEvents(ArrayList<Event> events) {
-		EventsOverlay.events = events;
+	public static void setRegions(ArrayList<Region> regions) {
+		RegionsOverlay.regions = regions;
 	}
 
 	// ===========================================================
@@ -88,31 +79,12 @@ public class EventsOverlay extends Overlay {
 		Point nw = new Point();
 		Point se = new Point();
 
-		for (int i = 0; i < events.size(); i++) {
-			Event event = events.get(i);
+		for (int i = 0; i < regions.size(); i++) {
+			Region region = regions.get(i);
 			((MapView) activity.findViewById(R.id.mapview)).getProjection()
-					.toPixels(event.getNw(), nw);
+					.toPixels(region.getNw(), nw);
 			((MapView) activity.findViewById(R.id.mapview)).getProjection()
-					.toPixels(event.getSe(), se);
-			if (nw.x < 0)
-				nw.x = 0;
-			else if (nw.x > width)
-				nw.x = width;
-
-			if (nw.y < 0)
-				nw.y = 0;
-			else if (nw.y > height)
-				nw.y = height;
-
-			if (se.x > width)
-				se.x = width;
-			else if (se.x < 0)
-				se.x = 0;
-
-			if (se.y > height)
-				se.y = height;
-			else if (se.y < 0)
-				se.y = 0;
+					.toPixels(region.getSe(), se);
 			canvas.drawRect(nw.x, nw.y, se.x, se.y, mPaint);
 			// canvas.drawRect(50, 50, 122, 532, mPaint);
 		}
@@ -127,48 +99,11 @@ public class EventsOverlay extends Overlay {
 	}
 
 	@Override
-	public boolean onTouchEvent(MotionEvent e, MapView mapView) {
-		final int action = e.getAction();
-		if (action == MotionEvent.ACTION_DOWN) {
-			x = (int) e.getX();
-			y = (int) e.getY();
-			moved = false;
-			return false;
-		} else if (action == MotionEvent.ACTION_MOVE) {
-			moved = true;
-			return false;
-		} else if (action == MotionEvent.ACTION_UP) {
-			if (!moved) {
-				int hits = 0;
-				for (int i = 0; i < events.size(); i++) {
-					Event event = events.get(i);
-
-					GeoPoint p = mapView.getProjection().fromPixels(x, y);
-					
-					if (p.getLatitudeE6() < event.getNw().getLatitudeE6()
-							&& p.getLongitudeE6() > event.getNw()
-									.getLongitudeE6()
-							&& p.getLatitudeE6() > event.getSe()
-									.getLatitudeE6()
-							&& p.getLongitudeE6() < event.getSe()
-									.getLongitudeE6()) {
-						hits++;
-					}
-				}
-				if (hits == 0)
-					return false;
-				else if (hits == 1) {
-					return false;
-				} else {
-					return false
-							;
-				}
-			} else {
-				return false;
-			}
-		} else {
-			return (super.onTouchEvent(e, mapView));
-		}
+	public boolean onTouchEvent(MotionEvent event, MapView mapView) {
+		final int action = event.getAction();
+		final int x = (int) event.getX();
+		final int y = (int) event.getY();
+		return (super.onTouchEvent(event, mapView));
 	}
 
 	// ===========================================================
