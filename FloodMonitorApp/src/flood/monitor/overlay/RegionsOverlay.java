@@ -25,7 +25,7 @@ import flood.monitor.R;
 import flood.monitor.modules.kmlparser.Event;
 import flood.monitor.modules.kmlparser.Region;
 
-public class RegionsOverlay extends Overlay {
+public class RegionsOverlay extends Overlay implements IOverlay{
 
 	// ===========================================================
 	// Constants
@@ -126,5 +126,11 @@ public class RegionsOverlay extends Overlay {
 
 	private boolean checkHit() {
 		return false;
+	}
+
+	@Override
+	public void showMarkerDialog(int id) {
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -33,7 +33,7 @@ import flood.monitor.R;
 import flood.monitor.abstracts.ModuleEventListener;
 import flood.monitor.modules.kmlparser.MarkerManager;
 
-public class MarkersOverlay extends ItemizedOverlay<OverlayItem> {
+public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements IOverlay{
 
 	// ===========================================================
 	// Constants
@@ -132,33 +132,14 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> {
 			return true;
 		}
 
+		showMarkerDialog(index);
+		
 		/*
 		 * AlertDialog.Builder dialog = new AlertDialog.Builder(context);
 		 * dialog.setTitle(item.getTitle());
 		 * dialog.setMessage(item.getSnippet()); dialog.show();
 		 */
-		AlertDialog.Builder builder;
-		AlertDialog alertDialog;
 
-		Context mContext = activity;
-		LayoutInflater inflater = (LayoutInflater) mContext
-				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		View layout = inflater.inflate(R.layout.markerdialog,
-				(ViewGroup) (activity).findViewById(R.id.markerLayout));
-
-		TextView text = (TextView) layout.findViewById(R.id.textView1);
-		text.setText(item.getTitle());
-		ImageView image = (ImageView) layout.findViewById(R.id.imageView1);
-		String pathToFile = "/mnt/sdcard/FloodMonitor/.cache/cute_cat.jpeg";
-		image.setImageBitmap(BitmapFactory.decodeFile(pathToFile));
-		TextView text2 = (TextView) layout.findViewById(R.id.textView2);
-		text2.setText(item.getSnippet());
-
-		builder = new AlertDialog.Builder(mContext);
-		builder.setView(layout);
-		alertDialog = builder.create();
-		alertDialog.setCanceledOnTouchOutside(true);
-		alertDialog.show();
 		return true;
 	}
 
@@ -333,6 +314,33 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> {
 		isMarking = false;
 		mOverlays.remove(uploadLocationMarker);
 		populate();
+	}
+
+	@Override
+	public void showMarkerDialog(int id) {
+		AlertDialog.Builder builder;
+		AlertDialog alertDialog;
+
+		Context mContext = activity;
+		LayoutInflater inflater = (LayoutInflater) mContext
+				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		View layout = inflater.inflate(R.layout.markerdialog,
+				(ViewGroup) (activity).findViewById(R.id.markerLayout));
+
+		OverlayItem item = mOverlays.get(id);
+		TextView text = (TextView) layout.findViewById(R.id.textView1);
+		text.setText(item.getTitle());
+		ImageView image = (ImageView) layout.findViewById(R.id.imageView1);
+		String pathToFile = "/mnt/sdcard/FloodMonitor/.cache/cute_cat.jpeg";
+		image.setImageBitmap(BitmapFactory.decodeFile(pathToFile));
+		TextView text2 = (TextView) layout.findViewById(R.id.textView2);
+		text2.setText(item.getSnippet());
+
+		builder = new AlertDialog.Builder(mContext);
+		builder.setView(layout);
+		alertDialog = builder.create();
+		alertDialog.setCanceledOnTouchOutside(true);
+		alertDialog.show();
 	}
 
 }

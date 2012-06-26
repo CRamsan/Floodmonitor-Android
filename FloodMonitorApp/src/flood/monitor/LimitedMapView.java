@@ -2,6 +2,7 @@ package flood.monitor;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.ImageView;
@@ -52,7 +53,6 @@ public class LimitedMapView extends MapView {
 	// ========================================================================
 	@Override
 	public boolean onTouchEvent(MotionEvent ev) {
-
 		final int action = ev.getAction();
 		if (action == MotionEvent.ACTION_UP) {
 			switch (mapLevel) {
@@ -72,12 +72,11 @@ public class LimitedMapView extends MapView {
 		}
 	}
 
-
 	// ===========================================================
 	// Methods
 	// ===========================================================
 	public void updateActivity(MapViewActivity newActivity) {
 		this.activity = newActivity;
-		this.mapLevel = activity.mapLevel;
+		this.mapLevel = activity.getMapLevel();
 	}
 }

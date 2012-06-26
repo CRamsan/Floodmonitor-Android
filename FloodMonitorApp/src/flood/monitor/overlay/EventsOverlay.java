@@ -3,6 +3,9 @@ package flood.monitor.overlay;
 import java.util.ArrayList;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -12,9 +15,12 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.util.DisplayMetrics;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
@@ -22,11 +28,12 @@ import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
 import com.google.android.maps.Projection;
 
+import flood.monitor.LimitedMapView;
 import flood.monitor.R;
 import flood.monitor.modules.kmlparser.Event;
 import flood.monitor.modules.kmlparser.Region;
 
-public class EventsOverlay extends Overlay {
+public class EventsOverlay extends Overlay implements IOverlay {
 
 	// ===========================================================
 	// Constants
@@ -35,7 +42,7 @@ public class EventsOverlay extends Overlay {
 	// ===========================================================
 	// Fields
 	// ===========================================================
-	private static ArrayList<Event> events;
+	private ArrayList<Event> events;
 	private Activity activity;
 	private int eventIndex;
 	private OverlayItem currentLocationMarker;
@@ -66,12 +73,12 @@ public class EventsOverlay extends Overlay {
 		this.eventIndex = eventIndex;
 	}
 
-	public static ArrayList<Event> getEvents() {
+	public ArrayList<Event> getEvents() {
 		return events;
 	}
 
-	public static void setEvents(ArrayList<Event> events) {
-		EventsOverlay.events = events;
+	public void setEvents(ArrayList<Event> events) {
+		this.events = events;
 	}
 
 	// ===========================================================
@@ -90,31 +97,33 @@ public class EventsOverlay extends Overlay {
 
 		for (int i = 0; i < events.size(); i++) {
 			Event event = events.get(i);
-			((MapView) activity.findViewById(R.id.mapview)).getProjection()
-					.toPixels(event.getNw(), nw);
-			((MapView) activity.findViewById(R.id.mapview)).getProjection()
-					.toPixels(event.getSe(), se);
-			if (nw.x < 0)
-				nw.x = 0;
-			else if (nw.x > width)
-				nw.x = width;
+			for (int j = 0; j < event.getRegions().size(); j++) {
+				Region region = event.getRegion(j);
+				((LimitedMapView) activity.findViewById(R.id.mapview))
+						.getProjection().toPixels(region.getNw(), nw);
+				((LimitedMapView) activity.findViewById(R.id.mapview))
+						.getProjection().toPixels(region.getSe(), se);
+				if (nw.x < 0)
+					nw.x = 0;
+				else if (nw.x > width)
+					nw.x = width;
 
-			if (nw.y < 0)
-				nw.y = 0;
-			else if (nw.y > height)
-				nw.y = height;
+				if (nw.y < 0)
+					nw.y = 0;
+				else if (nw.y > height)
+					nw.y = height;
 
-			if (se.x > width)
-				se.x = width;
-			else if (se.x < 0)
-				se.x = 0;
+				if (se.x > width)
+					se.x = width;
+				else if (se.x < 0)
+					se.x = 0;
 
-			if (se.y > height)
-				se.y = height;
-			else if (se.y < 0)
-				se.y = 0;
-			canvas.drawRect(nw.x, nw.y, se.x, se.y, mPaint);
-			// canvas.drawRect(50, 50, 122, 532, mPaint);
+				if (se.y > height)
+					se.y = height;
+				else if (se.y < 0)
+					se.y = 0;
+				canvas.drawRect(nw.x, nw.y, se.x, se.y, mPaint);
+			}
 		}
 
 		if (currentLocationMarker != null) {
@@ -144,7 +153,7 @@ public class EventsOverlay extends Overlay {
 					Event event = events.get(i);
 
 					GeoPoint p = mapView.getProjection().fromPixels(x, y);
-					
+
 					if (p.getLatitudeE6() < event.getNw().getLatitudeE6()
 							&& p.getLongitudeE6() > event.getNw()
 									.getLongitudeE6()
@@ -155,13 +164,11 @@ public class EventsOverlay extends Overlay {
 						hits++;
 					}
 				}
-				if (hits == 0)
-					return false;
-				else if (hits == 1) {
+				if (hits == 0) {
 					return false;
 				} else {
-					return false
-							;
+					showMarkerDialog(eventIndex);
+					return false;
 				}
 			} else {
 				return false;
@@ -191,5 +198,30 @@ public class EventsOverlay extends Overlay {
 
 	private boolean checkHit() {
 		return false;
+	}
+
+	@Override
+	public void showMarkerDialog(int id) {
+		AlertDialog.Builder builder;
+		AlertDialog alertDialog;
+
+		Context mContext = activity;
+		LayoutInflater inflater = (LayoutInflater) mContext
+				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		View layout = inflater.inflate(R.layout.markerdialog,
+				(ViewGroup) (activity).findViewById(R.id.markerLayout));
+
+		TextView text = (TextView) layout.findViewById(R.id.textView1);
+		ImageView image = (ImageView) layout.findViewById(R.id.imageView1);
+		String pathToFile = "/mnt/sdcard/FloodMonitor/.cache/cute_cat.jpeg";
+		image.setImageBitmap(BitmapFactory.decodeFile(pathToFile));
+		TextView text2 = (TextView) layout.findViewById(R.id.textView2);
+
+		builder = new AlertDialog.Builder(mContext);
+		builder.setView(layout);
+		alertDialog = builder.create();
+		alertDialog.setCanceledOnTouchOutside(true);
+		alertDialog.show();
+		
 	}
 }
