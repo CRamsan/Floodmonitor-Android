@@ -11,6 +11,7 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
+import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -21,6 +22,7 @@ import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
 import com.google.android.maps.Projection;
 
+import flood.monitor.LimitedMapView;
 import flood.monitor.R;
 import flood.monitor.modules.kmlparser.Event;
 import flood.monitor.modules.kmlparser.Region;
@@ -38,6 +40,11 @@ public class RegionsOverlay extends Overlay implements IOverlay{
 	private Activity activity;
 	private int eventIndex;
 	private OverlayItem currentLocationMarker;
+	private int height = 0;
+	private int width = 0;
+	private int x;
+	private int y;
+	private boolean moved;
 
 	// ===========================================================
 	// Constructors
@@ -85,6 +92,28 @@ public class RegionsOverlay extends Overlay implements IOverlay{
 					.toPixels(region.getNw(), nw);
 			((MapView) activity.findViewById(R.id.mapview)).getProjection()
 					.toPixels(region.getSe(), se);
+			
+			if (nw.x < 0)
+				nw.x = 0;
+			else if (nw.x > width)
+				nw.x = width;
+
+			if (nw.y < 0)
+				nw.y = 0;
+			else if (nw.y > height)
+				nw.y = height;
+
+			if (se.x > width)
+				se.x = width;
+			else if (se.x < 0)
+				se.x = 0;
+
+			if (se.y > height)
+				se.y = height;
+			else if (se.y < 0)
+				se.y = 0;
+			
+			
 			canvas.drawRect(nw.x, nw.y, se.x, se.y, mPaint);
 			// canvas.drawRect(50, 50, 122, 532, mPaint);
 		}
@@ -101,9 +130,30 @@ public class RegionsOverlay extends Overlay implements IOverlay{
 	@Override
 	public boolean onTouchEvent(MotionEvent event, MapView mapView) {
 		final int action = event.getAction();
-		final int x = (int) event.getX();
-		final int y = (int) event.getY();
-		return (super.onTouchEvent(event, mapView));
+		if (action == MotionEvent.ACTION_DOWN) {
+			x = (int) event.getX();
+			y = (int) event.getY();
+			moved = false;
+			return false;
+		} else if (action == MotionEvent.ACTION_MOVE) {
+			moved = true;
+			return false;
+		} else if (action == MotionEvent.ACTION_UP) {
+			if (!moved) {
+				int hits = 0;
+				hits++;
+				if (hits == 0) {
+					return false;
+				} else {
+					showMarkerDialog(eventIndex);
+					return false;
+				}
+			} else {
+				return false;
+			}
+		} else {
+			return (super.onTouchEvent(event, mapView));
+		}
 	}
 
 	// ===========================================================
@@ -115,6 +165,11 @@ public class RegionsOverlay extends Overlay implements IOverlay{
 	// ===========================================================
 	public void updateActivity(Activity newActivity) {
 		this.activity = newActivity;
+		DisplayMetrics displaymetrics = new DisplayMetrics();
+		activity.getWindowManager().getDefaultDisplay()
+				.getMetrics(displaymetrics);
+		height = displaymetrics.heightPixels;
+		width = displaymetrics.widthPixels;
 	}
 
 	public void updateBestLocation(Location location) {

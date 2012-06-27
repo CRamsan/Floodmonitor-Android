@@ -56,10 +56,8 @@ public class EventsOverlay extends Overlay implements IOverlay {
 	// ===========================================================
 	// Constructors
 	// ===========================================================
-	public EventsOverlay(ArrayList<Event> events, int height, int width) {
+	public EventsOverlay(ArrayList<Event> events) {
 		this.events = events;
-		this.height = height;
-		this.width = width;
 	}
 
 	// ===========================================================
@@ -187,6 +185,11 @@ public class EventsOverlay extends Overlay implements IOverlay {
 	// ===========================================================
 	public void updateActivity(Activity newActivity) {
 		this.activity = newActivity;
+		DisplayMetrics displaymetrics = new DisplayMetrics();
+		activity.getWindowManager().getDefaultDisplay()
+				.getMetrics(displaymetrics);
+		height = displaymetrics.heightPixels;
+		width = displaymetrics.widthPixels;
 	}
 
 	public void updateBestLocation(Location location) {

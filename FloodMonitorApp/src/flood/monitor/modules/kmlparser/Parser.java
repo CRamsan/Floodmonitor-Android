@@ -464,4 +464,9 @@ public class Parser {
 			return mOverlay;
 		}
 	}
+
+	public ArrayList<Region> ParseGeoRegions(String filename, InputStream stream) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

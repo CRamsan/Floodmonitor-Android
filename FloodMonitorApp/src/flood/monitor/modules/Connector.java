@@ -34,6 +34,93 @@ public class Connector {
 	public static final String XML_COMMUNICATOR = "http://flood.cs.ndsu.nodak.edu/~ander773/flood/server/index.php";
 	public static final String DOWNLOAD_DIR = ".cache";
 
+	public static File downloadGeoRegions() {
+		File mediaStorageDir = new File(
+				Environment.getExternalStorageDirectory(), "FloodMonitor");
+		File world = new File(mediaStorageDir.getPath() + File.pathSeparator + DOWNLOAD_DIR + File.pathSeparator + "world.xml"); 
+		
+		OutputStreamWriter request = null;
+
+		try {
+			URL url = new URL("http://www.cesarandres.com/markers.xml");
+
+			/* Open a connection to that URL. */
+			HttpURLConnection ucon = (HttpURLConnection) url.openConnection();
+			ucon.setDoOutput(true);
+
+			request = new OutputStreamWriter(ucon.getOutputStream());
+			request.flush();
+			request.close();
+
+			/*
+			 * Define InputStreams to read from the URLConnection.
+			 */
+			InputStream is = ucon.getInputStream();
+			BufferedInputStream bis = new BufferedInputStream(is);
+
+			/*
+			 * Read bytes to the Buffer until there is nothing more to read(-1).
+			 */
+			ByteArrayBuffer baf = new ByteArrayBuffer(50);
+			int current = 0;
+			while ((current = bis.read()) != -1) {
+				baf.append((byte) current);
+			}
+
+			/* Convert the Bytes read to a String. */
+			FileOutputStream fos = new FileOutputStream(world);
+			fos.write(baf.toByteArray());
+			fos.close();
+
+		} catch (IOException e) {
+			Log.d("Connector", "Error: " + e);
+		}
+		
+		return world;
+		/*
+		for (int i = 0; i < event.getRegions().size(); i++) {
+			File file = new File(mediaStorageDir.getPath() + File.separator
+					+ DOWNLOAD_DIR + File.separator + subDir + File.separator
+					+ event.getRegions().get(i).getName() + ".kml");
+			if (!file.exists()) {
+
+				try {
+					URL url = new URL(event.getRegions().get(i).getKml());
+
+					/* Open a connection to that URL. */
+					/*HttpURLConnection ucon = (HttpURLConnection) url
+							.openConnection();
+
+					/*
+					 * Define InputStreams to read from the URLConnection.
+					 */
+					/*InputStream is = ucon.getInputStream();
+					BufferedInputStream bis = new BufferedInputStream(is);
+
+					/*
+					 * Read bytes to the Buffer until there is nothing more to
+					 * read(-1).
+					 */
+					/*ByteArrayBuffer baf = new ByteArrayBuffer(50);
+					int current = 0;
+					while ((current = bis.read()) != -1) {
+						baf.append((byte) current);
+					}
+
+					/* Convert the Bytes read to a String. */
+					/*FileOutputStream fos = new FileOutputStream(file);
+					fos.write(baf.toByteArray());
+					fos.close();
+					files[i] = file;
+
+				} catch (IOException e) {
+					Log.d("Connector", "Error: " + e);
+				}
+			}
+		}
+		return files;*/
+	}
+	
 	public static File downloadEvents() {
 		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss")
 				.format(new Date());

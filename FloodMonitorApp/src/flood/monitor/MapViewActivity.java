@@ -8,19 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Point;
-import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -28,36 +19,28 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
-import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnTouchListener;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.maps.GeoPoint;
-import com.google.android.maps.ItemizedOverlay;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
-import com.google.android.maps.OverlayItem;
 
 import flood.monitor.modules.Connector;
 import flood.monitor.modules.Locator;
 import flood.monitor.modules.kmlparser.Event;
-import flood.monitor.modules.kmlparser.MarkerManager;
 import flood.monitor.modules.kmlparser.Parser;
+import flood.monitor.modules.kmlparser.Region;
 import flood.monitor.overlay.EventsOverlay;
 import flood.monitor.overlay.IOverlay;
 import flood.monitor.overlay.Marker;
@@ -110,7 +93,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	// ===========================================================
 	private Locator locator;
 	private static MarkersOverlay markersOverlay;// 3
-	private static RegionsOverlay regionsOverlay;// 2
+	private static RegionsOverlay georegionsOverlay;// 2
 	private static EventsOverlay eventsOverlay;// 1
 	private static IOverlay selectedOverlay;
 
@@ -247,7 +230,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			selectedOverlay = eventsOverlay;
 			break;
 		case MapViewActivity.MAP_LEVEL_REGION:
-			selectedOverlay = regionsOverlay;
+			selectedOverlay = georegionsOverlay;
 			break;
 		case MapViewActivity.MAP_LEVEL_MARKER:
 			selectedOverlay = markersOverlay;
@@ -545,18 +528,13 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 
 		@Override
 		protected Void doInBackground(Void... params) {
-			File eventsFile = Connector.downloadEvents();
+			File eventsFile = Connector.downloadGeoRegions();
 			try {
-				ArrayList<Event> events = getEvents(eventsFile.getPath());
-				DisplayMetrics displaymetrics = new DisplayMetrics();
-				activity.getWindowManager().getDefaultDisplay()
-						.getMetrics(displaymetrics);
-				int height = displaymetrics.heightPixels;
-				int width = displaymetrics.widthPixels;
-				eventsOverlay = new EventsOverlay(events, height, width);
-				eventsOverlay.updateActivity(activity);
-				selectedOverlay = eventsOverlay;
-				addOverlay((EventsOverlay) selectedOverlay);
+				ArrayList<Region> regions = getGeoRegions(eventsFile.getPath());
+				georegionsOverlay = new RegionsOverlay(regions);
+				georegionsOverlay .updateActivity(activity);
+				selectedOverlay = georegionsOverlay;
+				addOverlay((RegionsOverlay) selectedOverlay);
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			}
@@ -655,6 +633,14 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		return parser.ParseEvents(filename, stream);
 	}
 
+	private ArrayList<Region> getGeoRegions(String filename)
+			throws FileNotFoundException {
+		InputStream stream = new FileInputStream(filename);
+		Parser parser = new Parser();
+		File file = new File(filename);
+		return parser.ParseGeoRegions(filename, stream);
+	}
+	
 	private void focus(Location locationToZoom, int level) {
 		MapView map = ((MapView) findViewById(R.id.mapview));
 		MapController mc = map.getController();
