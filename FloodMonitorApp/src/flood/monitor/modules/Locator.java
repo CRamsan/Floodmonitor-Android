@@ -2,11 +2,13 @@ package flood.monitor.modules;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import flood.monitor.MapViewActivity;
 
@@ -77,11 +79,15 @@ public class Locator {
 
 	public void startListening(Context context) {
 		if (!isLitening) {
-
-			locationManager.requestLocationUpdates(
-					LocationManager.GPS_PROVIDER, ONE_MINUTE, 10f,
-					locationListener);
-			isLitening = true;
+			SharedPreferences sharedPrefs = PreferenceManager
+					.getDefaultSharedPreferences(activity);
+			int updateInterval = Integer.parseInt(sharedPrefs.getString("updates_interval", "0"));
+			if (updateInterval != 0) {
+				locationManager.requestLocationUpdates(
+						LocationManager.GPS_PROVIDER, updateInterval, 10f,
+						locationListener);
+				isLitening = true;
+			}
 		}
 	}
 
@@ -193,12 +199,12 @@ public class Locator {
 					+ "Accuracy: " + location.getAccuracy());
 			Log.v("Locator", "Timestamp: " + location.getTime());
 			updateLocation(location);
-			((MapViewActivity) activity).runOnUiThread( new Runnable() {
-                public void run() {
-                	((MapViewActivity) activity).updateBestLocation();
-                }
-            });
-			
+			((MapViewActivity) activity).runOnUiThread(new Runnable() {
+				public void run() {
+					((MapViewActivity) activity).updateBestLocation();
+				}
+			});
+
 		}
 
 		@Override

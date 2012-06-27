@@ -161,7 +161,13 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		buttonLock.setOnClickListener(new Button.OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-				locator.updateListening(activity);
+				SharedPreferences sharedPrefs = PreferenceManager
+						.getDefaultSharedPreferences(activity);
+				boolean useGPS = sharedPrefs.getBoolean("pref_GPSEnabled",
+						false);
+				if (useGPS) {
+					locator.updateListening(activity);
+				}
 				switch (mapLevel) {
 				case MapViewActivity.MAP_LEVEL_EVENT:
 					focus(locator.getBestLocation(), 9);
@@ -253,12 +259,18 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		updateButton();
-		locator.startListening(this);
 		SharedPreferences sharedPrefs = PreferenceManager
 				.getDefaultSharedPreferences(this);
-		boolean useSatellite = sharedPrefs.getBoolean("pref_UseSatellite", false);
-			limitedMapView.setSatellite(useSatellite);
+
+		boolean useGPS = sharedPrefs.getBoolean("pref_GPSEnabled", false);
+		if (useGPS) {
+			locator.startListening(this);
+		}
+		boolean useSatellite = sharedPrefs.getBoolean("pref_UseSatellite",
+				false);
+		limitedMapView.setSatellite(useSatellite);
+		limitedMapView.invalidate();
+		updateButton();
 		// The activity has become visible (it is now "resumed").
 	}
 

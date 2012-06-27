@@ -15,11 +15,6 @@
             android:summary="@string/pref_UpdateInterval_summary"
             android:title="@string/pref_UpdateInterval_title" />
 
-        <Preference
-            android:dependency="pref_GPSEnabled"
-            android:key="pref_UpdateNow"
-            android:summary="@string/pref_UpdateNow_summary"
-            android:title="@string/pref_UpdateNow_title" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_DataStorage" >
         <Preference
