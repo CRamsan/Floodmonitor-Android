@@ -487,16 +487,13 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 						public void run() {
 							dismissDialog(REGION_DOWNLOAD_DIALOG);
 							Toast.makeText(activity,
-									"Download of regions failed", 500).show();
+									"Download of regions failed", Toast.LENGTH_SHORT).show();
 						}
 					});
 				}
 			}
 		};
 
-		ProgressThread progressThread = new ProgressThread(
-				downloadRegionsDialogHandler, REQUEST_DOWNLOAD_REGIONS);
-		progressThread.start();
 	}
 
 	public void updateBestLocation() {
@@ -558,60 +555,6 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		protected void onPostExecute(Void none) {
 			mapLevel = MAP_LEVEL_EVENT;
 			dismissDialog(EVENT_DOWNLOAD_DIALOG);
-		}
-	}
-
-	private class ProgressThread extends Thread {
-		private Handler mHandler;
-		private int request;
-
-		public ProgressThread(Handler h, int request) {
-			this.mHandler = h;
-			this.request = request;
-		}
-
-		public void run() {
-			Message msg1 = mHandler.obtainMessage();
-			msg1.arg1 = PROCESS_RUNNING;
-			mHandler.sendMessage(msg1);
-
-			switch (request) {
-			case REQUEST_DOWNLOAD_EVENTS:
-				/*
-				 * File eventsFile = Connector.downloadEvents(); try {
-				 * ArrayList<Event> events = getEvents(eventsFile.getPath());
-				 * eventsMarker = new EventsOverlay(events); Message msg2 =
-				 * mHandler.obtainMessage(); msg2.arg1 = PROCESS_COMPLETE;
-				 * mHandler.sendMessage(msg2); } catch (FileNotFoundException e)
-				 * { Message msg3 = mHandler.obtainMessage(); msg3.arg1 =
-				 * PROCESS_FAILED; mHandler.sendMessage(msg3);
-				 * e.printStackTrace(); }
-				 */
-				break;
-			case REQUEST_DOWNLOAD_REGIONS:
-				File regionFiles[] = Connector.downloadRegions(eventsOverlay
-						.getEvents().get(eventsOverlay.getEventIndex()));
-				for (int i = 0; i < regionFiles.length; i++) {
-					try {
-						markersOverlay.addOverlay(getMarkers(regionFiles[i]
-								.getPath()));
-					} catch (FileNotFoundException e) {
-
-						e.printStackTrace();
-					}
-				}
-				Message msg2 = mHandler.obtainMessage();
-				msg2.arg1 = PROCESS_COMPLETE;
-				mHandler.sendMessage(msg2);
-				break;
-			case REQUEST_DOWNLOAD_MARKERS:
-
-				break;
-
-			default:
-				break;
-			}
-
 		}
 	}
 

@@ -45,7 +45,8 @@
         <EditText
             android:id="@+id/commentText"
             android:layout_width="match_parent"
-            android:layout_height="94dp" />
+            android:layout_height="94dp"
+            android:inputType="" />
 
         <TextView
             android:id="@+id/pictureView"
@@ -96,20 +97,19 @@
             android:layout_height="wrap_content" >
 
             <Button
-                android:id="@+id/submitButton"
+                android:id="@+id/cancelButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="right"
-                android:text="@string/text_Submit" />
+                android:text="@string/text_Cancel" />
 
             <Button
-                android:id="@+id/cancelButton"
+                android:id="@+id/submitButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentTop="true"
-                android:text="@string/text_Cancel" />
-
+                android:text="@string/text_Submit" />
         </RelativeLayout>
     </LinearLayout>
 
