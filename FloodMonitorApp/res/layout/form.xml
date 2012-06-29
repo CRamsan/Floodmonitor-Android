@@ -46,7 +46,7 @@
             android:id="@+id/commentText"
             android:layout_width="match_parent"
             android:layout_height="94dp"
-            android:inputType="" />
+            android:inputType="text" />
 
         <TextView
             android:id="@+id/pictureView"
