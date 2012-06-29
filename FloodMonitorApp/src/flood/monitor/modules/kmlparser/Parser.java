@@ -92,6 +92,11 @@ public class Parser {
 		return handler.getResult();
 	}
 
+	public ArrayList<Region> ParseGeoRegions(String filename, InputStream stream) {
+		ArrayList<Region> regions = new ArrayList<Region>();
+		return  regions;
+	}
+	
 	private class EventHandler extends DefaultHandler {
 
 		private static final String EVENTS = "events";
@@ -463,10 +468,5 @@ public class Parser {
 		public ArrayList<Marker> getResult() {
 			return mOverlay;
 		}
-	}
-
-	public ArrayList<Region> ParseGeoRegions(String filename, InputStream stream) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 }

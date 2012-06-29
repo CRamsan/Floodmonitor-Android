@@ -329,7 +329,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			startActivity(intent);
 			return true;
 		case android.R.id.home:
-			downloadEventDialog();
+			//downloadEventDialog();
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);

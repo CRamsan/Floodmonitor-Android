@@ -2,24 +2,30 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
+        android:id="@+id/menuItemSearch"
+        android:actionViewClass="android.widget.SearchView"
+        android:icon="@drawable/menuitem_search"
+        android:showAsAction="always|withText|collapseActionView"
+        android:title="Look For Address"/>
+    <item
         android:id="@+id/menuItemSettings"
-        android:showAsAction="withText|ifRoom"
-        android:title="@string/text_Settings">
-    </item>
+        android:icon="@drawable/menuitem_settings"
+        android:showAsAction="ifRoom|withText"
+        android:title="@string/text_Settings"/>
     <item
         android:id="@+id/menuItemHelp"
-        android:showAsAction="withText|ifRoom"
-        android:title="@string/text_Help">
-    </item>
+        android:icon="@drawable/menuitem_help"
+        android:showAsAction="ifRoom|withText"
+        android:title="@string/text_Help"/>
     <item
         android:id="@+id/menuItemAbout"
-        android:showAsAction="withText|ifRoom"
-        android:title="@string/text_About">
-    </item>
+        android:icon="@drawable/menuitem_about"
+        android:showAsAction="ifRoom|withText"
+        android:title="@string/text_About"/>
     <item
         android:id="@+id/menuItemExit"
-        android:showAsAction="withText|ifRoom"
-        android:title="@string/text_Exit">
-    </item>
+        android:icon="@drawable/menuitem_exit"
+        android:showAsAction="ifRoom|withText"
+        android:title="@string/text_Exit"/>
 
 </menu>
