@@ -7,12 +7,17 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -414,13 +419,14 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			((MapView) findViewById(R.id.mapview)).invalidate();
 		}
 	}
-
+	
 	@Override
+	@TargetApi(11)
+	@SuppressLint("NewApi")
 	public void onSaveInstanceState(Bundle savedInstanceState) {
 
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-			savedInstanceState.putCharSequence(SUBTITLE_TEXT, getActionBar()
-					.getSubtitle());
+			savedInstanceState.putCharSequence(SUBTITLE_TEXT, getActionBar().getSubtitle());
 		}
 		savedInstanceState.putInt(MARKER_STATE, markerState);
 		savedInstanceState.putInt(OVERLAY_STATE, mapLevel);
@@ -493,10 +499,6 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		progressThread.start();
 	}
 
-	public void loadEvents() {
-
-	}
-
 	public void updateBestLocation() {
 		selectedOverlay.updateBestLocation(locator.getBestLocation());
 	}
@@ -528,11 +530,22 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 
 		@Override
 		protected Void doInBackground(Void... params) {
-			File eventsFile = Connector.downloadGeoRegions();
+			ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+			NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+			File eventsFile = null;
+			if (networkInfo != null && networkInfo.isConnected()) {
+				eventsFile = Connector.downloadGeoRegions();
+			} else {
+				
+			}
+			if(eventsFile == null)
+			{
+				return null;
+			}
 			try {
 				ArrayList<Region> regions = getGeoRegions(eventsFile.getPath());
 				georegionsOverlay = new RegionsOverlay(regions);
-				georegionsOverlay .updateActivity(activity);
+				georegionsOverlay.updateActivity(activity);
 				selectedOverlay = georegionsOverlay;
 				addOverlay((RegionsOverlay) selectedOverlay);
 			} catch (FileNotFoundException e) {
@@ -543,7 +556,6 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 
 		@Override
 		protected void onPostExecute(Void none) {
-			loadEvents();
 			mapLevel = MAP_LEVEL_EVENT;
 			dismissDialog(EVENT_DOWNLOAD_DIALOG);
 		}
@@ -640,7 +652,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		File file = new File(filename);
 		return parser.ParseGeoRegions(filename, stream);
 	}
-	
+
 	private void focus(Location locationToZoom, int level) {
 		MapView map = ((MapView) findViewById(R.id.mapview));
 		MapController mc = map.getController();
@@ -676,6 +688,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 
 	public static class ActivityUtil {
 
+		@SuppressLint("NewApi")
 		public static void updateOptionsMenu(Activity activity) {
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 				activity.invalidateOptionsMenu();

@@ -18,7 +18,7 @@ public class AboutActivity extends Activity {
 		setContentView(R.layout.about);
 
 	    mWebView = (WebView) findViewById(R.id.aboutWebView);
-	    mWebView.getSettings().setJavaScriptEnabled(true);
+	    mWebView.getSettings().setJavaScriptEnabled(false);
 	    mWebView.loadUrl(this.getString(R.string.text_AboutURL));
 	    mWebView.setWebViewClient(new AboutWebViewClient());
 	}

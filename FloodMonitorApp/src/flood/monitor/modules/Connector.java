@@ -374,8 +374,7 @@ public class Connector {
 			}
 			in.close();
 		} catch (Exception ex) {
-			Toast.makeText(context, "Error Message: " + ex.getMessage(), 5000)
-					.show();
+			Toast.makeText(context, "Error Message: " + ex.getMessage(), Toast.LENGTH_SHORT).show();
 		}
 	}
 
@@ -446,7 +445,7 @@ public class Connector {
 			outputStream.flush();
 			outputStream.close();
 		} catch (Exception ex) {
-			Toast.makeText(context, "Error Message: " + ex.getMessage(), 5000)
+			Toast.makeText(context, "Error Message: " + ex.getMessage(), Toast.LENGTH_SHORT)
 					.show();
 		}
 	}
