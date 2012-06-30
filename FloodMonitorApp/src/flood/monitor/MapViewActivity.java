@@ -48,6 +48,7 @@ import flood.monitor.modules.kmlparser.Parser;
 import flood.monitor.modules.kmlparser.Region;
 import flood.monitor.overlay.EventsOverlay;
 import flood.monitor.overlay.IOverlay;
+import flood.monitor.overlay.LimitedMapView;
 import flood.monitor.overlay.Marker;
 import flood.monitor.overlay.MarkersOverlay;
 import flood.monitor.overlay.RegionsOverlay;

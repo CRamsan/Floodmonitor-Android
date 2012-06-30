@@ -94,9 +94,20 @@ public class Parser {
 
 	public ArrayList<Region> ParseGeoRegions(String filename, InputStream stream) {
 		ArrayList<Region> regions = new ArrayList<Region>();
-		return  regions;
+		Region gegionA = new Region(0, "Fargo", new GeoPoint(47369500, -99059500), 
+												new GeoPoint(46755800, -98109200));
+		Event event = new Event(gegionA.getRegionId(), "Fargo", true, "sdf", "sad", null);
+		Region gegionB = new Region(0, "Test1", new GeoPoint(46369500,-100059500), 
+												new GeoPoint(45755800, -99109200));
+		Region gegionC = new Region(0, "Test3", new GeoPoint(46369500,-101259500), 
+												new GeoPoint(45755800,-100109200));
+
+		regions.add(gegionA);
+		regions.add(gegionB);
+		regions.add(gegionC);
+		return regions;
 	}
-	
+
 	private class EventHandler extends DefaultHandler {
 
 		private static final String EVENTS = "events";
@@ -204,12 +215,16 @@ public class Parser {
 						northWest, southEast);
 				this.regions.add(region);
 			} else if (qName.equalsIgnoreCase(NORTHWEST)) {
-				int lon = (int) (Double.parseDouble(temp.substring(0, temp.indexOf(",")))  * 1000000);
-				int lat = (int) (Double.parseDouble(temp.substring(temp.indexOf(",") + 1)) * 1000000);
+				int lon = (int) (Double.parseDouble(temp.substring(0,
+						temp.indexOf(","))) * 1000000);
+				int lat = (int) (Double.parseDouble(temp.substring(temp
+						.indexOf(",") + 1)) * 1000000);
 				this.northWest = new GeoPoint(lat, lon);
 			} else if (qName.equalsIgnoreCase(SOUTHEAST)) {
-				int lon = (int) (Double.parseDouble(temp.substring(0, temp.indexOf(",")))  * 1000000);
-				int lat = (int) (Double.parseDouble(temp.substring(temp.indexOf(",") + 1)) * 1000000);
+				int lon = (int) (Double.parseDouble(temp.substring(0,
+						temp.indexOf(","))) * 1000000);
+				int lat = (int) (Double.parseDouble(temp.substring(temp
+						.indexOf(",") + 1)) * 1000000);
 				this.southEast = new GeoPoint(lat, lon);
 			}
 			temp = "";

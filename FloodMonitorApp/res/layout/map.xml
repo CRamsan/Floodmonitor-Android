@@ -5,7 +5,7 @@
     android:layout_height="fill_parent"
     tools:context=".MapViewActivity" >
 
-    <flood.monitor.LimitedMapView
+    <flood.monitor.overlay.LimitedMapView
         android:id="@+id/mapview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

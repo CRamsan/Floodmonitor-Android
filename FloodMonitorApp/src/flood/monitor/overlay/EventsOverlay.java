@@ -28,7 +28,6 @@ import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
 import com.google.android.maps.Projection;
 
-import flood.monitor.LimitedMapView;
 import flood.monitor.R;
 import flood.monitor.modules.kmlparser.Event;
 import flood.monitor.modules.kmlparser.Region;

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 import com.google.android.maps.GeoPoint;
 
+import flood.monitor.overlay.Marker;
+
 public class Event {
 
 	private String beginDate;
@@ -15,6 +17,7 @@ public class Event {
 	private GeoPoint se;
 
 	private ArrayList<Region> regions;
+	private ArrayList<Marker> markers;
 
 	public Event(int regionId, String name, boolean active, String beginDate,
 			String endDate, ArrayList<Region> regions) {
@@ -23,9 +26,9 @@ public class Event {
 		this.name = name;
 		this.regionId = regionId;
 		this.active = active;
-		this.regions = regions;
+		//this.regions = regions;
 
-		int north = 0;
+		/*int north = 0;
 		int east = 0;
 		int south = 0;
 		int west = 0;
@@ -48,7 +51,7 @@ public class Event {
 			}
 		}
 		nw = new GeoPoint(north, west);
-		se = new GeoPoint(south, east);
+		se = new GeoPoint(south, east);*/
 	}
 
 	public String getName() {
