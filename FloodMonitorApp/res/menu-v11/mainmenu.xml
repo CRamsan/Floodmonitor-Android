@@ -3,6 +3,7 @@
 
     <item
         android:id="@+id/menuItemSearch"
+        android:actionViewClass="android.widget.SearchView"
         android:icon="@drawable/menuitem_search"
         android:showAsAction="always|withText|collapseActionView"
         android:title="Look For Address"/>

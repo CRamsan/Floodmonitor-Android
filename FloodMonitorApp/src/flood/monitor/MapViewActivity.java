@@ -3,6 +3,7 @@ package flood.monitor;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,10 +12,14 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.ListActivity;
 import android.app.ProgressDialog;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -31,8 +36,13 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
+import android.widget.Adapter;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ListAdapter;
+import android.widget.SearchView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.maps.GeoPoint;
@@ -77,6 +87,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	public final static int PROCESS_FAILED = 2;
 	// REQUEST CODES
 	public final static int PROCESS_REQUEST = 100;
+	public final static int SEARCH_REQUEST = 200;
 	public final static int REQUEST_DOWNLOAD_EVENTS = 500;
 	public final static int REQUEST_DOWNLOAD_REGIONS = 600;
 	public final static int REQUEST_DOWNLOAD_MARKERS = 700;
@@ -98,6 +109,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	// Fields
 	// ===========================================================
 	private Locator locator;
+	private Geocoder geocoder;
 	private static MarkersOverlay markersOverlay;// 3
 	private static RegionsOverlay georegionsOverlay;// 2
 	private static EventsOverlay eventsOverlay;// 1
@@ -146,6 +158,8 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		locator = new Locator(this);
 		locator.updateOldLocation();
 
+		geocoder = new Geocoder(this);
+		
 		ImageButton buttonLock = (ImageButton) findViewById(R.id.buttonLock);
 		buttonLock.setOnClickListener(new Button.OnClickListener() {
 			@Override
@@ -226,6 +240,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			}
 			downloadEventDialog();
 		}
+
 	}
 
 	@Override
@@ -314,6 +329,9 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		// Handle item selection
 		Intent intent = null;
 		switch (item.getItemId()) {
+		case R.id.menuItemSearch:// Settings
+			onSearchRequested();
+			return true;
 		case R.id.menuItemSettings:// Settings
 			intent = new Intent(MapViewActivity.this, SettingsActivity.class);
 			startActivity(intent);
@@ -330,13 +348,30 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			startActivity(intent);
 			return true;
 		case android.R.id.home:
-			//downloadEventDialog();
+			// downloadEventDialog();
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
 	}
 
+	@Override
+	public boolean onSearchRequested() {
+		String query =  ((SearchView)findViewById(R.id.menuItemSearch)).getQuery().toString();
+		try {
+			List<Address> addressList = geocoder.getFromLocationName(query,5);
+			ArrayAdapter<Address> adapter = new ArrayAdapter<Address>(activity, R.layout.searchresult, addressList);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Bundle appData = new Bundle();
+	     appData.putBoolean("", true);
+	     startSearch(null, false, appData, false);
+	    return super.onSearchRequested();
+	}
+	
+	
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
 		return false;
@@ -420,14 +455,15 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			((MapView) findViewById(R.id.mapview)).invalidate();
 		}
 	}
-	
+
 	@Override
 	@TargetApi(11)
 	@SuppressLint("NewApi")
 	public void onSaveInstanceState(Bundle savedInstanceState) {
 
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-			savedInstanceState.putCharSequence(SUBTITLE_TEXT, getActionBar().getSubtitle());
+			savedInstanceState.putCharSequence(SUBTITLE_TEXT, getActionBar()
+					.getSubtitle());
 		}
 		savedInstanceState.putInt(MARKER_STATE, markerState);
 		savedInstanceState.putInt(OVERLAY_STATE, mapLevel);
@@ -488,7 +524,8 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 						public void run() {
 							dismissDialog(REGION_DOWNLOAD_DIALOG);
 							Toast.makeText(activity,
-									"Download of regions failed", Toast.LENGTH_SHORT).show();
+									"Download of regions failed",
+									Toast.LENGTH_SHORT).show();
 						}
 					});
 				}
@@ -534,10 +571,9 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			if (networkInfo != null && networkInfo.isConnected()) {
 				eventsFile = Connector.downloadGeoRegions();
 			} else {
-				
+
 			}
-			if(eventsFile == null)
-			{
+			if (eventsFile == null) {
 				return null;
 			}
 			try {
