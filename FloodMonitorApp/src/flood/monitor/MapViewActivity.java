@@ -159,7 +159,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		locator.updateOldLocation();
 
 		geocoder = new Geocoder(this);
-		
+
 		ImageButton buttonLock = (ImageButton) findViewById(R.id.buttonLock);
 		buttonLock.setOnClickListener(new Button.OnClickListener() {
 			@Override
@@ -355,23 +355,6 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		}
 	}
 
-	@Override
-	public boolean onSearchRequested() {
-		String query =  ((SearchView)findViewById(R.id.menuItemSearch)).getQuery().toString();
-		try {
-			List<Address> addressList = geocoder.getFromLocationName(query,5);
-			ArrayAdapter<Address> adapter = new ArrayAdapter<Address>(activity, R.layout.searchresult, addressList);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		Bundle appData = new Bundle();
-	     appData.putBoolean("", true);
-	     startSearch(null, false, appData, false);
-	    return super.onSearchRequested();
-	}
-	
-	
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
 		return false;
@@ -676,5 +659,35 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 
 			}
 		}
+	}
+
+	public static class SearchActivity extends ListActivity {
+
+		/** Called when the activity is first created. */
+		@Override
+		public void onCreate(Bundle savedInstanceState) {
+			super.onCreate(savedInstanceState);
+			// setContentView(R.layout.search);
+
+			// Get the intent, verify the action and get the query
+			Intent intent = getIntent();
+			if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+				String query = intent.getStringExtra(SearchManager.QUERY);
+				//search(query);
+			}
+		}
+
+		//public void search(String query) {
+			/*
+			 * try { List<Address> addressList =
+			 * geocoder.getFromLocationName(query, 5); ArrayAdapter<Address>
+			 * adapter = new ArrayAdapter<Address>(activity,
+			 * R.layout.searchresult, addressList); setListAdapter(adapter); }
+			 * catch (IOException e) { // TODO Auto-generated catch block
+			 * e.printStackTrace(); }
+			 */
+
+		//}
+
 	}
 }

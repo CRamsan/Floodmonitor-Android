@@ -19,7 +19,7 @@
         android:theme="@style/ThemeSelector" >
         <uses-library android:name="com.google.android.maps" />
 
-        <activity android:name=".MapViewActivity" android:launchMode="singleTop">
+        <activity android:name=".MapViewActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -28,7 +28,7 @@
 
             <meta-data
                 android:name="android.app.default_searchable"
-                android:value=".SearchActivity" />
+                android:value=".MapViewActivity$SearchActivity" />
         </activity>
         <activity
             android:name=".UploadFormActivity"
@@ -41,7 +41,7 @@
         <activity android:name=".HelpActivity" >
         </activity>
         <activity
-            android:name=".SearchActivity"
+            android:name="MapViewActivity$SearchActivity"
             android:theme="@style/ThemeSelectorDialog" >
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />

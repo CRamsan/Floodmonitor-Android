@@ -68,7 +68,7 @@ import flood.monitor.overlay.RegionsOverlay;
  * @version 25/05/12
  */
 
-public class SearchActivity extends ListActivity {
+public class SearchActivity2 extends ListActivity {
 
 	/** Called when the activity is first created. */
 	@Override
