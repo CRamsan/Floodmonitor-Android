@@ -104,6 +104,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	public final static String MARKER_STATE = "markerState";
 	public final static String OVERLAY_STATE = "overlayState";
 	public final static String SUBTITLE_TEXT = "subtitleText";
+	public final static String SEARCH_TEXT = "searchText";
 
 	// ===========================================================
 	// Fields
@@ -428,6 +429,12 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	}
 
 	@Override
+	public boolean onSearchRequested() {
+	     ActivityUtil.updateOptionsMenu(activity);
+	     return super.onSearchRequested();
+	 }
+	
+	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 
@@ -450,7 +457,8 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		}
 		savedInstanceState.putInt(MARKER_STATE, markerState);
 		savedInstanceState.putInt(OVERLAY_STATE, mapLevel);
-
+		//savedInstanceState.putString(SEARCH_TEXT, mapLevel);
+		
 		super.onSaveInstanceState(savedInstanceState);
 	}
 
@@ -676,7 +684,9 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 				//search(query);
 			}
 		}
-
+		
+		
+		
 		//public void search(String query) {
 			/*
 			 * try { List<Address> addressList =

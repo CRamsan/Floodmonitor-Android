@@ -42,7 +42,7 @@
         </activity>
         <activity
             android:name="MapViewActivity$SearchActivity"
-            android:theme="@style/ThemeSelectorDialog" >
+            android:theme="@style/ThemeSelectorDialog">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
