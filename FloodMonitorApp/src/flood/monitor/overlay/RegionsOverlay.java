@@ -48,6 +48,8 @@ public class RegionsOverlay extends Overlay implements IOverlay {
 	private Activity activity;
 	private int index;
 	private RegionsOverlay overlay = this;
+	private Location currentLocation;
+	private Drawable currentLocationDrawable;
 	private OverlayItem currentLocationMarker;
 	private int height = 0;
 	private int width = 0;
@@ -128,8 +130,13 @@ public class RegionsOverlay extends Overlay implements IOverlay {
 
 		if (currentLocationMarker != null) {
 			Point center = new Point();
-			((MapView) activity.findViewById(R.id.mapview)).getProjection()
-					.toPixels(currentLocationMarker.getPoint(), center);
+			((MapView) activity.findViewById(R.id.mapview))
+					.getProjection()
+					.toPixels(
+							new GeoPoint(
+									(int) (currentLocation.getLatitude() * 1000000),
+									(int) (currentLocation.getLongitude()) * 1000000),
+							center);
 			canvas.drawCircle(center.x, center.y, 15, mPaint);
 		}
 
@@ -184,6 +191,13 @@ public class RegionsOverlay extends Overlay implements IOverlay {
 				(int) (location.getLatitude() * 1000000),
 				(int) (location.getLongitude() * 1000000)), "You are here",
 				"Description...", null, 0, 0, 0);
+		Drawable icon = activity.getResources()
+				.getDrawable(R.drawable.location);
+		icon.setBounds(-icon.getIntrinsicWidth() / 2,
+				-icon.getIntrinsicHeight(), icon.getIntrinsicWidth() / 2, 0);
+		currentLocationMarker.setMarker(icon);
+		currentLocation = location;
+		currentLocationDrawable = icon;
 	}
 
 	private int checkHit(GeoPoint p) {
@@ -205,16 +219,16 @@ public class RegionsOverlay extends Overlay implements IOverlay {
 		AlertDialog.Builder builder;
 		AlertDialog alertDialog;
 
-		Context mContext = activity;		
+		Context mContext = activity;
 		builder = new AlertDialog.Builder(mContext);
-		
-		final CharSequence[] items = {"Red", "Green", "Blue"};
+
+		final CharSequence[] items = { "Red", "Green", "Blue" };
 
 		builder.setTitle("Choose the event to load");
 		builder.setItems(items, new DialogInterface.OnClickListener() {
-		    public void onClick(DialogInterface dialog, int item) {
-		        ((MapViewActivity)activity).downloadEventsDialog(id);
-		    }
+			public void onClick(DialogInterface dialog, int item) {
+				((MapViewActivity) activity).downloadEventsDialog(id);
+			}
 		});
 		alertDialog = builder.create();
 		alertDialog.setCanceledOnTouchOutside(true);

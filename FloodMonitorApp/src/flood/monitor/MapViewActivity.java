@@ -27,23 +27,17 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.preference.PreferenceManager;
-import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
-import android.widget.Adapter;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ListAdapter;
-import android.widget.SearchView;
-import android.widget.TextView;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.android.maps.GeoPoint;
@@ -111,13 +105,13 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	// Fields
 	// ===========================================================
 	private Locator locator;
-	private Geocoder geocoder;
+	private static Geocoder geocoder;
 	private static MarkersOverlay markersOverlay;// 3
 	private static RegionsOverlay georegionsOverlay;// 2
 	private static EventsOverlay eventsOverlay;// 1
 	private static IOverlay selectedOverlay;
 
-	private MapViewActivity activity;
+	private static MapViewActivity activity;
 	private LimitedMapView limitedMapView;
 
 	private int markerState;
@@ -150,7 +144,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		 * configuration change(screen rotation).
 		 */
 
-		this.activity = this;
+		MapViewActivity.activity = this;
 		setContentView(R.layout.map);
 
 		limitedMapView = (LimitedMapView) findViewById(R.id.mapview);
@@ -428,10 +422,10 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 
 	@Override
 	public boolean onSearchRequested() {
-	     ActivityUtil.updateOptionsMenu(activity);
-	     return super.onSearchRequested();
-	 }
-	
+		ActivityUtil.updateOptionsMenu(activity);
+		return super.onSearchRequested();
+	}
+
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
@@ -455,8 +449,8 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		}
 		savedInstanceState.putInt(MARKER_STATE, markerState);
 		savedInstanceState.putInt(OVERLAY_STATE, mapLevel);
-		//savedInstanceState.putString(SEARCH_TEXT, mapLevel);
-		
+		// savedInstanceState.putString(SEARCH_TEXT, mapLevel);
+
 		super.onSaveInstanceState(savedInstanceState);
 	}
 
@@ -477,11 +471,11 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	// Methods
 	// ===========================================================
 
-	public void loadMarkerOverlay(Overlay remove){
+	public void loadMarkerOverlay(Overlay remove) {
 		removeOverlay(remove);
 		addOverlay(markersOverlay);
 	}
-	
+
 	private void addOverlay(Overlay overlay) {
 		MapView mapView = (MapView) findViewById(R.id.mapview);
 		List<Overlay> mapOverlays = mapView.getOverlays();
@@ -499,42 +493,31 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	public void downloadRegionsDialog() {
 		new DownloadRegionsTask().execute();
 	}
-	
+
 	public void downloadEventsDialog(int regionId) {
 		new DownloadEventsTask().execute(regionId);
 	}
-	
+
 	public void downloadMarkersDialog(int eventId) {
 		new DownloadMarkersTask().execute(eventId);
 	}
 
-/*	private void downloadRegionsDialog() {
-		final Handler downloadRegionsDialogHandler = new Handler() {
-			public void handleMessage(Message msg) {
-				int state = msg.arg1;
-				if (state == PROCESS_COMPLETE) {
-					activity.runOnUiThread(new Runnable() {
-						public void run() {
-							dismissDialog(REGION_DOWNLOAD_DIALOG);
-							focus(locator.getBestLocation(), 11);
-						}
-					});
-				} else if (state == PROCESS_RUNNING) {
-
-				} else if (state == PROCESS_FAILED) {
-					activity.runOnUiThread(new Runnable() {
-						public void run() {
-							dismissDialog(REGION_DOWNLOAD_DIALOG);
-							Toast.makeText(activity,
-									"Download of regions failed",
-									Toast.LENGTH_SHORT).show();
-						}
-					});
-				}
-			}
-		};
-
-	}*/
+	/*
+	 * private void downloadRegionsDialog() { final Handler
+	 * downloadRegionsDialogHandler = new Handler() { public void
+	 * handleMessage(Message msg) { int state = msg.arg1; if (state ==
+	 * PROCESS_COMPLETE) { activity.runOnUiThread(new Runnable() { public void
+	 * run() { dismissDialog(REGION_DOWNLOAD_DIALOG);
+	 * focus(locator.getBestLocation(), 11); } }); } else if (state ==
+	 * PROCESS_RUNNING) {
+	 * 
+	 * } else if (state == PROCESS_FAILED) { activity.runOnUiThread(new
+	 * Runnable() { public void run() { dismissDialog(REGION_DOWNLOAD_DIALOG);
+	 * Toast.makeText(activity, "Download of regions failed",
+	 * Toast.LENGTH_SHORT).show(); } }); } } };
+	 * 
+	 * }
+	 */
 
 	public void updateBestLocation() {
 		selectedOverlay.updateBestLocation(locator.getBestLocation());
@@ -637,7 +620,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			dismissDialog(EVENT_DOWNLOAD_DIALOG);
 		}
 	}
-	
+
 	private class DownloadMarkersTask extends AsyncTask<Integer, Void, Void> {
 		@Override
 		protected void onPreExecute() {
@@ -659,7 +642,8 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			}
 			try {
 				ArrayList<Marker> markers = getMarkers(eventsFile.getPath());
-				Drawable defaultDrawable = activity.getResources().getDrawable(R.drawable.marker_green);
+				Drawable defaultDrawable = activity.getResources().getDrawable(
+						R.drawable.marker_green);
 				markersOverlay = new MarkersOverlay(defaultDrawable);
 				markersOverlay.setOverlay(markers);
 				markersOverlay.updateActivity(activity);
@@ -679,7 +663,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			dismissDialog(EVENT_DOWNLOAD_DIALOG);
 		}
 	}
-	
+
 	// ===========================================================
 	// Debug
 	// ===========================================================
@@ -765,6 +749,8 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 
 	public static class SearchActivity extends ListActivity {
 
+		private List<Address> addressList;
+		
 		/** Called when the activity is first created. */
 		@Override
 		public void onCreate(Bundle savedInstanceState) {
@@ -775,23 +761,54 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			Intent intent = getIntent();
 			if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
 				String query = intent.getStringExtra(SearchManager.QUERY);
-				//search(query);
+				search(query);
+			}
+		}
+
+		public void search(String query) {
+			try {
+				List<Address> addressList = geocoder.getFromLocationName(query,
+						5);
+				this.addressList = addressList;
+				if(addressList.size() == 0){
+					return;
+				}
+				String[] items = new String[addressList.size()];
+				for (int i = 0; i < addressList.size(); i++) {
+					int addSize = addressList.get(i).getMaxAddressLineIndex();
+					StringBuffer sb = new StringBuffer(100);
+					for (int j = 0; j < addSize; j++) {
+						sb.append(addressList.get(i).getAddressLine(j));
+					}
+					items[i] = sb.toString();
+				}
+				ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+						activity, android.R.layout.simple_list_item_1, items);
+				setListAdapter(adapter);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+		}
+
+		@Override
+		public void onResume()
+		{
+			super.onResume();
+			if(addressList == null){
+				Toast.makeText(activity, "No results found", Toast.LENGTH_SHORT).show();
+				this.finish();
 			}
 		}
 		
+		@Override
+		protected void onListItemClick(ListView l, View v, int position, long id) {
+			Address address = addressList.get(position);
+			int latitude = (int) (address.getLatitude() * 1000000);
+			int longitude= (int) (address.getLongitude() * 1000000);
+		}
+
 		
 		
-		//public void search(String query) {
-			/*
-			 * try { List<Address> addressList =
-			 * geocoder.getFromLocationName(query, 5); ArrayAdapter<Address>
-			 * adapter = new ArrayAdapter<Address>(activity,
-			 * R.layout.searchresult, addressList); setListAdapter(adapter); }
-			 * catch (IOException e) { // TODO Auto-generated catch block
-			 * e.printStackTrace(); }
-			 */
-
-		//}
-
 	}
 }
