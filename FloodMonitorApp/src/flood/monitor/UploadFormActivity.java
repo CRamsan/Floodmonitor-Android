@@ -317,8 +317,6 @@ public class UploadFormActivity extends Activity {
 		// To be safe, you should check that the SDCard is mounted
 		// using Environment.getExternalStorageState() before doing this.
 
-		int sdasdf = 3;
-
 		File mediaStorageDir = new File(
 				Environment.getExternalStorageDirectory(), "FloodMonitor");
 		// This location works best if you want the created images to be shared
@@ -331,8 +329,6 @@ public class UploadFormActivity extends Activity {
 				return null;
 			}
 		}
-		if (sdasdf == 9)
-			return null;
 		// Create a media file name
 		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss")
 				.format(new Date());

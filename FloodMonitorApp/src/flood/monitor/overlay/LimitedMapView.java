@@ -56,19 +56,18 @@ public class LimitedMapView extends MapView {
 			case MapViewActivity.MAP_LEVEL_EVENT:
 				if (this.getZoomLevel() > 10) {
 					this.getController().setZoom(10);
-					Toast.makeText(activity, "Choose a region to zoom further", Toast.LENGTH_LONG).show();
+					Toast.makeText(activity, "Choose a region to zoom further",
+							Toast.LENGTH_LONG).show();
+					return true;
 				}
-				return true;
 			case MapViewActivity.MAP_LEVEL_REGION:
-				return true;
+				break;
 			case MapViewActivity.MAP_LEVEL_MARKER:
-				return true;
-			default:
-				return super.onTouchEvent(ev);
+				break;
 			}
-		} else {
-			return super.onTouchEvent(ev);
 		}
+		return super.onTouchEvent(ev);
+
 	}
 
 	// ===========================================================

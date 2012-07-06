@@ -35,10 +35,15 @@ public class Connector {
 	public static final String DOWNLOAD_DIR = ".cache";
 
 	public static File downloadGeoRegions() {
-		File mediaStorageDir = new File(
-				Environment.getExternalStorageDirectory(), "FloodMonitor");
-		File world = new File(mediaStorageDir.getPath() + File.pathSeparator + DOWNLOAD_DIR + File.pathSeparator + "world.xml"); 
-		
+		File mediaStorageDir = new File(Environment
+				.getExternalStorageDirectory().getPath()
+				+ File.separator
+				+ "FloodMonitor" + File.separator + DOWNLOAD_DIR);
+		if (!mediaStorageDir.exists()) {
+			mediaStorageDir.mkdirs();
+		}
+		File world = new File(mediaStorageDir + File.separator + "world.xml");
+
 		OutputStreamWriter request = null;
 
 		try {
@@ -75,59 +80,52 @@ public class Connector {
 		} catch (IOException e) {
 			Log.d("Connector", "Error: " + e);
 		}
-		
+
 		return world;
 		/*
-		for (int i = 0; i < event.getRegions().size(); i++) {
-			File file = new File(mediaStorageDir.getPath() + File.separator
-					+ DOWNLOAD_DIR + File.separator + subDir + File.separator
-					+ event.getRegions().get(i).getName() + ".kml");
-			if (!file.exists()) {
-
-				try {
-					URL url = new URL(event.getRegions().get(i).getKml());
-
-					/* Open a connection to that URL. */
-					/*HttpURLConnection ucon = (HttpURLConnection) url
-							.openConnection();
-
-					/*
-					 * Define InputStreams to read from the URLConnection.
-					 */
-					/*InputStream is = ucon.getInputStream();
-					BufferedInputStream bis = new BufferedInputStream(is);
-
-					/*
-					 * Read bytes to the Buffer until there is nothing more to
-					 * read(-1).
-					 */
-					/*ByteArrayBuffer baf = new ByteArrayBuffer(50);
-					int current = 0;
-					while ((current = bis.read()) != -1) {
-						baf.append((byte) current);
-					}
-
-					/* Convert the Bytes read to a String. */
-					/*FileOutputStream fos = new FileOutputStream(file);
-					fos.write(baf.toByteArray());
-					fos.close();
-					files[i] = file;
-
-				} catch (IOException e) {
-					Log.d("Connector", "Error: " + e);
-				}
-			}
-		}
-		return files;*/
+		 * for (int i = 0; i < event.getRegions().size(); i++) { File file = new
+		 * File(mediaStorageDir.getPath() + File.separator + DOWNLOAD_DIR +
+		 * File.separator + subDir + File.separator +
+		 * event.getRegions().get(i).getName() + ".kml"); if (!file.exists()) {
+		 * 
+		 * try { URL url = new URL(event.getRegions().get(i).getKml());
+		 * 
+		 * /* Open a connection to that URL.
+		 */
+		/*
+		 * HttpURLConnection ucon = (HttpURLConnection) url .openConnection();
+		 * 
+		 * /* Define InputStreams to read from the URLConnection.
+		 */
+		/*
+		 * InputStream is = ucon.getInputStream(); BufferedInputStream bis = new
+		 * BufferedInputStream(is);
+		 * 
+		 * /* Read bytes to the Buffer until there is nothing more to read(-1).
+		 */
+		/*
+		 * ByteArrayBuffer baf = new ByteArrayBuffer(50); int current = 0; while
+		 * ((current = bis.read()) != -1) { baf.append((byte) current); }
+		 * 
+		 * /* Convert the Bytes read to a String.
+		 */
+		/*
+		 * FileOutputStream fos = new FileOutputStream(file);
+		 * fos.write(baf.toByteArray()); fos.close(); files[i] = file;
+		 * 
+		 * } catch (IOException e) { Log.d("Connector", "Error: " + e); } } }
+		 * return files;
+		 */
 	}
-	
-	public static File downloadEvents() {
+
+	public static File downloadEvents(int regionId) {
 		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss")
 				.format(new Date());
 		String filename = "events" + timeStamp + ".xml";
 		File mediaStorageDir = new File(
 				Environment.getExternalStorageDirectory(), "FloodMonitor");
-		File downloadDir = new File(mediaStorageDir.getPath()+File.separator+DOWNLOAD_DIR);
+		File downloadDir = new File(mediaStorageDir.getPath() + File.separator
+				+ DOWNLOAD_DIR);
 		if (!mediaStorageDir.exists()) {
 			if (!mediaStorageDir.mkdirs()) {
 				Log.d("MyCameraApp", "failed to create directory");
@@ -186,16 +184,80 @@ public class Connector {
 		return file;
 	}
 
+	public static File downloadMarkers(int eventId) {
+		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss")
+				.format(new Date());
+		String filename = "events" + timeStamp + ".xml";
+		File mediaStorageDir = new File(
+				Environment.getExternalStorageDirectory(), "FloodMonitor");
+		File downloadDir = new File(mediaStorageDir.getPath() + File.separator
+				+ DOWNLOAD_DIR);
+		if (!mediaStorageDir.exists()) {
+			if (!mediaStorageDir.mkdirs()) {
+				Log.d("MyCameraApp", "failed to create directory");
+				return null;
+			}
+		}
+		if (!downloadDir.exists()) {
+			if (!downloadDir.mkdirs()) {
+				Log.d("MyCameraApp", "failed to create directory");
+				return null;
+			}
+		}
+		File file = new File(mediaStorageDir.getPath() + File.separator
+				+ DOWNLOAD_DIR + File.separator + filename);
+		OutputStreamWriter request = null;
+		String parameters = "data=<phone><command>GetEvents</command></phone>";
+
+		try {
+			URL url = new URL(XML_COMMUNICATOR);
+
+			/* Open a connection to that URL. */
+			HttpURLConnection ucon = (HttpURLConnection) url.openConnection();
+			ucon.setDoOutput(true);
+			ucon.setRequestProperty("Content-Type",
+					"application/x-www-form-urlencoded");
+			ucon.setRequestMethod("POST");
+
+			request = new OutputStreamWriter(ucon.getOutputStream());
+			request.write(parameters);
+			request.flush();
+			request.close();
+
+			/*
+			 * Define InputStreams to read from the URLConnection.
+			 */
+			InputStream is = ucon.getInputStream();
+			BufferedInputStream bis = new BufferedInputStream(is);
+
+			/*
+			 * Read bytes to the Buffer until there is nothing more to read(-1).
+			 */
+			ByteArrayBuffer baf = new ByteArrayBuffer(50);
+			int current = 0;
+			while ((current = bis.read()) != -1) {
+				baf.append((byte) current);
+			}
+
+			/* Convert the Bytes read to a String. */
+			FileOutputStream fos = new FileOutputStream(file);
+			fos.write(baf.toByteArray());
+			fos.close();
+
+		} catch (IOException e) {
+			Log.d("Connector", "Error: " + e);
+		}
+		return file;
+	}
+	
 	public static File[] downloadRegions(Event event) {
 		File mediaStorageDir = new File(
 				Environment.getExternalStorageDirectory(), "FloodMonitor");
 		String subDir = event.getName();
-		//File[] files = new File[event.getRegions().size()];
+		// File[] files = new File[event.getRegions().size()];
 
-		File fileasd = new File("/mnt/sdcard/FloodMonitor/markers.xml"); 
-		
-		
-		
+		File fileasd = new File("/mnt/sdcard/FloodMonitor/markers.xml");
+
 		OutputStreamWriter request = null;
 
 		try {
@@ -232,52 +294,44 @@ public class Connector {
 		} catch (IOException e) {
 			Log.d("Connector", "Error: " + e);
 		}
-		
-		File[] files = {fileasd};
-		
+
+		File[] files = { fileasd };
+
 		return files;
 		/*
-		for (int i = 0; i < event.getRegions().size(); i++) {
-			File file = new File(mediaStorageDir.getPath() + File.separator
-					+ DOWNLOAD_DIR + File.separator + subDir + File.separator
-					+ event.getRegions().get(i).getName() + ".kml");
-			if (!file.exists()) {
-
-				try {
-					URL url = new URL(event.getRegions().get(i).getKml());
-
-					/* Open a connection to that URL. */
-					/*HttpURLConnection ucon = (HttpURLConnection) url
-							.openConnection();
-
-					/*
-					 * Define InputStreams to read from the URLConnection.
-					 */
-					/*InputStream is = ucon.getInputStream();
-					BufferedInputStream bis = new BufferedInputStream(is);
-
-					/*
-					 * Read bytes to the Buffer until there is nothing more to
-					 * read(-1).
-					 */
-					/*ByteArrayBuffer baf = new ByteArrayBuffer(50);
-					int current = 0;
-					while ((current = bis.read()) != -1) {
-						baf.append((byte) current);
-					}
-
-					/* Convert the Bytes read to a String. */
-					/*FileOutputStream fos = new FileOutputStream(file);
-					fos.write(baf.toByteArray());
-					fos.close();
-					files[i] = file;
-
-				} catch (IOException e) {
-					Log.d("Connector", "Error: " + e);
-				}
-			}
-		}
-		return files;*/
+		 * for (int i = 0; i < event.getRegions().size(); i++) { File file = new
+		 * File(mediaStorageDir.getPath() + File.separator + DOWNLOAD_DIR +
+		 * File.separator + subDir + File.separator +
+		 * event.getRegions().get(i).getName() + ".kml"); if (!file.exists()) {
+		 * 
+		 * try { URL url = new URL(event.getRegions().get(i).getKml());
+		 * 
+		 * /* Open a connection to that URL.
+		 */
+		/*
+		 * HttpURLConnection ucon = (HttpURLConnection) url .openConnection();
+		 * 
+		 * /* Define InputStreams to read from the URLConnection.
+		 */
+		/*
+		 * InputStream is = ucon.getInputStream(); BufferedInputStream bis = new
+		 * BufferedInputStream(is);
+		 * 
+		 * /* Read bytes to the Buffer until there is nothing more to read(-1).
+		 */
+		/*
+		 * ByteArrayBuffer baf = new ByteArrayBuffer(50); int current = 0; while
+		 * ((current = bis.read()) != -1) { baf.append((byte) current); }
+		 * 
+		 * /* Convert the Bytes read to a String.
+		 */
+		/*
+		 * FileOutputStream fos = new FileOutputStream(file);
+		 * fos.write(baf.toByteArray()); fos.close(); files[i] = file;
+		 * 
+		 * } catch (IOException e) { Log.d("Connector", "Error: " + e); } } }
+		 * return files;
+		 */
 	}
 
 	public static File downloadPicture(Marker marker, int id) {
@@ -374,10 +428,12 @@ public class Connector {
 			}
 			in.close();
 		} catch (Exception ex) {
-			Toast.makeText(context, "Error Message: " + ex.getMessage(), Toast.LENGTH_SHORT).show();
+			Toast.makeText(context, "Error Message: " + ex.getMessage(),
+					Toast.LENGTH_SHORT).show();
 		}
 	}
 
+	
 	public static void UploadPicture(Context context, String file) {
 		HttpURLConnection connection = null;
 		DataOutputStream outputStream = null;
@@ -445,8 +501,8 @@ public class Connector {
 			outputStream.flush();
 			outputStream.close();
 		} catch (Exception ex) {
-			Toast.makeText(context, "Error Message: " + ex.getMessage(), Toast.LENGTH_SHORT)
-					.show();
+			Toast.makeText(context, "Error Message: " + ex.getMessage(),
+					Toast.LENGTH_SHORT).show();
 		}
 	}
 }

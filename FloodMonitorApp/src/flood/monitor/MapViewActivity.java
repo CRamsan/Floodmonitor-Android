@@ -18,6 +18,7 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -239,7 +240,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			if (installedBefore) {
 				onInstall();
 			}
-			downloadEventDialog();
+			downloadRegionsDialog();
 		}
 
 	}
@@ -347,9 +348,6 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		case R.id.menuItemHelp: // Help
 			intent = new Intent(MapViewActivity.this, HelpActivity.class);
 			startActivity(intent);
-			return true;
-		case android.R.id.home:
-			// downloadEventDialog();
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
@@ -479,6 +477,11 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	// Methods
 	// ===========================================================
 
+	public void loadMarkerOverlay(Overlay remove){
+		removeOverlay(remove);
+		addOverlay(markersOverlay);
+	}
+	
 	private void addOverlay(Overlay overlay) {
 		MapView mapView = (MapView) findViewById(R.id.mapview);
 		List<Overlay> mapOverlays = mapView.getOverlays();
@@ -493,11 +496,19 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		// mapView.invalidate();
 	}
 
-	private void downloadEventDialog() {
-		new DownloadEventsTask().execute();
+	public void downloadRegionsDialog() {
+		new DownloadRegionsTask().execute();
+	}
+	
+	public void downloadEventsDialog(int regionId) {
+		new DownloadEventsTask().execute(regionId);
+	}
+	
+	public void downloadMarkersDialog(int eventId) {
+		new DownloadMarkersTask().execute(eventId);
 	}
 
-	private void downloadRegionsDialog() {
+/*	private void downloadRegionsDialog() {
 		final Handler downloadRegionsDialogHandler = new Handler() {
 			public void handleMessage(Message msg) {
 				int state = msg.arg1;
@@ -523,7 +534,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			}
 		};
 
-	}
+	}*/
 
 	public void updateBestLocation() {
 		selectedOverlay.updateBestLocation(locator.getBestLocation());
@@ -548,7 +559,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	// Inner and Anonymous Classes
 	// ===========================================================
 
-	private class DownloadEventsTask extends AsyncTask<Void, Void, Void> {
+	private class DownloadRegionsTask extends AsyncTask<Void, Void, Void> {
 		@Override
 		protected void onPreExecute() {
 			showDialog(EVENT_DOWNLOAD_DIALOG);
@@ -582,10 +593,93 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		@Override
 		protected void onPostExecute(Void none) {
 			mapLevel = MAP_LEVEL_EVENT;
+			limitedMapView.invalidate();
 			dismissDialog(EVENT_DOWNLOAD_DIALOG);
 		}
 	}
 
+	private class DownloadEventsTask extends AsyncTask<Integer, Void, Void> {
+		@Override
+		protected void onPreExecute() {
+			showDialog(EVENT_DOWNLOAD_DIALOG);
+		}
+
+		@Override
+		protected Void doInBackground(Integer... params) {
+			ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+			NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+			File eventsFile = null;
+			if (networkInfo != null && networkInfo.isConnected()) {
+				eventsFile = Connector.downloadEvents(params[0]);
+			} else {
+
+			}
+			if (eventsFile == null) {
+				return null;
+			}
+			try {
+				ArrayList<Event> events = getEvents(eventsFile.getPath());
+				eventsOverlay = new EventsOverlay(events);
+				eventsOverlay.updateActivity(activity);
+				removeOverlay((Overlay) selectedOverlay);
+				selectedOverlay = georegionsOverlay;
+				addOverlay((RegionsOverlay) selectedOverlay);
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void none) {
+			mapLevel = MAP_LEVEL_EVENT;
+			limitedMapView.invalidate();
+			dismissDialog(EVENT_DOWNLOAD_DIALOG);
+		}
+	}
+	
+	private class DownloadMarkersTask extends AsyncTask<Integer, Void, Void> {
+		@Override
+		protected void onPreExecute() {
+			showDialog(EVENT_DOWNLOAD_DIALOG);
+		}
+
+		@Override
+		protected Void doInBackground(Integer... params) {
+			ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+			NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+			File eventsFile = null;
+			if (networkInfo != null && networkInfo.isConnected()) {
+				eventsFile = Connector.downloadMarkers(params[0]);
+			} else {
+
+			}
+			if (eventsFile == null) {
+				return null;
+			}
+			try {
+				ArrayList<Marker> markers = getMarkers(eventsFile.getPath());
+				Drawable defaultDrawable = activity.getResources().getDrawable(R.drawable.marker_green);
+				markersOverlay = new MarkersOverlay(defaultDrawable);
+				markersOverlay.setOverlay(markers);
+				markersOverlay.updateActivity(activity);
+				removeOverlay((Overlay) selectedOverlay);
+				selectedOverlay = markersOverlay;
+				addOverlay((RegionsOverlay) selectedOverlay);
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void none) {
+			mapLevel = MAP_LEVEL_EVENT;
+			limitedMapView.invalidate();
+			dismissDialog(EVENT_DOWNLOAD_DIALOG);
+		}
+	}
+	
 	// ===========================================================
 	// Debug
 	// ===========================================================

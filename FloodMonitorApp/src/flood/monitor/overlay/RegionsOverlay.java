@@ -3,6 +3,10 @@ package flood.monitor.overlay;
 import java.util.ArrayList;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -12,9 +16,13 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.util.DisplayMetrics;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
@@ -22,11 +30,12 @@ import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
 import com.google.android.maps.Projection;
 
+import flood.monitor.MapViewActivity;
 import flood.monitor.R;
 import flood.monitor.modules.kmlparser.Event;
 import flood.monitor.modules.kmlparser.Region;
 
-public class RegionsOverlay extends Overlay implements IOverlay{
+public class RegionsOverlay extends Overlay implements IOverlay {
 
 	// ===========================================================
 	// Constants
@@ -37,7 +46,8 @@ public class RegionsOverlay extends Overlay implements IOverlay{
 	// ===========================================================
 	private static ArrayList<Region> regions;
 	private Activity activity;
-	private int eventIndex;
+	private int index;
+	private RegionsOverlay overlay = this;
 	private OverlayItem currentLocationMarker;
 	private int height = 0;
 	private int width = 0;
@@ -55,12 +65,12 @@ public class RegionsOverlay extends Overlay implements IOverlay{
 	// ===========================================================
 	// Getter & Setter
 	// ===========================================================
-	public int getEventIndex() {
-		return eventIndex;
+	public int getIndex() {
+		return index;
 	}
 
-	public void setEventIndex(int eventIndex) {
-		this.eventIndex = eventIndex;
+	public void setIndex(int index) {
+		this.index = index;
 	}
 
 	public static ArrayList<Region> getRegions() {
@@ -91,7 +101,7 @@ public class RegionsOverlay extends Overlay implements IOverlay{
 					.toPixels(region.getNw(), nw);
 			((MapView) activity.findViewById(R.id.mapview)).getProjection()
 					.toPixels(region.getSe(), se);
-			
+
 			if (nw.x < 0)
 				nw.x = 0;
 			else if (nw.x > width)
@@ -111,8 +121,7 @@ public class RegionsOverlay extends Overlay implements IOverlay{
 				se.y = height;
 			else if (se.y < 0)
 				se.y = 0;
-			
-			
+
 			canvas.drawRect(nw.x, nw.y, se.x, se.y, mPaint);
 			// canvas.drawRect(50, 50, 122, 532, mPaint);
 		}
@@ -132,20 +141,19 @@ public class RegionsOverlay extends Overlay implements IOverlay{
 		if (action == MotionEvent.ACTION_DOWN) {
 			x = (int) event.getX();
 			y = (int) event.getY();
-			moved = false;
-			return false;
-		} else if (action == MotionEvent.ACTION_MOVE) {
-			moved = true;
 			return false;
 		} else if (action == MotionEvent.ACTION_UP) {
-			if (!moved) {
-				int hits = 0;
-				hits++;
-				if (hits == 0) {
+			int samplex = (int) Math.abs(x - event.getX());
+			int sampley = (int) Math.abs(y - event.getY());
+			if (Math.abs(x - event.getX()) < 10
+					&& Math.abs(y - event.getY()) < 10) {
+				GeoPoint p = mapView.getProjection().fromPixels(x, y);
+				int id = checkHit(p);
+				if (id != -1) {
+					showMarkerDialog(id);
 					return false;
 				} else {
-					showMarkerDialog(eventIndex);
-					return false;
+					return true;
 				}
 			} else {
 				return false;
@@ -178,13 +186,39 @@ public class RegionsOverlay extends Overlay implements IOverlay{
 				"Description...", null, 0, 0, 0);
 	}
 
-	private boolean checkHit() {
-		return false;
+	private int checkHit(GeoPoint p) {
+		for (int i = 0; i < regions.size(); i++) {
+			Region region = regions.get(i);
+
+			if (p.getLatitudeE6() < region.getNw().getLatitudeE6()
+					&& p.getLongitudeE6() > region.getNw().getLongitudeE6()
+					&& p.getLatitudeE6() > region.getSe().getLatitudeE6()
+					&& p.getLongitudeE6() < region.getSe().getLongitudeE6()) {
+				return region.getRegionId();
+			}
+		}
+		return -1;
 	}
 
 	@Override
-	public void showMarkerDialog(int id) {
-		// TODO Auto-generated method stub
+	public void showMarkerDialog(final int id) {
+		AlertDialog.Builder builder;
+		AlertDialog alertDialog;
+
+		Context mContext = activity;		
+		builder = new AlertDialog.Builder(mContext);
 		
+		final CharSequence[] items = {"Red", "Green", "Blue"};
+
+		builder.setTitle("Choose the event to load");
+		builder.setItems(items, new DialogInterface.OnClickListener() {
+		    public void onClick(DialogInterface dialog, int item) {
+		        ((MapViewActivity)activity).downloadEventsDialog(id);
+		    }
+		});
+		alertDialog = builder.create();
+		alertDialog.setCanceledOnTouchOutside(true);
+		alertDialog.show();
+
 	}
 }

@@ -34,7 +34,7 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements IOve
 	// ===========================================================
 	// Fields
 	// ===========================================================
-	private ArrayList<OverlayItem> mOverlays = new ArrayList<OverlayItem>();
+	private ArrayList<Marker> mOverlays = new ArrayList<Marker>();
 
 	private OverlayItem currentLocationMarker;
 	private OverlayItem uploadLocationMarker;
@@ -59,7 +59,7 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements IOve
 
 	public MarkersOverlay(Drawable defaultMarker) {
 		super(boundCenterBottom(defaultMarker));
-		this.mOverlays = new ArrayList<OverlayItem>(0);
+		this.mOverlays = new ArrayList<Marker>(0);
 	}
 
 	// ===========================================================
@@ -73,23 +73,19 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements IOve
 		return temp;
 	}
 
-	public ArrayList<OverlayItem> getmOverlays() {
+	public ArrayList<Marker> getmOverlays() {
 		return mOverlays;
 	}
 
-	public void setmOverlays(ArrayList<OverlayItem> mOverlays) {
-		this.mOverlays = mOverlays;
-	}
-
-	public void setOverlay(ArrayList<OverlayItem> overlay) {
+	public void setOverlay(ArrayList<Marker> overlay) {
 		mOverlays = overlay;
 
-		for (OverlayItem marker : overlay) {
-			addOverlayMarker((Marker) marker);
+		for (Marker marker : overlay) {
+			addOverlayMarker(marker);
 		}
 
 		if (currentLocationMarker != null) {
-			addOverlayItem(currentLocationMarker);
+			addOverlayItem((Marker) currentLocationMarker);
 		}
 		populate();
 	}
@@ -262,7 +258,7 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements IOve
 		mOverlays.add(overlayItem);
 	}
 
-	public void addOverlayItem(OverlayItem overlayItem) {
+	public void addOverlayItem(Marker overlayItem) {
 		mOverlays.add(overlayItem);
 		//populate();
 	}
@@ -284,7 +280,7 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements IOve
 		icon.setBounds(-icon.getIntrinsicWidth() /2, -icon.getIntrinsicHeight(),
 				icon.getIntrinsicWidth()/2, 0);
 		currentLocationMarker.setMarker(icon);
-		addOverlayItem(currentLocationMarker);
+		addOverlayItem((Marker) currentLocationMarker);
 		populate();
 	}
 
@@ -297,7 +293,7 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements IOve
 				icon.getIntrinsicWidth()/2, 0);
 		uploadDrawable = icon;
 		uploadLocationMarker.setMarker(icon);
-		addOverlayItem(uploadLocationMarker);
+		addOverlayItem((Marker) uploadLocationMarker);
 		populate();
 		isMarking = true;
 	}
