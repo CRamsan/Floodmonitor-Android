@@ -148,7 +148,6 @@ public class RegionsOverlay extends Overlay implements IOverlay {
 		if (action == MotionEvent.ACTION_DOWN) {
 			x = (int) event.getX();
 			y = (int) event.getY();
-			return false;
 		} else if (action == MotionEvent.ACTION_UP) {
 			int samplex = (int) Math.abs(x - event.getX());
 			int sampley = (int) Math.abs(y - event.getY());
@@ -158,16 +157,12 @@ public class RegionsOverlay extends Overlay implements IOverlay {
 				int id = checkHit(p);
 				if (id != -1) {
 					showMarkerDialog(id);
-					return false;
-				} else {
 					return true;
 				}
-			} else {
-				return false;
 			}
-		} else {
-			return (super.onTouchEvent(event, mapView));
 		}
+		return (super.onTouchEvent(event, mapView));
+
 	}
 
 	// ===========================================================

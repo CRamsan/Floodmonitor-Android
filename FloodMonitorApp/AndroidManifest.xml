@@ -19,7 +19,7 @@
         android:theme="@style/ThemeSelector" >
         <uses-library android:name="com.google.android.maps" />
 
-        <activity android:name=".MapViewActivity">
+        <activity android:name=".MapViewActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -31,7 +31,11 @@
                 android:value=".MapViewActivity$SearchActivity" />
         </activity>
         <activity
-            android:name=".UploadFormActivity"
+            android:name=".ploadFormActivity"
+            android:theme="@style/ThemeSelectorDialog" >
+        </activity>
+        <activity
+            android:name=".MarkerDIalogActivity"
             android:theme="@style/ThemeSelectorDialog" >
         </activity>
         <activity android:name=".SettingsActivity" >
@@ -42,7 +46,7 @@
         </activity>
         <activity
             android:name="MapViewActivity$SearchActivity"
-            android:theme="@style/ThemeSelectorDialog">
+            android:theme="@style/ThemeSelectorDialog" >
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>

@@ -11,6 +11,7 @@ import java.util.List;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
@@ -18,6 +19,8 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.BitmapFactory;
+import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Geocoder;
@@ -28,23 +31,31 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.View.OnTouchListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.maps.GeoPoint;
+import com.google.android.maps.ItemizedOverlay;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
+import com.google.android.maps.OverlayItem;
 
 import flood.monitor.modules.Connector;
 import flood.monitor.modules.Locator;
@@ -106,13 +117,14 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	// ===========================================================
 	private Locator locator;
 	private static Geocoder geocoder;
+	private static LocationOverlay locationOverlay;// 4
 	private static MarkersOverlay markersOverlay;// 3
 	private static RegionsOverlay georegionsOverlay;// 2
 	private static EventsOverlay eventsOverlay;// 1
 	private static IOverlay selectedOverlay;
 
 	private static MapViewActivity activity;
-	private LimitedMapView limitedMapView;
+	private static LimitedMapView limitedMapView;
 
 	private int markerState;
 	private int mapLevel;
@@ -156,6 +168,10 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 
 		geocoder = new Geocoder(this);
 
+		locationOverlay = new LocationOverlay(this.getResources().getDrawable(
+				R.drawable.marker_white));
+		limitedMapView.getOverlays().add(locationOverlay);
+
 		ImageButton buttonLock = (ImageButton) findViewById(R.id.buttonLock);
 		buttonLock.setOnClickListener(new Button.OnClickListener() {
 			@Override
@@ -186,7 +202,8 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			@Override
 			public void onClick(View arg0) {
 				markerState = ENABLE_UPLOAD;
-				markersOverlay.initiateDragMarker(locator.getBestLocation());
+				locationOverlay.initiateDragMarker(limitedMapView
+						.getMapCenter());
 				updateButton();
 				((MapView) findViewById(R.id.mapview)).invalidate();
 			}
@@ -197,7 +214,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			@Override
 			public void onClick(View arg0) {
 				markerState = ENABLE_MARKER;
-				markersOverlay.stopDragMarker();
+				locationOverlay.stopDragMarker();
 				updateButton();
 				((MapView) findViewById(R.id.mapview)).invalidate();
 
@@ -325,7 +342,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		// Handle item selection
 		Intent intent = null;
 		switch (item.getItemId()) {
-		case R.id.menuItemSearch:// Settings
+		case R.id.menuItemSearch:// Search
 			onSearchRequested();
 			return true;
 		case R.id.menuItemSettings:// Settings
@@ -520,7 +537,13 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	 */
 
 	public void updateBestLocation() {
-		selectedOverlay.updateBestLocation(locator.getBestLocation());
+		locationOverlay.updateBestLocation(locator.getBestLocation());
+		limitedMapView.invalidate();
+	}
+
+	public void updateSearchResult(Address address) {
+		locationOverlay.updateSearchResult(address);
+		limitedMapView.invalidate();
 	}
 
 	private void onInstall() {
@@ -702,18 +725,32 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		return parser.ParseGeoRegions(filename, stream);
 	}
 
-	private void focus(Location locationToZoom, int level) {
-		MapView map = ((MapView) findViewById(R.id.mapview));
-		MapController mc = map.getController();
+	private static void focus(Location locationToZoom, int level) {
+		MapController mc = limitedMapView.getController();
 		mc.animateTo(new GeoPoint(
 				(int) (locationToZoom.getLatitude() * 1000000),
 				(int) (locationToZoom.getLongitude() * 1000000)));
 		mc.setZoom(level);
-		map.invalidate();
+		limitedMapView.invalidate();
+	}
+
+	private static void focus(int lat, int lon, int level) {
+		MapController mc = limitedMapView.getController();
+		mc.animateTo(new GeoPoint((lat), (lon)));
+		mc.setZoom(level);
+		limitedMapView.invalidate();
+	}
+
+	private static void focus(double lat, double lon, int level) {
+		MapController mc = limitedMapView.getController();
+		mc.animateTo(new GeoPoint((int) (lat * 1000000), (int) (lon * 1000000)));
+		mc.setZoom(level);
+		limitedMapView.invalidate();
 	}
 
 	private void updateButton() {
-		if (mapLevel == MAP_LEVEL_MARKER) {
+		switch (mapLevel) {
+		case MAP_LEVEL_MARKER:
 			switch (markerState) {
 			case ENABLE_MARKER:
 				findViewById(R.id.buttonUploadMarker).setVisibility(View.GONE);
@@ -728,10 +765,41 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 				findViewById(R.id.buttonAddMarker).setVisibility(View.GONE);
 				break;
 			}
-		} else {
-			findViewById(R.id.buttonUploadMarker).setVisibility(View.GONE);
-			findViewById(R.id.buttoCancelMarker).setVisibility(View.GONE);
-			findViewById(R.id.buttonAddMarker).setVisibility(View.GONE);
+			break;
+		case MAP_LEVEL_EVENT:
+			switch (markerState) {
+			case ENABLE_MARKER:
+				findViewById(R.id.buttonUploadMarker).setVisibility(View.GONE);
+				findViewById(R.id.buttoCancelMarker).setVisibility(View.GONE);
+				findViewById(R.id.buttonAddMarker).setVisibility(View.VISIBLE);
+				break;
+			case ENABLE_UPLOAD:
+				findViewById(R.id.buttonUploadMarker).setVisibility(View.GONE);
+				findViewById(R.id.buttoCancelMarker)
+						.setVisibility(View.VISIBLE);
+				findViewById(R.id.buttonAddMarker).setVisibility(View.GONE);
+				break;
+			}
+
+			break;
+		case MAP_LEVEL_REGION:
+			switch (markerState) {
+			case ENABLE_MARKER:
+				findViewById(R.id.buttonUploadMarker).setVisibility(View.GONE);
+				findViewById(R.id.buttoCancelMarker).setVisibility(View.GONE);
+				findViewById(R.id.buttonAddMarker).setVisibility(View.VISIBLE);
+				break;
+			case ENABLE_UPLOAD:
+				findViewById(R.id.buttonUploadMarker).setVisibility(View.GONE);
+				findViewById(R.id.buttoCancelMarker)
+						.setVisibility(View.VISIBLE);
+				findViewById(R.id.buttonAddMarker).setVisibility(View.GONE);
+				break;
+			}
+
+			break;
+		default:
+			break;
 		}
 	}
 
@@ -747,10 +815,207 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		}
 	}
 
+	public class LocationOverlay extends ItemizedOverlay<OverlayItem> {
+		private OverlayItem currentLocationMarker;
+		private OverlayItem searchResultMarker;
+		private OverlayItem draggerMarker;
+		private ArrayList<OverlayItem> mOverlays;
+		private Drawable uploadDrawable;
+		private boolean isMarking;
+		private boolean isTouching;
+		private ImageView dragImage = null;
+		private int xDragImageOffset = 0;
+		private int yDragImageOffset = 0;
+		private int xDragTouchOffset = 0;
+		private int yDragTouchOffset = 0;
+
+		public LocationOverlay(Drawable defaultMarker) {
+			super(defaultMarker);
+			mOverlays = new ArrayList<OverlayItem>(0);
+			uploadDrawable = activity.getResources().getDrawable(
+					R.drawable.marker_white);
+			dragImage = (ImageView) activity.findViewById(R.id.drag);
+			xDragImageOffset = dragImage.getDrawable().getIntrinsicWidth() / 2;
+			yDragImageOffset = dragImage.getDrawable().getIntrinsicHeight();
+			populate();
+		}
+
+		public void updateBestLocation(Location location) {
+			mOverlays.remove(currentLocationMarker);
+			currentLocationMarker = new OverlayItem(new GeoPoint(
+					(int) (location.getLatitude() * 1000000),
+					(int) (location.getLongitude() * 1000000)),
+					"Your location", "Latitude: "
+							+ Double.toString(location.getLatitude()) + "\n"
+							+ "Longitude: "
+							+ Double.toString(location.getLongitude()));
+			Drawable icon = activity.getResources().getDrawable(
+					R.drawable.location);
+			icon.setBounds(-icon.getIntrinsicWidth() / 2,
+					-icon.getIntrinsicHeight(), icon.getIntrinsicWidth() / 2, 0);
+			currentLocationMarker.setMarker(icon);
+			mOverlays.add(currentLocationMarker);
+			populate();
+		}
+
+		public void updateSearchResult(Address address) {
+			mOverlays.remove(searchResultMarker);
+			searchResultMarker = new OverlayItem(new GeoPoint(
+					(int) (address.getLatitude() * 1000000),
+					(int) (address.getLongitude() * 1000000)), "Your location",
+					"Latitude: " + Double.toString(address.getLatitude())
+							+ "\n" + "Longitude: "
+							+ Double.toString(address.getLongitude()));
+			Drawable icon = activity.getResources().getDrawable(
+					R.drawable.marker_white);
+			icon.setBounds(-icon.getIntrinsicWidth() / 2,
+					-icon.getIntrinsicHeight(), icon.getIntrinsicWidth() / 2, 0);
+			searchResultMarker.setMarker(icon);
+			mOverlays.add(searchResultMarker);
+			populate();
+		}
+
+		public void initiateDragMarker(GeoPoint geoPoint) {
+			draggerMarker = new OverlayItem(geoPoint, "", "");
+			uploadDrawable.setBounds(-uploadDrawable.getIntrinsicWidth() / 2,
+					-uploadDrawable.getIntrinsicHeight(), uploadDrawable.getIntrinsicWidth() / 2, 0);
+			draggerMarker.setMarker(uploadDrawable);
+			mOverlays.add(draggerMarker);
+			isMarking = true;
+			populate();
+		}
+
+		public Location getMarkerLocation() {
+			Location temp = new Location("Picture Marker");
+			temp.setLatitude(draggerMarker.getPoint().getLatitudeE6());
+			temp.setLongitude(draggerMarker.getPoint().getLongitudeE6());
+			return temp;
+		}
+
+		public void stopDragMarker() {
+			isMarking = false;
+			mOverlays.remove(draggerMarker);
+			populate();
+		}
+
+		@Override
+		protected OverlayItem createItem(int i) {
+			return mOverlays.get(i);
+		}
+
+		@Override
+		public int size() {
+			return mOverlays.size();
+		}
+
+		@Override
+		protected boolean onTap(int index) {
+			showMarkerDialog(index);
+			return true;
+		}
+
+		@Override
+		public boolean onTouchEvent(MotionEvent event, MapView mapView) {
+			if (isMarking) {
+				final int action = event.getAction();
+				final int x = (int) event.getX();
+				final int y = (int) event.getY();
+
+				if (action == MotionEvent.ACTION_DOWN) {
+					Point p = new Point(0, 0);
+
+					limitedMapView.getProjection().toPixels(
+							draggerMarker.getPoint(), p);
+					if (hitTest(draggerMarker, uploadDrawable, x - p.x, y - p.y)) {
+						isTouching = true;
+						mOverlays.remove(draggerMarker);
+						populate();
+
+						xDragTouchOffset = 0;
+						yDragTouchOffset = 0;
+
+						setDragImagePosition(p.x, p.y);
+						dragImage.setVisibility(View.VISIBLE);
+
+						xDragTouchOffset = x - p.x;
+						yDragTouchOffset = y - p.y;
+						return true;
+					} else {
+						return super.onTouchEvent(event, mapView);
+					}
+				} else if (action == MotionEvent.ACTION_MOVE
+						&& draggerMarker != null && isTouching) {
+					setDragImagePosition(x, y);
+					return true;
+				} else if (action == MotionEvent.ACTION_UP
+						&& draggerMarker != null && isTouching) {
+					dragImage.setVisibility(View.GONE);
+
+					GeoPoint pt = limitedMapView.getProjection()
+							.fromPixels(x - xDragTouchOffset,
+									y - yDragTouchOffset);
+
+					Marker toDrop = new Marker(pt, draggerMarker.getTitle(),
+							draggerMarker.getSnippet(), null, 0, 0, 0);
+
+					Drawable icon = uploadDrawable;
+					icon.setBounds(-icon.getIntrinsicWidth() / 2,
+							-icon.getIntrinsicHeight(),
+							icon.getIntrinsicWidth() / 2, 0);
+					toDrop.setMarker(icon);
+
+					mOverlays.remove(draggerMarker);
+					mOverlays.add(toDrop);
+					populate();
+
+					draggerMarker = toDrop;
+					isTouching = false;
+					return true;
+				} else {
+					return (super.onTouchEvent(event, mapView));
+				}
+			}else {
+				return (super.onTouchEvent(event, mapView));
+			}
+		}
+
+		private void setDragImagePosition(int x, int y) {
+			RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) dragImage
+					.getLayoutParams();
+
+			lp.setMargins(x - xDragImageOffset - xDragTouchOffset, y
+					- yDragImageOffset - yDragTouchOffset, 0, 0);
+			dragImage.setLayoutParams(lp);
+		}
+
+		public void showMarkerDialog(int id) {
+			AlertDialog.Builder builder;
+			AlertDialog alertDialog;
+
+			Context mContext = activity;
+			LayoutInflater inflater = (LayoutInflater) mContext
+					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			View layout = inflater.inflate(R.layout.markerdialog,
+					(ViewGroup) (activity).findViewById(R.id.markerLayout));
+
+			OverlayItem item = mOverlays.get(id);
+			TextView text = (TextView) layout.findViewById(R.id.textView1);
+			text.setText(item.getTitle());
+			TextView text2 = (TextView) layout.findViewById(R.id.textView2);
+			text2.setText(item.getSnippet());
+
+			builder = new AlertDialog.Builder(mContext);
+			builder.setView(layout);
+			alertDialog = builder.create();
+			alertDialog.setCanceledOnTouchOutside(true);
+			alertDialog.show();
+		}
+	}
+
 	public static class SearchActivity extends ListActivity {
 
 		private List<Address> addressList;
-		
+
 		/** Called when the activity is first created. */
 		@Override
 		public void onCreate(Bundle savedInstanceState) {
@@ -770,7 +1035,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 				List<Address> addressList = geocoder.getFromLocationName(query,
 						5);
 				this.addressList = addressList;
-				if(addressList.size() == 0){
+				if (addressList.size() == 0) {
 					return;
 				}
 				String[] items = new String[addressList.size()];
@@ -779,6 +1044,8 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 					StringBuffer sb = new StringBuffer(100);
 					for (int j = 0; j < addSize; j++) {
 						sb.append(addressList.get(i).getAddressLine(j));
+						if (j < addSize - 1)
+							sb.append(", ");
 					}
 					items[i] = sb.toString();
 				}
@@ -792,23 +1059,32 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		}
 
 		@Override
-		public void onResume()
-		{
+		public void onResume() {
 			super.onResume();
-			if(addressList == null){
-				Toast.makeText(activity, "No results found", Toast.LENGTH_SHORT).show();
+			if (addressList == null) {
+				Toast.makeText(activity, "No results found", Toast.LENGTH_SHORT)
+						.show();
 				this.finish();
 			}
 		}
-		
+
 		@Override
 		protected void onListItemClick(ListView l, View v, int position, long id) {
 			Address address = addressList.get(position);
-			int latitude = (int) (address.getLatitude() * 1000000);
-			int longitude= (int) (address.getLongitude() * 1000000);
+			activity.updateSearchResult(address);
+			switch (activity.mapLevel) {
+			case MapViewActivity.MAP_LEVEL_EVENT:
+				focus(address.getLatitude(), address.getLongitude(), 9);
+				break;
+			case MapViewActivity.MAP_LEVEL_REGION:
+				focus(address.getLatitude(), address.getLongitude(), 14);
+				break;
+			case MapViewActivity.MAP_LEVEL_MARKER:
+				focus(address.getLatitude(), address.getLongitude(), 15);
+				break;
+			}
+			this.finish();
 		}
 
-		
-		
 	}
 }

@@ -46,25 +46,26 @@ public final class R {
         public static final int drag=0x7f090010;
         public static final int emailText=0x7f09000c;
         public static final int emailView=0x7f09000b;
-        public static final int imageView1=0x7f090017;
+        public static final int imageViewPictureUpload=0x7f090017;
         public static final int latitudeValueView=0x7f090002;
         public static final int latitudeView=0x7f090001;
         public static final int longitudeValueView=0x7f090004;
         public static final int longitudeView=0x7f090003;
         public static final int mapview=0x7f09000f;
         public static final int markerLayout=0x7f090015;
-        public static final int menuItemAbout=0x7f09001c;
-        public static final int menuItemExit=0x7f09001d;
-        public static final int menuItemHelp=0x7f09001b;
-        public static final int menuItemSearch=0x7f090019;
-        public static final int menuItemSettings=0x7f09001a;
+        public static final int menuItemAbout=0x7f09001d;
+        public static final int menuItemExit=0x7f09001e;
+        public static final int menuItemHelp=0x7f09001c;
+        public static final int menuItemSearch=0x7f09001a;
+        public static final int menuItemSettings=0x7f09001b;
         public static final int pictureButton=0x7f090008;
         public static final int pictureView=0x7f090007;
         public static final int submitButton=0x7f09000e;
         public static final int textFile=0x7f090009;
         public static final int textFileName=0x7f09000a;
-        public static final int textView1=0x7f090016;
-        public static final int textView2=0x7f090018;
+        public static final int textView1=0x7f090019;
+        public static final int textViewDescription=0x7f090018;
+        public static final int textViewTitle=0x7f090016;
     }
     public static final class layout {
         public static final int about=0x7f030000;

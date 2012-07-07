@@ -55,8 +55,8 @@
         android:id="@+id/buttoCancelMarker"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/buttonUploadMarker"
-        android:layout_below="@+id/buttonUploadMarker"
+        android:layout_marginLeft="18dp"
+        android:layout_marginTop="70dp"
         android:contentDescription="@string/desc_buttonCancelMarker"
         android:src="@drawable/cancelmarker" />
 
