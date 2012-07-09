@@ -8,13 +8,18 @@ public class Region {
 
 	private String kml;
 	private String name;
-	private Event event;
+	private ArrayList<Event> events;
+	private ArrayList<Boundary> boundaries;
 	private int[] edges;
 	private int regionId;
 	private int latitude;
 	private int longitud;
-	private GeoPoint nw;
-	private GeoPoint se;
+
+	public Region(int regionId, String name, ArrayList<Boundary> boundaries) {
+		this.setName(name);
+		this.setRegionId(regionId);
+		this.setBoundaries(boundaries);
+	}
 
 	public Region(int regionId, String name, String kml, int latitude,
 			int longitud) {
@@ -28,8 +33,6 @@ public class Region {
 	public Region(int regionId, String name, GeoPoint nw, GeoPoint se) {
 		this.setName(name);
 		this.setRegionId(regionId);
-		this.nw = nw;
-		this.se = se;
 	}
 
 	public String getKml() {
@@ -80,28 +83,20 @@ public class Region {
 		this.longitud = longitud;
 	}
 
-	public Event getEvent() {
-		return event;
+	public ArrayList<Event> getEvents() {
+		return events;
 	}
 
-	public void setEvent(Event event) {
-		this.event = event;
+	public void setEvents(ArrayList<Event> events) {
+		this.events = events;
 	}
 
-	public GeoPoint getNw() {
-		return nw;
+	public ArrayList<Boundary> getBoundaries() {
+		return boundaries;
 	}
 
-	public void setNw(GeoPoint nw) {
-		this.nw = nw;
-	}
-
-	public GeoPoint getSe() {
-		return se;
-	}
-
-	public void setSe(GeoPoint se) {
-		this.se = se;
+	public void setBoundaries(ArrayList<Boundary> boundaries) {
+		this.boundaries = boundaries;
 	}
 
 }

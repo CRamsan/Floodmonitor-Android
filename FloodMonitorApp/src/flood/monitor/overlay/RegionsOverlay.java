@@ -32,6 +32,7 @@ import com.google.android.maps.Projection;
 
 import flood.monitor.MapViewActivity;
 import flood.monitor.R;
+import flood.monitor.modules.kmlparser.Boundary;
 import flood.monitor.modules.kmlparser.Event;
 import flood.monitor.modules.kmlparser.Region;
 
@@ -99,33 +100,37 @@ public class RegionsOverlay extends Overlay implements IOverlay {
 
 		for (int i = 0; i < regions.size(); i++) {
 			Region region = regions.get(i);
-			((MapView) activity.findViewById(R.id.mapview)).getProjection()
-					.toPixels(region.getNw(), nw);
-			((MapView) activity.findViewById(R.id.mapview)).getProjection()
-					.toPixels(region.getSe(), se);
+			for (int j = 0; j < region.getBoundaries().size(); j++) {
+				Boundary boundary = region.getBoundaries().get(j);
+				GeoPoint northwest = new GeoPoint(boundary.north, boundary.west);
+				GeoPoint southeast = new GeoPoint(boundary.south, boundary.east);
+				((MapView) activity.findViewById(R.id.mapview)).getProjection()
+						.toPixels(northwest, nw);
+				((MapView) activity.findViewById(R.id.mapview)).getProjection()
+						.toPixels(southeast, se);
 
-			if (nw.x < 0)
-				nw.x = 0;
-			else if (nw.x > width)
-				nw.x = width;
+				if (nw.x < 0)
+					nw.x = 0;
+				else if (nw.x > width)
+					nw.x = width;
 
-			if (nw.y < 0)
-				nw.y = 0;
-			else if (nw.y > height)
-				nw.y = height;
+				if (nw.y < 0)
+					nw.y = 0;
+				else if (nw.y > height)
+					nw.y = height;
 
-			if (se.x > width)
-				se.x = width;
-			else if (se.x < 0)
-				se.x = 0;
+				if (se.x > width)
+					se.x = width;
+				else if (se.x < 0)
+					se.x = 0;
 
-			if (se.y > height)
-				se.y = height;
-			else if (se.y < 0)
-				se.y = 0;
+				if (se.y > height)
+					se.y = height;
+				else if (se.y < 0)
+					se.y = 0;
 
-			canvas.drawRect(nw.x, nw.y, se.x, se.y, mPaint);
-			// canvas.drawRect(50, 50, 122, 532, mPaint);
+				canvas.drawRect(nw.x, nw.y, se.x, se.y, mPaint);
+			}
 		}
 
 		if (currentLocationMarker != null) {
@@ -156,7 +161,7 @@ public class RegionsOverlay extends Overlay implements IOverlay {
 				GeoPoint p = mapView.getProjection().fromPixels(x, y);
 				int id = checkHit(p);
 				if (id != -1) {
-					showMarkerDialog(id);
+					((MapViewActivity)activity).downloadEventsAndShowDialog(id);
 					return true;
 				}
 			}
@@ -198,31 +203,39 @@ public class RegionsOverlay extends Overlay implements IOverlay {
 	private int checkHit(GeoPoint p) {
 		for (int i = 0; i < regions.size(); i++) {
 			Region region = regions.get(i);
-
-			if (p.getLatitudeE6() < region.getNw().getLatitudeE6()
-					&& p.getLongitudeE6() > region.getNw().getLongitudeE6()
-					&& p.getLatitudeE6() > region.getSe().getLatitudeE6()
-					&& p.getLongitudeE6() < region.getSe().getLongitudeE6()) {
-				return region.getRegionId();
+			for (int j = 0; j < region.getBoundaries().size(); j++) {
+				Boundary boundary = region.getBoundaries().get(j);			
+				if (p.getLatitudeE6() < boundary.north
+						&& p.getLongitudeE6() > boundary.west
+						&& p.getLatitudeE6() > boundary.south
+						&& p.getLongitudeE6() < boundary.east) {
+					return region.getRegionId();
+				}
 			}
 		}
 		return -1;
 	}
 
-	@Override
-	public void showMarkerDialog(final int id) {
+
+	public void showMarkerDialog(final int id, ArrayList<Event> events) {
 		AlertDialog.Builder builder;
 		AlertDialog alertDialog;
 
 		Context mContext = activity;
 		builder = new AlertDialog.Builder(mContext);
 
-		final CharSequence[] items = { "Red", "Green", "Blue" };
+		int listSize = events.size();
+
+		final CharSequence[] items = new CharSequence[listSize];
+
+		for (int i = 0; i < listSize; i++) {
+			items[i] = events.get(i).getName();
+		}
 
 		builder.setTitle("Choose the event to load");
 		builder.setItems(items, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int item) {
-				((MapViewActivity) activity).downloadEventsDialog(id);
+				((MapViewActivity) activity).downloadMarkersDialog(id, item);
 			}
 		});
 		alertDialog = builder.create();

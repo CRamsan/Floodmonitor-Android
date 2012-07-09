@@ -155,7 +155,7 @@ public class UploadFormActivity extends Activity {
 		// Save UI state changes to the savedInstanceState.
 		// This bundle will be passed to onCreate if the process is
 		// killed and restarted.
-		savedInstanceState.putString("FilePathVar",file);
+		savedInstanceState.putString("FilePathVar", file);
 		super.onSaveInstanceState(savedInstanceState);
 	}
 
@@ -268,11 +268,6 @@ public class UploadFormActivity extends Activity {
 			return builder.create();
 		}
 		default: {
-			int asd = 2;
-			asd++;
-			if(asd > 0){
-				return null;
-			}
 			return null;
 		}
 		}

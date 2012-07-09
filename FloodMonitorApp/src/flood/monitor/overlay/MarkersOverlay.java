@@ -78,12 +78,12 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements IOve
 	}
 
 	public void setOverlay(ArrayList<Marker> overlay) {
-		mOverlays = overlay;
+		this.mOverlays = new ArrayList<Marker>(0);
 
 		for (Marker marker : overlay) {
 			addOverlayMarker(marker);
 		}
-
+		
 		if (currentLocationMarker != null) {
 			addOverlayItem((Marker) currentLocationMarker);
 		}
@@ -229,23 +229,23 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements IOve
 	public void addOverlayMarker(Marker overlayItem) {
 		Drawable icon = null;
 		switch (overlayItem.getSeverity()) {
-		case 4:
+		case 1:
 			icon = activity.getResources().getDrawable(
 					R.drawable.marker_blue);
 			break;
-		case 5:
+		case 2:
 			icon = activity.getResources().getDrawable(
 					R.drawable.marker_green);
 			break;
-		case 6:
+		case 3:
 			icon = activity.getResources().getDrawable(
 					R.drawable.marker_yellow);
 			break;
-		case 7:
+		case 4:
 			icon = activity.getResources().getDrawable(
 					R.drawable.marker_orange);
 			break;
-		case 8:
+		case 5:
 			icon = activity.getResources().getDrawable(
 					R.drawable.marker_red);
 			break;
@@ -304,9 +304,8 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements IOve
 		populate();
 	}
 
-	@Override
 	public void showMarkerDialog(int id) {
-		AlertDialog.Builder builder;
+		/*AlertDialog.Builder builder;
 		AlertDialog alertDialog;
 
 		Context mContext = activity;
@@ -328,7 +327,7 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements IOve
 		builder.setView(layout);
 		alertDialog = builder.create();
 		alertDialog.setCanceledOnTouchOutside(true);
-		alertDialog.show();
+		alertDialog.show();*/
 	}
 
 }

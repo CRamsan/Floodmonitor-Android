@@ -93,19 +93,25 @@ public class Parser {
 	}
 
 	public ArrayList<Region> ParseGeoRegions(String filename, InputStream stream) {
-		ArrayList<Region> regions = new ArrayList<Region>();
-		Region gegionA = new Region(0, "Fargo", new GeoPoint(47369500, -99059500), 
-												new GeoPoint(46755800, -98109200));
-		Event event = new Event(gegionA.getRegionId(), "Fargo", true, "sdf", "sad", null);
-		Region gegionB = new Region(0, "Test1", new GeoPoint(46369500,-100059500), 
-												new GeoPoint(45755800, -99109200));
-		Region gegionC = new Region(0, "Test3", new GeoPoint(46369500,-101259500), 
-												new GeoPoint(45755800,-100109200));
+		RegionHandler handler = new RegionHandler();
 
-		regions.add(gegionA);
-		regions.add(gegionB);
-		regions.add(gegionC);
-		return regions;
+		try {
+
+			SAXParserFactory factory = SAXParserFactory.newInstance();
+			SAXParser saxParser = factory.newSAXParser();
+			saxParser.parse(stream, handler);
+
+		} catch (SAXException e) {
+			String message = e.getMessage();
+			Log.i(Parser.class.toString(), message);
+		} catch (ParserConfigurationException e) {
+			String message = e.getMessage();
+			Log.i(Parser.class.toString(), message);
+		} catch (IOException e) {
+			String message = e.getMessage();
+			Log.i(Parser.class.toString(), message);
+		}
+		return handler.getResult();
 	}
 
 	private class EventHandler extends DefaultHandler {
@@ -247,32 +253,26 @@ public class Parser {
 		private static final String BOUNDARIES = "boundaries";
 		private static final String BOUNDARY_NAME = "name";
 		private static final String BOUNDARY_ID = "id";
-		private static final String EVENTS = "events";
-		private static final String EVENT = "event";
+		private static final String LIST = "regions";
+		private static final String ITEM = "region";
 
 		private static final String ID = "id";
 		private static final String NAME = "name";
-		private static final String FILE = "kmlfile";
-		private static final String ACTIVE = "active";
-		private static final String BEGINDATE = "begindate";
-		private static final String ENDDATE = "enddate";
 		private static final String BOUNDARY = "boundary";
 		private static final String NORTHWEST = "northwest";
-		private static final String SOUTHEAST = "northeast";
+		private static final String SOUTHEAST = "southeast";
 
 		private ArrayList<Region> regions;
-		private String northwest;
-		private String southeast;
+		private ArrayList<Boundary> boundaries;
 		private String temp;
 
 		private String originURL;
-		private String beginDate;
-		private String endDate;
 		private String name;
 		private int regionId;
-		private int latitude;
-		private int longitud;
-		private boolean active;
+		private int south;
+		private int east;
+		private int north;
+		private int west;
 
 		public RegionHandler() {
 			super();
@@ -283,28 +283,16 @@ public class Parser {
 		public void startElement(String uri, String localName, String qName,
 				Attributes attributes) throws SAXException {
 
-			if (qName.equalsIgnoreCase(EVENTS)) {
+			if (qName.equalsIgnoreCase(LIST)) {
 				this.regions = new ArrayList<Region>(0);
-			} else if (qName.equalsIgnoreCase(EVENT)) {
+			} else if (qName.equalsIgnoreCase(ITEM)) {
 
 			} else if (qName.equalsIgnoreCase(ID)) {
 
 			} else if (qName.equalsIgnoreCase(NAME)) {
 
-			} else if (qName.equalsIgnoreCase(FILE)) {
-
-			} else if (qName.equalsIgnoreCase(ACTIVE)) {
-
-			} else if (qName.equalsIgnoreCase(BEGINDATE)) {
-
-			} else if (qName.equalsIgnoreCase(ENDDATE)) {
-
 			} else if (qName.equalsIgnoreCase(BOUNDARIES)) {
-
-			} else if (qName.equalsIgnoreCase(BOUNDARY_ID)) {
-
-			} else if (qName.equalsIgnoreCase(BOUNDARY_NAME)) {
-
+				this.boundaries = new ArrayList<Boundary>(0);
 			} else if (qName.equalsIgnoreCase(BOUNDARY)) {
 
 			} else if (qName.equalsIgnoreCase(NORTHWEST)) {
@@ -312,7 +300,6 @@ public class Parser {
 			} else if (qName.equalsIgnoreCase(SOUTHEAST)) {
 
 			}
-
 			temp = "";
 		}
 
@@ -320,38 +307,36 @@ public class Parser {
 		public void endElement(String uri, String localName, String qName)
 				throws SAXException {
 
-			if (qName.equalsIgnoreCase(EVENTS)) {
+			if (qName.equalsIgnoreCase(LIST)) {
 
-			} else if (qName.equalsIgnoreCase(EVENT)) {
-				Region region = new Region(regionId, name, originURL, latitude,
-						longitud);
+			} else if (qName.equalsIgnoreCase(ITEM)) {
+				Region region = new Region(regionId, name, boundaries);
+				this.boundaries = null;
 				this.regions.add(region);
 			} else if (qName.equalsIgnoreCase(ID)) {
 				this.regionId = Integer.parseInt(temp);
 			} else if (qName.equalsIgnoreCase(NAME)) {
 				this.name = temp;
-			} else if (qName.equalsIgnoreCase(FILE)) {
-				this.originURL = temp;
-			} else if (qName.equalsIgnoreCase(ACTIVE)) {
-				this.active = Boolean.parseBoolean(temp);
-			} else if (qName.equalsIgnoreCase(BEGINDATE)) {
-				this.beginDate = temp;
-			} else if (qName.equalsIgnoreCase(ENDDATE)) {
-				this.endDate = temp;
 			} else if (qName.equalsIgnoreCase(BOUNDARIES)) {
 
-			} else if (qName.equalsIgnoreCase(BOUNDARY_ID)) {
-
-			} else if (qName.equalsIgnoreCase(BOUNDARY_NAME)) {
-
 			} else if (qName.equalsIgnoreCase(BOUNDARY)) {
-
+				Boundary boundary = new Boundary();
+				boundary.east = east;
+				boundary.west = west;
+				boundary.south = south;
+				boundary.north = north;
+				boundaries.add(boundary);
 			} else if (qName.equalsIgnoreCase(NORTHWEST)) {
-				this.northwest = temp;
+				west = (int) (Double.parseDouble(temp.substring(0,
+						temp.indexOf(","))) * 1000000);
+				north = (int) (Double.parseDouble(temp.substring(temp
+						.indexOf(",") + 1)) * 1000000);
 			} else if (qName.equalsIgnoreCase(SOUTHEAST)) {
-				this.southeast = temp;
+				east = (int) (Double.parseDouble(temp.substring(0,
+						temp.indexOf(","))) * 1000000);
+				south = (int) (Double.parseDouble(temp.substring(temp
+						.indexOf(",") + 1)) * 1000000);
 			}
-
 			temp = "";
 		}
 

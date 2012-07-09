@@ -84,7 +84,7 @@ public class EventsOverlay extends Overlay implements IOverlay {
 	@Override
 	public void draw(Canvas canvas, MapView mapv, boolean shadow) {
 		super.draw(canvas, mapv, shadow);
-		Paint mPaint = new Paint();
+		/*Paint mPaint = new Paint();
 		mPaint.setColor(Color.RED);
 		mPaint.setStyle(Paint.Style.FILL_AND_STROKE);
 		mPaint.setAlpha(55);
@@ -128,7 +128,7 @@ public class EventsOverlay extends Overlay implements IOverlay {
 			((MapView) activity.findViewById(R.id.mapview)).getProjection()
 					.toPixels(currentLocationMarker.getPoint(), center);
 			canvas.drawCircle(center.x, center.y, 15, mPaint);
-		}
+		}*/
 
 	}
 
@@ -202,9 +202,8 @@ public class EventsOverlay extends Overlay implements IOverlay {
 		return false;
 	}
 
-	@Override
 	public void showMarkerDialog(int id) {
-		AlertDialog.Builder builder;
+		/*AlertDialog.Builder builder;
 		AlertDialog alertDialog;
 
 		Context mContext = activity;
@@ -223,7 +222,7 @@ public class EventsOverlay extends Overlay implements IOverlay {
 		builder.setView(layout);
 		alertDialog = builder.create();
 		alertDialog.setCanceledOnTouchOutside(true);
-		alertDialog.show();
+		alertDialog.show();*/
 		
 	}
 }

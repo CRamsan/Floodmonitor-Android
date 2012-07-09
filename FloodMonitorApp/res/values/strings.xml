@@ -41,6 +41,7 @@
     <string name="pref_Visuals">Visuals</string>
     <string name="pref_UseSatellite_title">Use satellite images</string>
     <string name="desc_drag">Drag the marker</string>
+    <string name="desc_MarkerDialogImage">Drag the marker</string>
     <string name="desc_buttonLock">Center the map in your location</string>
     <string name="desc_buttonAddMarker">Place a marker in this map</string>
     <string name="desc_buttonUploadMarker">Upload to the marked location</string>

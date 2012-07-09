@@ -10,5 +10,4 @@ public interface IOverlay {
 
 	public void updateBestLocation(Location location);
 	
-	public void showMarkerDialog(int id);
 }
