@@ -31,7 +31,7 @@
                 android:value=".MapViewActivity$SearchActivity" />
         </activity>
         <activity
-            android:name=".ploadFormActivity"
+            android:name=".UploadFormActivity"
             android:theme="@style/ThemeSelectorDialog" >
         </activity>
         <activity

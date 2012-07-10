@@ -72,7 +72,6 @@ public class LimitedMapView extends MapView {
 			}
 		}
 		return super.onTouchEvent(ev);
-
 	}
 
 	// ===========================================================

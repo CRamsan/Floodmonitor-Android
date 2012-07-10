@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
@@ -22,10 +23,13 @@ import com.google.android.maps.ItemizedOverlay;
 import com.google.android.maps.MapView;
 import com.google.android.maps.OverlayItem;
 
+import flood.monitor.MapViewActivity;
+import flood.monitor.MarkerDIalogActivity;
 import flood.monitor.R;
 import flood.monitor.modules.kmlparser.MarkerManager;
 
-public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements IOverlay{
+public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements
+		IOverlay {
 
 	// ===========================================================
 	// Constants
@@ -83,7 +87,7 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements IOve
 		for (Marker marker : overlay) {
 			addOverlayMarker(marker);
 		}
-		
+
 		if (currentLocationMarker != null) {
 			addOverlayItem((Marker) currentLocationMarker);
 		}
@@ -121,7 +125,7 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements IOve
 		}
 
 		showMarkerDialog(index);
-		
+
 		/*
 		 * AlertDialog.Builder dialog = new AlertDialog.Builder(context);
 		 * dialog.setTitle(item.getTitle());
@@ -181,10 +185,11 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements IOve
 						uploadLocationMarker.getSnippet(), null, 0, 0, 0);
 
 				Drawable icon = uploadDrawable;
-				icon.setBounds(-icon.getIntrinsicWidth() /2, -icon.getIntrinsicHeight(),
-						icon.getIntrinsicWidth()/2, 0);
-				toDrop  .setMarker(icon);
-				
+				icon.setBounds(-icon.getIntrinsicWidth() / 2,
+						-icon.getIntrinsicHeight(),
+						icon.getIntrinsicWidth() / 2, 0);
+				toDrop.setMarker(icon);
+
 				mOverlays.remove(uploadLocationMarker);
 				mOverlays.add(toDrop);
 				populate();
@@ -230,24 +235,21 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements IOve
 		Drawable icon = null;
 		switch (overlayItem.getSeverity()) {
 		case 1:
-			icon = activity.getResources().getDrawable(
-					R.drawable.marker_blue);
+			icon = activity.getResources().getDrawable(R.drawable.marker_blue);
 			break;
 		case 2:
-			icon = activity.getResources().getDrawable(
-					R.drawable.marker_green);
+			icon = activity.getResources().getDrawable(R.drawable.marker_green);
 			break;
 		case 3:
-			icon = activity.getResources().getDrawable(
-					R.drawable.marker_yellow);
+			icon = activity.getResources()
+					.getDrawable(R.drawable.marker_yellow);
 			break;
 		case 4:
-			icon = activity.getResources().getDrawable(
-					R.drawable.marker_orange);
+			icon = activity.getResources()
+					.getDrawable(R.drawable.marker_orange);
 			break;
 		case 5:
-			icon = activity.getResources().getDrawable(
-					R.drawable.marker_red);
+			icon = activity.getResources().getDrawable(R.drawable.marker_red);
 			break;
 		default:
 			break;
@@ -260,7 +262,7 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements IOve
 
 	public void addOverlayItem(Marker overlayItem) {
 		mOverlays.add(overlayItem);
-		//populate();
+		// populate();
 	}
 
 	public void addOverlay(ArrayList<Marker> overlay) {
@@ -276,9 +278,10 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements IOve
 				(int) (location.getLatitude() * 1000000),
 				(int) (location.getLongitude() * 1000000)), "You are here",
 				"Description...", null, 0, 0, 0);
-		Drawable icon = activity.getResources().getDrawable(R.drawable.location);
-		icon.setBounds(-icon.getIntrinsicWidth() /2, -icon.getIntrinsicHeight(),
-				icon.getIntrinsicWidth()/2, 0);
+		Drawable icon = activity.getResources()
+				.getDrawable(R.drawable.location);
+		icon.setBounds(-icon.getIntrinsicWidth() / 2,
+				-icon.getIntrinsicHeight(), icon.getIntrinsicWidth() / 2, 0);
 		currentLocationMarker.setMarker(icon);
 		addOverlayItem((Marker) currentLocationMarker);
 		populate();
@@ -288,9 +291,10 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements IOve
 		uploadLocationMarker = new OverlayItem(new GeoPoint(
 				(int) (location.getLatitude() * 1000000),
 				(int) (location.getLongitude() * 1000000)), "", "");
-		Drawable icon = activity.getResources().getDrawable(R.drawable.marker_white);
-		icon.setBounds(-icon.getIntrinsicWidth() /2, -icon.getIntrinsicHeight(),
-				icon.getIntrinsicWidth()/2, 0);
+		Drawable icon = activity.getResources().getDrawable(
+				R.drawable.marker_white);
+		icon.setBounds(-icon.getIntrinsicWidth() / 2,
+				-icon.getIntrinsicHeight(), icon.getIntrinsicWidth() / 2, 0);
 		uploadDrawable = icon;
 		uploadLocationMarker.setMarker(icon);
 		addOverlayItem((Marker) uploadLocationMarker);
@@ -305,29 +309,14 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements IOve
 	}
 
 	public void showMarkerDialog(int id) {
-		/*AlertDialog.Builder builder;
-		AlertDialog alertDialog;
-
-		Context mContext = activity;
-		LayoutInflater inflater = (LayoutInflater) mContext
-				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		View layout = inflater.inflate(R.layout.markerdialog,
-				(ViewGroup) (activity).findViewById(R.id.markerLayout));
-
-		OverlayItem item = mOverlays.get(id);
-		TextView text = (TextView) layout.findViewById(R.id.textView1);
-		text.setText(item.getTitle());
-		ImageView image = (ImageView) layout.findViewById(R.id.imageView1);
-		String pathToFile = "/mnt/sdcard/FloodMonitor/.cache/cute_cat.jpeg";
-		image.setImageBitmap(BitmapFactory.decodeFile(pathToFile));
-		TextView text2 = (TextView) layout.findViewById(R.id.textView2);
-		text2.setText(item.getSnippet());
-
-		builder = new AlertDialog.Builder(mContext);
-		builder.setView(layout);
-		alertDialog = builder.create();
-		alertDialog.setCanceledOnTouchOutside(true);
-		alertDialog.show();*/
+		Intent intent = new Intent(activity,
+				MarkerDIalogActivity.class);
+		intent.putExtra("latitude", createItem(id).getPoint().getLatitudeE6());
+		intent.putExtra("longitude", createItem(id).getPoint().getLongitudeE6());
+		intent.putExtra("mode", MapViewActivity.MARKER_UPLOAD);
+		boolean uploadButton = true;
+		intent.putExtra("upload", uploadButton);
+		activity.startActivityForResult(intent, MapViewActivity.MARKER_REQUEST);
 	}
 
 }

@@ -1,56 +1,19 @@
 package flood.monitor;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import com.google.android.maps.Overlay;
-
-import flood.monitor.modules.Connector;
-import flood.monitor.overlay.Marker;
-import flood.monitor.overlay.MarkersOverlay;
-import flood.monitor.overlay.RegionsOverlay;
-
-import android.R.integer;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
-import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Geocoder;
-import android.media.MediaScannerConnection;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
-import android.os.Handler;
-import android.os.Message;
-import android.provider.MediaStore;
-import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class MarkerDIalogActivity extends Activity {
 
@@ -63,7 +26,10 @@ public class MarkerDIalogActivity extends Activity {
 	// ===========================================================
 	private int latitude;
 	private int longitude;
+	private int mode;
+	private boolean upload;
 	private MarkerDIalogActivity activity;
+
 	// ===========================================================
 	// Methods from Activity
 	// ===========================================================
@@ -71,29 +37,70 @@ public class MarkerDIalogActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		// Activity is first created.
+		setContentView(R.layout.markerdialog);
 		activity = this;
+		upload = false;
 		Bundle markerData = getIntent().getExtras();
 		if (markerData != null) {
 			latitude = (markerData.getInt("latitude"));
 			longitude = (markerData.getInt("longitude"));
-			String title = markerData.getString("title");
-			String desc = markerData.getString("desc");
-			TextView titleView = (TextView) findViewById(R.id.textViewTitle);
-			TextView descView = (TextView) findViewById(R.id.textViewDescription);
-			TextView latView = (TextView) findViewById(R.id.textViewLatitude);
-			TextView lonView = (TextView) findViewById(R.id.textViewLatitude);
-			TextView addressView = (TextView) findViewById(R.id.textViewAddress);
-			ProgressBar circle = (ProgressBar) findViewById(R.id.progressBarAddress);
+			mode = markerData.getInt("mode");
+			upload = markerData.getBoolean("upload");
+			switch (mode) {
+			case MapViewActivity.MARKER_LOCATION:
+				TextView latView = (TextView) findViewById(R.id.textViewLatitude);
+				TextView lonView = (TextView) findViewById(R.id.textViewLongitude);
+				latView.setText(Integer.toString(latitude));
+				lonView.setText(Integer.toString(longitude));
+				ProgressBar circle = (ProgressBar) findViewById(R.id.progressBarAddress);
+				circle.setVisibility(View.GONE);
 
-			latView.setText(Integer.toString(latitude));
-			lonView.setText(Integer.toString(latitude));
-			titleView.setText(title);
-			descView.setText(desc);
-			addressView.setText("");
-			circle.setVisibility(View.GONE);
+				String title = markerData.getString("title");
+				String desc = markerData.getString("desc");
+
+				TextView titleView = (TextView) findViewById(R.id.textViewTitle);
+				TextView descView = (TextView) findViewById(R.id.textViewDescription);
+				TextView addressView = (TextView) findViewById(R.id.textViewAddress);
+
+				titleView.setText("");
+				descView.setText("");
+				addressView.setText("");
+				new GetAddressTask().execute();
+				break;
+			case MapViewActivity.MARKER_UPLOAD:
+
+				break;
+			default:
+				break;
+			}
 		}
+		Button buttonCancel = (Button) findViewById(R.id.markerCancelButton);
+		buttonCancel.setOnClickListener(new Button.OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				setResult(RESULT_CANCELED);
+				finish();
+			}
+		});
+		Button buttonUpload = (Button) findViewById(R.id.markerSubmitButton);
+		buttonUpload.setOnClickListener(new Button.OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				Intent intent = new Intent(activity, UploadFormActivity.class);
+				float lat = latitude / 1000000f;
+				float lon = longitude / 1000000f;
+				intent.putExtra("latitude", lat);
+				intent.putExtra("longitude", lon);
+				startActivityForResult(intent, MapViewActivity.PROCESS_REQUEST);
+			}
+		});
+		if (upload) {
+			buttonUpload.setVisibility(View.VISIBLE);
+		} else {
+			buttonUpload.setVisibility(View.GONE);
+		}
+
 		setResult(RESULT_CANCELED);
-		setContentView(R.layout.markerdialog);
 	}
 
 	@Override
@@ -149,6 +156,8 @@ public class MarkerDIalogActivity extends Activity {
 	}
 
 	private class GetAddressTask extends AsyncTask<Void, Void, Void> {
+		private String address;
+
 		@Override
 		protected void onPreExecute() {
 			((ProgressBar) findViewById(R.id.progressBarAddress))
@@ -160,22 +169,24 @@ public class MarkerDIalogActivity extends Activity {
 			Geocoder geocoder = new Geocoder(activity, Locale.getDefault());
 			List<Address> addressList;
 			try {
-				addressList = geocoder.getFromLocation(latitude/1000000, longitude/1000000, 1);
+				float lat = latitude / 1000000f;
+				float lon = longitude / 1000000f;
+				addressList = geocoder.getFromLocation(lat, lon, 1);
 				if (addressList.size() == 0) {
 					return null;
 				}
+				StringBuffer sb = new StringBuffer(50);
 				String[] items = new String[addressList.size()];
 				for (int i = 0; i < addressList.size(); i++) {
 					int addSize = addressList.get(i).getMaxAddressLineIndex();
-					StringBuffer sb = new StringBuffer(100);
 					for (int j = 0; j < addSize; j++) {
 						sb.append(addressList.get(i).getAddressLine(j));
 						if (j < addSize - 1)
 							sb.append(", ");
 					}
-					items[i] = sb.toString();
 				}
-				((TextView) findViewById(R.id.textViewAddress)).setText(items[0]);
+				items[0] = sb.toString();
+				address = items[0];
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -185,6 +196,7 @@ public class MarkerDIalogActivity extends Activity {
 
 		@Override
 		protected void onPostExecute(Void none) {
+			((TextView) findViewById(R.id.textViewAddress)).setText(address);
 			((ProgressBar) findViewById(R.id.progressBarAddress))
 					.setVisibility(View.GONE);
 		}

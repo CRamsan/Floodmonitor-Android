@@ -37,7 +37,6 @@ public final class R {
     public static final class id {
         public static final int aboutWebView=0x7f090000;
         public static final int buttoCancelMarker=0x7f090014;
-        public static final int button1=0x7f09001d;
         public static final int buttonAddMarker=0x7f090012;
         public static final int buttonLock=0x7f090011;
         public static final int buttonUploadMarker=0x7f090013;
@@ -53,19 +52,21 @@ public final class R {
         public static final int longitudeValueView=0x7f090004;
         public static final int longitudeView=0x7f090003;
         public static final int mapview=0x7f09000f;
+        public static final int markerCancelButton=0x7f09001d;
         public static final int markerLayout=0x7f090015;
-        public static final int menuItemAbout=0x7f090022;
-        public static final int menuItemExit=0x7f090023;
-        public static final int menuItemHelp=0x7f090021;
-        public static final int menuItemSearch=0x7f09001f;
-        public static final int menuItemSettings=0x7f090020;
+        public static final int markerSubmitButton=0x7f09001e;
+        public static final int menuItemAbout=0x7f090023;
+        public static final int menuItemExit=0x7f090024;
+        public static final int menuItemHelp=0x7f090022;
+        public static final int menuItemSearch=0x7f090020;
+        public static final int menuItemSettings=0x7f090021;
         public static final int pictureButton=0x7f090008;
         public static final int pictureView=0x7f090007;
         public static final int progressBarAddress=0x7f09001c;
         public static final int submitButton=0x7f09000e;
         public static final int textFile=0x7f090009;
         public static final int textFileName=0x7f09000a;
-        public static final int textView1=0x7f09001e;
+        public static final int textView1=0x7f09001f;
         public static final int textViewAddress=0x7f09001b;
         public static final int textViewDescription=0x7f090018;
         public static final int textViewLatitude=0x7f090019;
