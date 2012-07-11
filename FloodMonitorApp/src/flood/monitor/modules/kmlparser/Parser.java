@@ -12,39 +12,11 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import android.content.Context;
 import android.util.Log;
 
 import com.google.android.maps.GeoPoint;
 
-import flood.monitor.overlay.Marker;
-
 public class Parser {
-
-	public ArrayList<Marker> Parse(String file, InputStream stream,
-			Context context) {
-
-		KMLHandler handler = new KMLHandler();
-		ArrayList<Marker> itemList = new ArrayList<Marker>(0);
-		try {
-
-			SAXParserFactory factory = SAXParserFactory.newInstance();
-			SAXParser saxParser = factory.newSAXParser();
-			saxParser.parse(stream, handler);
-
-		} catch (SAXException e) {
-			String message = e.getMessage();
-			Log.i(Parser.class.toString(), message);
-		} catch (ParserConfigurationException e) {
-			String message = e.getMessage();
-			Log.i(Parser.class.toString(), message);
-		} catch (IOException e) {
-			String message = e.getMessage();
-			Log.i(Parser.class.toString(), message);
-		}
-		itemList = handler.getResult();
-		return itemList;
-	}
 
 	public ArrayList<Marker> ParseMarkers(String file, InputStream stream) {
 
@@ -121,26 +93,15 @@ public class Parser {
 
 		private static final String ID = "id";
 		private static final String NAME = "name";
-		private static final String FILE = "kmlfile";
 		private static final String ACTIVE = "active";
 		private static final String BEGINDATE = "begindate";
 		private static final String ENDDATE = "enddate";
 		private static final String BOUNDARIES = "boundaries";
 		private static final String BOUNDARY = "boundary";
-		private static final String NORTHWEST = "northwest";
-		private static final String SOUTHEAST = "southeast";
-
-		private GeoPoint northWest;
-		private GeoPoint southEast;
-		private int boundary_id;
-		private String boundary_name;
-
+		
 		private ArrayList<Event> events;
-		private ArrayList<Region> regions;
-		private boolean boundaries;
 		private String temp;
 
-		private String originURL;
 		private String beginDate;
 		private String endDate;
 		private String name;
@@ -150,7 +111,6 @@ public class Parser {
 		public EventHandler() {
 			super();
 			this.temp = "";
-			boundaries = false;
 		}
 
 		@Override
@@ -165,8 +125,6 @@ public class Parser {
 
 			} else if (qName.equalsIgnoreCase(NAME)) {
 
-			} else if (qName.equalsIgnoreCase(FILE)) {
-
 			} else if (qName.equalsIgnoreCase(ACTIVE)) {
 
 			} else if (qName.equalsIgnoreCase(BEGINDATE)) {
@@ -174,13 +132,7 @@ public class Parser {
 			} else if (qName.equalsIgnoreCase(ENDDATE)) {
 
 			} else if (qName.equalsIgnoreCase(BOUNDARIES)) {
-				this.regions = new ArrayList<Region>(0);
-				boundaries = true;
 			} else if (qName.equalsIgnoreCase(BOUNDARY)) {
-
-			} else if (qName.equalsIgnoreCase(NORTHWEST)) {
-
-			} else if (qName.equalsIgnoreCase(SOUTHEAST)) {
 
 			}
 			temp = "";
@@ -194,20 +146,12 @@ public class Parser {
 
 			} else if (qName.equalsIgnoreCase(EVENT)) {
 				Event event = new Event(regionId, name, active, beginDate,
-						endDate, regions);
+						endDate);
 				this.events.add(event);
 			} else if (qName.equalsIgnoreCase(ID)) {
-				if (!boundaries)
-					this.regionId = Integer.parseInt(temp);
-				else
-					this.boundary_id = Integer.parseInt(temp);
+				this.regionId = Integer.parseInt(temp);
 			} else if (qName.equalsIgnoreCase(NAME)) {
-				if (!boundaries)
-					this.name = temp;
-				else
-					this.boundary_name = temp;
-			} else if (qName.equalsIgnoreCase(FILE)) {
-				this.originURL = temp;
+				this.name = temp;
 			} else if (qName.equalsIgnoreCase(ACTIVE)) {
 				this.active = Boolean.parseBoolean(temp);
 			} else if (qName.equalsIgnoreCase(BEGINDATE)) {
@@ -215,23 +159,7 @@ public class Parser {
 			} else if (qName.equalsIgnoreCase(ENDDATE)) {
 				this.endDate = temp;
 			} else if (qName.equalsIgnoreCase(BOUNDARIES)) {
-				boundaries = false;
 			} else if (qName.equalsIgnoreCase(BOUNDARY)) {
-				Region region = new Region(boundary_id, boundary_name,
-						northWest, southEast);
-				this.regions.add(region);
-			} else if (qName.equalsIgnoreCase(NORTHWEST)) {
-				int lon = (int) (Double.parseDouble(temp.substring(0,
-						temp.indexOf(","))) * 1000000);
-				int lat = (int) (Double.parseDouble(temp.substring(temp
-						.indexOf(",") + 1)) * 1000000);
-				this.northWest = new GeoPoint(lat, lon);
-			} else if (qName.equalsIgnoreCase(SOUTHEAST)) {
-				int lon = (int) (Double.parseDouble(temp.substring(0,
-						temp.indexOf(","))) * 1000000);
-				int lat = (int) (Double.parseDouble(temp.substring(temp
-						.indexOf(",") + 1)) * 1000000);
-				this.southEast = new GeoPoint(lat, lon);
 			}
 			temp = "";
 		}
@@ -251,8 +179,6 @@ public class Parser {
 	private class RegionHandler extends DefaultHandler {
 
 		private static final String BOUNDARIES = "boundaries";
-		private static final String BOUNDARY_NAME = "name";
-		private static final String BOUNDARY_ID = "id";
 		private static final String LIST = "regions";
 		private static final String ITEM = "region";
 
@@ -266,7 +192,6 @@ public class Parser {
 		private ArrayList<Boundary> boundaries;
 		private String temp;
 
-		private String originURL;
 		private String name;
 		private int regionId;
 		private int south;

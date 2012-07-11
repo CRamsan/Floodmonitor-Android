@@ -14,7 +14,6 @@
             android:key="updates_interval"
             android:summary="@string/pref_UpdateInterval_summary"
             android:title="@string/pref_UpdateInterval_title" />
-
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_DataStorage" >
         <Preference

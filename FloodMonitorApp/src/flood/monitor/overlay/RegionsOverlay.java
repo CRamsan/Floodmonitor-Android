@@ -6,29 +6,16 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Path;
 import android.graphics.Point;
-import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
-import android.location.Location;
 import android.util.DisplayMetrics;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
-import com.google.android.maps.OverlayItem;
-import com.google.android.maps.Projection;
 
 import flood.monitor.MapViewActivity;
 import flood.monitor.R;
@@ -45,18 +32,13 @@ public class RegionsOverlay extends Overlay implements IOverlay {
 	// ===========================================================
 	// Fields
 	// ===========================================================
-	private static ArrayList<Region> regions;
+	private ArrayList<Region> regions;
 	private Activity activity;
-	private int index;
-	private RegionsOverlay overlay = this;
-	private Location currentLocation;
-	private Drawable currentLocationDrawable;
-	private OverlayItem currentLocationMarker;
+	
 	private int height = 0;
 	private int width = 0;
 	private int x;
 	private int y;
-	private boolean moved;
 
 	// ===========================================================
 	// Constructors
@@ -68,22 +50,22 @@ public class RegionsOverlay extends Overlay implements IOverlay {
 	// ===========================================================
 	// Getter & Setter
 	// ===========================================================
-	public int getIndex() {
-		return index;
-	}
-
-	public void setIndex(int index) {
-		this.index = index;
-	}
-
-	public static ArrayList<Region> getRegions() {
+	public ArrayList<Region> getRegions() {
 		return regions;
 	}
 
-	public static void setRegions(ArrayList<Region> regions) {
-		RegionsOverlay.regions = regions;
+	public void setRegions(ArrayList<Region> regions) {
+		this.regions = regions;
 	}
 
+	public Region getRegionById(int regionId) {
+		for(Region region : regions){
+			if(region.getRegionId() == regionId)
+				return region;
+		}
+		return null;
+	}
+	
 	// ===========================================================
 	// Methods from Parent
 	// ===========================================================
@@ -132,19 +114,6 @@ public class RegionsOverlay extends Overlay implements IOverlay {
 				canvas.drawRect(nw.x, nw.y, se.x, se.y, mPaint);
 			}
 		}
-
-		if (currentLocationMarker != null) {
-			Point center = new Point();
-			((MapView) activity.findViewById(R.id.mapview))
-					.getProjection()
-					.toPixels(
-							new GeoPoint(
-									(int) (currentLocation.getLatitude() * 1000000),
-									(int) (currentLocation.getLongitude()) * 1000000),
-							center);
-			canvas.drawCircle(center.x, center.y, 15, mPaint);
-		}
-
 	}
 
 	@Override
@@ -154,14 +123,13 @@ public class RegionsOverlay extends Overlay implements IOverlay {
 			x = (int) event.getX();
 			y = (int) event.getY();
 		} else if (action == MotionEvent.ACTION_UP) {
-			int samplex = (int) Math.abs(x - event.getX());
-			int sampley = (int) Math.abs(y - event.getY());
 			if (Math.abs(x - event.getX()) < 10
 					&& Math.abs(y - event.getY()) < 10) {
 				GeoPoint p = mapView.getProjection().fromPixels(x, y);
 				int id = checkHit(p);
 				if (id != -1) {
-					((MapViewActivity)activity).downloadEventsAndShowDialog(id);
+					((MapViewActivity) activity)
+							.downloadEventsAndShowDialog(id);
 					return true;
 				}
 			}
@@ -173,56 +141,15 @@ public class RegionsOverlay extends Overlay implements IOverlay {
 	// ===========================================================
 	// Methods from Interfaces
 	// ===========================================================
-
-	// ===========================================================
-	// Methods
-	// ===========================================================
-	public void updateActivity(Activity newActivity) {
-		this.activity = newActivity;
-		DisplayMetrics displaymetrics = new DisplayMetrics();
-		activity.getWindowManager().getDefaultDisplay()
-				.getMetrics(displaymetrics);
-		height = displaymetrics.heightPixels;
-		width = displaymetrics.widthPixels;
-	}
-
-	public void updateBestLocation(Location location) {
-		currentLocationMarker = new Marker(new GeoPoint(
-				(int) (location.getLatitude() * 1000000),
-				(int) (location.getLongitude() * 1000000)), "You are here",
-				"Description...", null, 0, 0, 0);
-		Drawable icon = activity.getResources()
-				.getDrawable(R.drawable.location);
-		icon.setBounds(-icon.getIntrinsicWidth() / 2,
-				-icon.getIntrinsicHeight(), icon.getIntrinsicWidth() / 2, 0);
-		currentLocationMarker.setMarker(icon);
-		currentLocation = location;
-		currentLocationDrawable = icon;
-	}
-
-	private int checkHit(GeoPoint p) {
-		for (int i = 0; i < regions.size(); i++) {
-			Region region = regions.get(i);
-			for (int j = 0; j < region.getBoundaries().size(); j++) {
-				Boundary boundary = region.getBoundaries().get(j);			
-				if (p.getLatitudeE6() < boundary.north
-						&& p.getLongitudeE6() > boundary.west
-						&& p.getLatitudeE6() > boundary.south
-						&& p.getLongitudeE6() < boundary.east) {
-					return region.getRegionId();
-				}
-			}
-		}
-		return -1;
-	}
-
-
-	public void showMarkerDialog(final int id, ArrayList<Event> events) {
+	@Override
+	public void showMarkerDialog(final int id) {
 		AlertDialog.Builder builder;
 		AlertDialog alertDialog;
 
 		Context mContext = activity;
 		builder = new AlertDialog.Builder(mContext);
+
+		ArrayList<Event> events = getRegionById(id).getEvents();
 
 		int listSize = events.size();
 
@@ -243,4 +170,38 @@ public class RegionsOverlay extends Overlay implements IOverlay {
 		alertDialog.show();
 
 	}
+
+	@Override
+	public void updateActivity(Activity newActivity) {
+		this.activity = newActivity;
+		DisplayMetrics displaymetrics = new DisplayMetrics();
+		activity.getWindowManager().getDefaultDisplay()
+				.getMetrics(displaymetrics);
+		height = displaymetrics.heightPixels;
+		width = displaymetrics.widthPixels;
+	}
+
+	// ===========================================================
+	// Methods
+	// ===========================================================
+	private int checkHit(GeoPoint p) {
+		for (int i = 0; i < regions.size(); i++) {
+			Region region = regions.get(i);
+			for (int j = 0; j < region.getBoundaries().size(); j++) {
+				Boundary boundary = region.getBoundaries().get(j);
+				if (p.getLatitudeE6() < boundary.north
+						&& p.getLongitudeE6() > boundary.west
+						&& p.getLatitudeE6() > boundary.south
+						&& p.getLongitudeE6() < boundary.east) {
+					return region.getRegionId();
+				}
+			}
+		}
+		return -1;
+	}
+	
+	public void setEvents(int regionId, ArrayList<Event> events){
+		getRegionById(regionId).setEvents(events);
+	}
+
 }

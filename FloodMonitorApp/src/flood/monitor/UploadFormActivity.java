@@ -1,6 +1,5 @@
 package flood.monitor;
 
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,7 +8,6 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import android.R.integer;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -28,7 +26,6 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,7 +44,6 @@ public class UploadFormActivity extends Activity {
 
 	private final static int UPLOAD_RUNNING = 0;
 	private final static int UPLOAD_COMPLETE = 1;
-	private final static int UPLOAD_NOTCOMPLETED = 2;
 
 	// ===========================================================
 	// Fields
@@ -358,7 +354,6 @@ public class UploadFormActivity extends Activity {
 	public void UploadPicture(Context context, String file) {
 		HttpURLConnection connection = null;
 		DataOutputStream outputStream = null;
-		DataInputStream inputStream = null;
 
 		String pathToOurFile = file;
 		String urlServer = "http://buzz.acm.ndsu.nodak.edu/hosted/cramirez/floodmonitor/plog-mobupload.php";
@@ -414,8 +409,8 @@ public class UploadFormActivity extends Activity {
 					+ lineEnd);
 
 			// Responses from the server (code and message)
-			int serverResponseCode = connection.getResponseCode();
-			String serverResponseMessage = connection.getResponseMessage();
+			//int serverResponseCode = connection.getResponseCode();
+			//String serverResponseMessage = connection.getResponseMessage();
 
 			fileInputStream.close();
 			outputStream.flush();

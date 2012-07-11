@@ -54,12 +54,11 @@ import com.google.android.maps.OverlayItem;
 import flood.monitor.modules.Connector;
 import flood.monitor.modules.Locator;
 import flood.monitor.modules.kmlparser.Event;
+import flood.monitor.modules.kmlparser.Marker;
 import flood.monitor.modules.kmlparser.Parser;
 import flood.monitor.modules.kmlparser.Region;
-import flood.monitor.overlay.EventsOverlay;
 import flood.monitor.overlay.IOverlay;
 import flood.monitor.overlay.LimitedMapView;
-import flood.monitor.overlay.Marker;
 import flood.monitor.overlay.MarkersOverlay;
 import flood.monitor.overlay.RegionsOverlay;
 
@@ -75,36 +74,26 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	// ===========================================================
 	// Constants
 	// ===========================================================
-	// STATES
-	public final static int ENABLE_MARKER = 0;
-	public final static int ENABLE_UPLOAD = 1;
-	// MARKER MODES
-	public final static int MARKER_LOCATION = 0;
-	public final static int MARKER_UPLOAD = 1;
-	// MAP LEVEL
+	// BUTTON STATES
+	public final static int ENABLE_ADD = 1;
+	public final static int ENABLE_UPLOAD = 2;
+	// MARKER DIALOG MODES
+	public final static int MARKER_LOCATION = 1;
+	public final static int MARKER_UPLOAD = 2;
+	// MAP OVERLAY LEVEL
 	public final static int MAP_LEVEL_REGION = 1;
 	public final static int MAP_LEVEL_MARKER = 2;
-	// PROCESS STATES
-	public final static int PROCESS_RUNNING = 0;
-	public final static int PROCESS_COMPLETE = 1;
-	public final static int PROCESS_FAILED = 2;
-	// REQUEST CODES
-	public final static int PROCESS_REQUEST = 100;
-	public final static int MARKER_REQUEST = 150;
-	public final static int SEARCH_REQUEST = 200;
-	public final static int REQUEST_DOWNLOAD_EVENTS = 500;
-	public final static int REQUEST_DOWNLOAD_REGIONS = 600;
-	public final static int REQUEST_DOWNLOAD_MARKERS = 700;
+	// INTENT CODES
+	public final static int UPLOAD_INTENT = 100;
+	public final static int DIALOG_INTENT = 150;
 	// DIALOGS ID
-	public final static int EVENT_DOWNLOAD_DIALOG = 200;
-	public final static int EVENT_SELECT_DIALOG = 300;
-	public final static int REGION_DOWNLOAD_DIALOG = 350;
-	public final static int MARKER_DOWNLOAD_DIALOG = 3750;
+	public final static int EVENT_DOWNLOAD_DIALOG = 100;
+	public final static int REGION_DOWNLOAD_DIALOG = 300;
+	public final static int MARKER_DOWNLOAD_DIALOG = 400;
+
 	// PREFERENCES
 	public final static String PREFS_NAME = "MapViewPref";
 	public final static String INSTALL_STATE = "Install_State";
-	public final static String MAP_STATE = "Map_State";
-	public final static String REGIONS_DATA = "Regions_Array";
 	public final static String MARKER_STATE = "markerState";
 	public final static String OVERLAY_STATE = "overlayState";
 	public final static String SUBTITLE_TEXT = "subtitleText";
@@ -118,7 +107,6 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	private static LocationOverlay locationOverlay;// 4
 	private static MarkersOverlay markersOverlay;// 3
 	private static RegionsOverlay georegionsOverlay;// 2
-	private static EventsOverlay eventsOverlay;// 1
 	private static IOverlay selectedOverlay;
 
 	private static MapViewActivity activity;
@@ -127,18 +115,6 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	private int markerState;
 	private int mapLevel;
 	private boolean installedBefore;
-
-	// ===========================================================
-	// Constructors
-	// ===========================================================
-
-	// ===========================================================
-	// Getter & Setter
-	// ===========================================================
-
-	public int getMapLevel() {
-		return this.mapLevel;
-	}
 
 	// ===========================================================
 	// Methods from Activity
@@ -208,7 +184,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		cancelMarker.setOnClickListener(new Button.OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-				markerState = ENABLE_MARKER;
+				markerState = ENABLE_ADD;
 				locationOverlay.stopDragMarker();
 				updateButton();
 				((MapView) findViewById(R.id.mapview)).invalidate();
@@ -226,7 +202,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 						.getLatitude());
 				intent.putExtra("longitude", locationOverlay
 						.getMarkerLocation().getLongitude());
-				startActivityForResult(intent, PROCESS_REQUEST);
+				startActivityForResult(intent, UPLOAD_INTENT);
 			}
 		});
 
@@ -240,7 +216,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			markerState = savedInstanceState.getInt(MARKER_STATE);
 			mapLevel = savedInstanceState.getInt(OVERLAY_STATE);
 		} else {
-			markerState = ENABLE_MARKER;
+			markerState = ENABLE_ADD;
 			mapLevel = MAP_LEVEL_REGION;
 			SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
 			installedBefore = settings.getBoolean(INSTALL_STATE, false);
@@ -371,26 +347,6 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			progressDialog.setCancelable(false);
 			return progressDialog;
 		}
-		case EVENT_SELECT_DIALOG: {
-			/*
-			 * CharSequence[] items = new String[events.size()]; for (int i = 0;
-			 * i < events.size(); i++) { items[i] = events.get(i).getName(); }
-			 * AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			 * builder.setTitle("Pick an event"); builder.setItems(items, new
-			 * DialogInterface.OnClickListener() { public void
-			 * onClick(DialogInterface dialog, int item) {
-			 * eventsMarker.setEventIndex(item); if (Build.VERSION.SDK_INT >=
-			 * Build.VERSION_CODES.HONEYCOMB) { getActionBar().setSubtitle(
-			 * events.get(eventsMarker.getEventIndex()).getName());
-			 * 
-			 * } else {
-			 * 
-			 * } dismissDialog(EVENT_SELECT_DIALOG); downloadRegionsDialog(); }
-			 * }); builder.setCancelable(false); AlertDialog alert =
-			 * builder.create(); return alert;
-			 */
-			return null;
-		}
 		case REGION_DOWNLOAD_DIALOG: {
 			ProgressDialog progressDialog = new ProgressDialog(this);
 			progressDialog.setMessage("Getting data of this event");
@@ -412,13 +368,6 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		case EVENT_DOWNLOAD_DIALOG: {
 
 		}
-		case EVENT_SELECT_DIALOG: {
-			if (markersOverlay == null) {
-				dialog.setCancelable(false);
-			} else {
-				dialog.setCancelable(true);
-			}
-		}
 		case REGION_DOWNLOAD_DIALOG: {
 		}
 		case MARKER_DOWNLOAD_DIALOG: {
@@ -439,15 +388,15 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		super.onActivityResult(requestCode, resultCode, data);
 
 		switch (requestCode) {
-		case PROCESS_REQUEST:
-			markerState = ENABLE_MARKER;
+		case UPLOAD_INTENT:
+			markerState = ENABLE_ADD;
 			locationOverlay.stopDragMarker();
 			updateButton();
 			limitedMapView.invalidate();
 			break;
-		case MARKER_REQUEST:
+		case DIALOG_INTENT:
 			if (resultCode == RESULT_OK) {
-				markerState = ENABLE_MARKER;
+				markerState = ENABLE_ADD;
 				locationOverlay.stopDragMarker();
 				updateButton();
 				limitedMapView.invalidate();
@@ -477,6 +426,14 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
+	}
+
+	// ===========================================================
+	// Getter & Setter
+	// ===========================================================
+
+	public int getMapLevel() {
+		return this.mapLevel;
 	}
 
 	// ===========================================================
@@ -514,9 +471,10 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		new DownloadRegionsTask().execute();
 	}
 
-	public void downloadEventsDialog(int regionId) {
-		new DownloadEventsTask().execute(regionId);
-	}
+	/*
+	 * public void downloadEventsDialog(int regionId) { new
+	 * DownloadEventsTask().execute(regionId); }
+	 */
 
 	public void downloadEventsAndShowDialog(int regionId) {
 		new DownloadAndShowEventsTask().execute(regionId);
@@ -525,23 +483,6 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	public void downloadMarkersDialog(int regionId, int eventId) {
 		new DownloadMarkersTask().execute(regionId, eventId);
 	}
-
-	/*
-	 * private void downloadRegionsDialog() { final Handler
-	 * downloadRegionsDialogHandler = new Handler() { public void
-	 * handleMessage(Message msg) { int state = msg.arg1; if (state ==
-	 * PROCESS_COMPLETE) { activity.runOnUiThread(new Runnable() { public void
-	 * run() { dismissDialog(REGION_DOWNLOAD_DIALOG);
-	 * focus(locator.getBestLocation(), 11); } }); } else if (state ==
-	 * PROCESS_RUNNING) {
-	 * 
-	 * } else if (state == PROCESS_FAILED) { activity.runOnUiThread(new
-	 * Runnable() { public void run() { dismissDialog(REGION_DOWNLOAD_DIALOG);
-	 * Toast.makeText(activity, "Download of regions failed",
-	 * Toast.LENGTH_SHORT).show(); } }); } } };
-	 * 
-	 * }
-	 */
 
 	public void updateBestLocation() {
 		locationOverlay.updateBestLocation(locator.getBestLocation());
@@ -560,12 +501,6 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		editor.putBoolean(INSTALL_STATE, installedBefore);
 		editor.commit();
 		// create DB
-	}
-
-	private void downloadAllRegions(Event event) {
-		for (int i = 0; i < event.getRegions().size(); i++) {
-
-		}
 	}
 
 	// ===========================================================
@@ -612,50 +547,9 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		}
 	}
 
-	private class DownloadEventsTask extends AsyncTask<Integer, Void, Void> {
-		@Override
-		protected void onPreExecute() {
-			showDialog(EVENT_DOWNLOAD_DIALOG);
-		}
-
-		@Override
-		protected Void doInBackground(Integer... params) {
-			ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-			NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-			File eventsFile = null;
-			if (networkInfo != null && networkInfo.isConnected()) {
-				eventsFile = Connector.downloadEvents(params[0]);
-			} else {
-
-			}
-			if (eventsFile == null) {
-				return null;
-			}
-			try {
-				ArrayList<Event> events = getEvents(eventsFile.getPath());
-				eventsOverlay = new EventsOverlay(events);
-				eventsOverlay.updateActivity(activity);
-				removeOverlay((Overlay) selectedOverlay);
-				selectedOverlay = georegionsOverlay;
-				addOverlay((RegionsOverlay) selectedOverlay);
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
-			return null;
-		}
-
-		@Override
-		protected void onPostExecute(Void none) {
-			// mapLevel = MAP_LEVEL_EVENT;
-			limitedMapView.invalidate();
-			dismissDialog(EVENT_DOWNLOAD_DIALOG);
-		}
-	}
-
 	private class DownloadAndShowEventsTask extends
 			AsyncTask<Integer, Void, Void> {
 		int regionId;
-		ArrayList<Event> events;
 
 		@Override
 		protected void onPreExecute() {
@@ -677,13 +571,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 				return null;
 			}
 			try {
-				events = getEvents(eventsFile.getPath());
-
-				// eventsOverlay = new EventsOverlay(events);
-				// eventsOverlay.updateActivity(activity);
-				// removeOverlay((Overlay) selectedOverlay);
-				// selectedOverlay = georegionsOverlay;
-				// addOverlay((RegionsOverlay) selectedOverlay);
+				((RegionsOverlay) selectedOverlay).setEvents(regionId, getEvents(eventsFile.getPath()));
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			}
@@ -696,8 +584,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			limitedMapView.setMapLevel(mapLevel);
 			limitedMapView.invalidate();
 			dismissDialog(EVENT_DOWNLOAD_DIALOG);
-			((RegionsOverlay) selectedOverlay).showMarkerDialog(regionId,
-					events);
+			((RegionsOverlay) selectedOverlay).showMarkerDialog(regionId);
 		}
 	}
 
@@ -749,21 +636,10 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	// Debug
 	// ===========================================================
 
-	/*
-	 * private ArrayList<Marker> openAsset() { String file = ""; InputStream
-	 * stream = null; AssetManager assetManager = getAssets(); Parser parser =
-	 * new Parser(); ArrayList<Marker> itemList = new ArrayList<Marker>( 0); try
-	 * { stream = assetManager.open("sample.kml"); itemList = parser.Parse(file,
-	 * stream, this); } catch (IOException e) { // handle } finally { if (stream
-	 * != null) { try { stream.close(); } catch (IOException e) { } } } return
-	 * itemList; }
-	 */
-
 	private ArrayList<Marker> getMarkers(String filename)
 			throws FileNotFoundException {
 		InputStream stream = new FileInputStream(filename);
 		Parser parser = new Parser();
-		File file = new File(filename);
 		return parser.ParseMarkers(filename, stream);
 	}
 
@@ -771,7 +647,6 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			throws FileNotFoundException {
 		InputStream stream = new FileInputStream(filename);
 		Parser parser = new Parser();
-		File file = new File(filename);
 		return parser.ParseEvents(filename, stream);
 	}
 
@@ -779,7 +654,6 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			throws FileNotFoundException {
 		InputStream stream = new FileInputStream(filename);
 		Parser parser = new Parser();
-		File file = new File(filename);
 		return parser.ParseGeoRegions(filename, stream);
 	}
 
@@ -788,13 +662,6 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		mc.animateTo(new GeoPoint(
 				(int) (locationToZoom.getLatitude() * 1000000),
 				(int) (locationToZoom.getLongitude() * 1000000)));
-		mc.setZoom(level);
-		limitedMapView.invalidate();
-	}
-
-	private static void focus(int lat, int lon, int level) {
-		MapController mc = limitedMapView.getController();
-		mc.animateTo(new GeoPoint((lat), (lon)));
 		mc.setZoom(level);
 		limitedMapView.invalidate();
 	}
@@ -810,7 +677,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		switch (mapLevel) {
 		case MAP_LEVEL_MARKER:
 			switch (markerState) {
-			case ENABLE_MARKER:
+			case ENABLE_ADD:
 				findViewById(R.id.buttonUploadMarker).setVisibility(View.GONE);
 				findViewById(R.id.buttoCancelMarker).setVisibility(View.GONE);
 				findViewById(R.id.buttonAddMarker).setVisibility(View.VISIBLE);
@@ -826,7 +693,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			break;
 		case MAP_LEVEL_REGION:
 			switch (markerState) {
-			case ENABLE_MARKER:
+			case ENABLE_ADD:
 				findViewById(R.id.buttonUploadMarker).setVisibility(View.GONE);
 				findViewById(R.id.buttoCancelMarker).setVisibility(View.GONE);
 				findViewById(R.id.buttonAddMarker).setVisibility(View.VISIBLE);
@@ -1032,7 +899,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		public void showMarkerDialog(int id) {
 
 			Intent intent = new Intent(MapViewActivity.this,
-					MarkerDIalogActivity.class);
+					MarkerDialogActivity.class);
 			intent.putExtra("latitude", createItem(id).getPoint()
 					.getLatitudeE6());
 			intent.putExtra("longitude", createItem(id).getPoint()
@@ -1042,7 +909,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			if (activity.mapLevel == MapViewActivity.MAP_LEVEL_MARKER)
 				uploadButton = true;
 			intent.putExtra("upload", uploadButton);
-			startActivityForResult(intent, MARKER_REQUEST);
+			startActivityForResult(intent, DIALOG_INTENT);
 		}
 	}
 

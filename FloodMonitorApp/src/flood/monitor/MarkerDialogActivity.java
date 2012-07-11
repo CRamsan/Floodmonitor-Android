@@ -15,7 +15,7 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-public class MarkerDIalogActivity extends Activity {
+public class MarkerDialogActivity extends Activity {
 
 	// ===========================================================
 	// Constants
@@ -28,7 +28,7 @@ public class MarkerDIalogActivity extends Activity {
 	private int longitude;
 	private int mode;
 	private boolean upload;
-	private MarkerDIalogActivity activity;
+	private MarkerDialogActivity activity;
 
 	// ===========================================================
 	// Methods from Activity
@@ -54,9 +54,6 @@ public class MarkerDIalogActivity extends Activity {
 				lonView.setText(Integer.toString(longitude));
 				ProgressBar circle = (ProgressBar) findViewById(R.id.progressBarAddress);
 				circle.setVisibility(View.GONE);
-
-				String title = markerData.getString("title");
-				String desc = markerData.getString("desc");
 
 				TextView titleView = (TextView) findViewById(R.id.textViewTitle);
 				TextView descView = (TextView) findViewById(R.id.textViewDescription);
@@ -91,7 +88,7 @@ public class MarkerDIalogActivity extends Activity {
 				float lon = longitude / 1000000f;
 				intent.putExtra("latitude", lat);
 				intent.putExtra("longitude", lon);
-				startActivityForResult(intent, MapViewActivity.PROCESS_REQUEST);
+				startActivityForResult(intent, MapViewActivity.UPLOAD_INTENT);
 			}
 		});
 		if (upload) {

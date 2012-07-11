@@ -53,7 +53,7 @@ public class MarkerManager {
 	}
 
 	public void deleteMarker(Marker Marker) {
-		long id = Marker.id;
+		long id = Marker.getId();
 		System.out.println("Comment deleted with id: " + id);
 		database.delete(SQLliteManager.TABLE_MARKERS, SQLliteManager.COLUMN_ID
 				+ " = " + id, null);
@@ -77,20 +77,10 @@ public class MarkerManager {
 	}
 
 	private Marker cursorToMarker(Cursor cursor) {
-		Marker comment = new Marker();
+		/*Marker comment = new Marker();
 		comment.id = cursor.getInt(0);
 		comment.comment = cursor.getString(4);
-		return comment;
-	}
-
-	private class Marker {
-		public int id;
-		public int severity;
-		public int latitude;
-		public int longitude;
-		public String observation;
-		public String comment;
-		public String image;
-		public String time;
+		return comment;*/
+		return null;
 	}
 }

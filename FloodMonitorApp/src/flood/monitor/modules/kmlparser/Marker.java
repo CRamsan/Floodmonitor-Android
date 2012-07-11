@@ -1,9 +1,7 @@
-package flood.monitor.overlay;
+package flood.monitor.modules.kmlparser;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.OverlayItem;
-
-import flood.monitor.modules.kmlparser.Region;
 
 public class Marker extends OverlayItem {
 
@@ -18,18 +16,17 @@ public class Marker extends OverlayItem {
 	private String userComment;
 	private String image;
 	private int severity;
-	private String id;
+	private int id;
 	private int coverType;
 	private int coverHeight;
-	private Region region;
 
 	// ===========================================================
 	// Constructors
 	// ===========================================================
 	public Marker(GeoPoint point, String observationTime, String userComment, String image, int severity, int coverType, int coverHeight) {
 		super(point, observationTime, userComment);
-		this.severity = severity;
 		this.image = image;
+		this.severity = severity;
 		this.coverType = coverType;
 		this.coverHeight =coverHeight;
 	}
@@ -86,32 +83,11 @@ public class Marker extends OverlayItem {
 		this.coverHeight = coverHeight;
 	}
 
-	public Region getRegion() {
-		return region;
-	}
-
-	public void setRegion(Region region) {
-		this.region = region;
-	}
-
-	public String getId() {
+	public int getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(int id) {
 		this.id = id;
 	}
-
-	// ===========================================================
-	// Methods from Parent
-	// ===========================================================
-
-	// ===========================================================
-	// Methods from Interfaces
-	// ===========================================================
-
-	// ===========================================================
-	// Methods
-	// ===========================================================
-
 }

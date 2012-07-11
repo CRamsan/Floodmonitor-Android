@@ -35,7 +35,7 @@
             android:theme="@style/ThemeSelectorDialog" >
         </activity>
         <activity
-            android:name=".MarkerDIalogActivity"
+            android:name=".MarkerDialogActivity"
             android:theme="@style/ThemeSelectorDialog" >
         </activity>
         <activity android:name=".SettingsActivity" >

@@ -1,15 +1,7 @@
 package flood.monitor;
 
-import com.google.android.maps.MapActivity;
-import com.google.android.maps.MapController;
-
-import android.app.Activity;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.CheckBoxPreference;
-import android.preference.Preference;
 import android.preference.PreferenceActivity;
-import android.preference.PreferenceManager;
 
 public class SettingsActivity extends PreferenceActivity {
 

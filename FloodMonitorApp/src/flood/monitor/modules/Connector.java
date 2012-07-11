@@ -2,7 +2,6 @@ package flood.monitor.modules;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,8 +25,7 @@ import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
-import flood.monitor.modules.kmlparser.Event;
-import flood.monitor.overlay.Marker;
+import flood.monitor.modules.kmlparser.Marker;
 
 public class Connector {
 
@@ -238,8 +236,7 @@ public class Connector {
 	public static File downloadPicture(Marker marker, int id) {
 		File mediaStorageDir = new File(
 				Environment.getExternalStorageDirectory(), "FloodMonitor");
-		String subDir = marker.getRegion().getEvents().get(0).getName()
-				+ File.separator + marker.getRegion().getName();
+		String subDir = "tmp";
 		File file = new File(mediaStorageDir.getPath() + File.separator
 				+ DOWNLOAD_DIR + File.separator + subDir + File.separator
 				+ marker.getId());
@@ -306,8 +303,8 @@ public class Connector {
 			data.put("comment", comment);
 			data.put("contact", email);
 
-			Set keys = data.keySet();
-			Iterator keyIter = keys.iterator();
+			Set<String> keys = data.keySet();
+			Iterator<String> keyIter = keys.iterator();
 			String content = "";
 			for (int i = 0; keyIter.hasNext(); i++) {
 				Object key = keyIter.next();
@@ -337,7 +334,6 @@ public class Connector {
 	public static void UploadPicture(Context context, String file) {
 		HttpURLConnection connection = null;
 		DataOutputStream outputStream = null;
-		DataInputStream inputStream = null;
 
 		String pathToOurFile = file;
 		String urlServer = "http://192.168.0.100/plogger/plog-admin/plog-picture.php";
@@ -394,8 +390,8 @@ public class Connector {
 					+ lineEnd);
 
 			// Responses from the server (code and message)
-			int serverResponseCode = connection.getResponseCode();
-			String serverResponseMessage = connection.getResponseMessage();
+			//int serverResponseCode = connection.getResponseCode();
+			//String serverResponseMessage = connection.getResponseMessage();
 
 			fileInputStream.close();
 			outputStream.flush();
