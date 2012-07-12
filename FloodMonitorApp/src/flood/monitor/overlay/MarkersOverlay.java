@@ -89,8 +89,10 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements
 	@Override
 	public void showMarkerDialog(int id) {
 		Intent intent = new Intent(activity, MarkerDialogActivity.class);
-		intent.putExtra("latitude", createItem(id).getPoint().getLatitudeE6());
-		intent.putExtra("longitude", createItem(id).getPoint().getLongitudeE6());
+		intent.putExtra("title", createItem(id).getTitle());
+		intent.putExtra("desc", createItem(id).getSnippet());
+		intent.putExtra("latitude", createItem(id).getPoint().getLatitudeE6() / 1000000d);
+		intent.putExtra("longitude", createItem(id).getPoint().getLongitudeE6()/ 1000000d);
 		intent.putExtra("mode", MapViewActivity.MARKER_UPLOAD);
 		boolean uploadButton = true;
 		intent.putExtra("upload", uploadButton);

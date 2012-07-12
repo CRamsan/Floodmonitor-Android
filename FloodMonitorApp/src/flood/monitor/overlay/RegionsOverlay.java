@@ -162,7 +162,9 @@ public class RegionsOverlay extends Overlay implements IOverlay {
 		builder.setTitle("Choose the event to load");
 		builder.setItems(items, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int item) {
-				((MapViewActivity) activity).downloadMarkersDialog(id, item);
+				int eventId = getRegionById(id).getEvents().get(item).getEventId();
+				int regionId = getRegionById(id).getRegionId();
+				((MapViewActivity) activity).downloadMarkersDialog(regionId, eventId);
 			}
 		});
 		alertDialog = builder.create();

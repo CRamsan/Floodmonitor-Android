@@ -56,8 +56,8 @@ public class UploadFormActivity extends Activity {
 	private ProgressDialog progressDialog;
 	private ProgressThread progressThread;
 	private Uri fileUri;
-	private int latitude;
-	private int longitude;
+	private double latitude;
+	private double longitude;
 
 	// ===========================================================
 	// Constructors
@@ -93,18 +93,18 @@ public class UploadFormActivity extends Activity {
 		buttonCancel.setOnClickListener(new Button.OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-				setResult(RESULT_OK);
+				setResult(RESULT_CANCELED);
 				finish();
 			}
 		});
 		Bundle location = getIntent().getExtras();
 		if (location != null) {
-			latitude = (int) (location.getDouble("latitude"));
-			longitude = (int) (location.getDouble("longitude"));
+			latitude = (location.getDouble("latitude"));
+			longitude = (location.getDouble("longitude"));
 			TextView latText = (TextView) findViewById(R.id.latitudeValueView);
 			TextView lonText = (TextView) findViewById(R.id.longitudeValueView);
-			latText.setText(Integer.toString(latitude));
-			lonText.setText(Integer.toString(longitude));
+			latText.setText(Double.toString(latitude));
+			lonText.setText(Double.toString(longitude));
 		}
 		setResult(RESULT_CANCELED);
 	}

@@ -171,7 +171,11 @@ public class Connector {
 		File file = new File(mediaStorageDir.getPath() + File.separator
 				+ DOWNLOAD_DIR + File.separator + filename);
 		OutputStreamWriter request = null;
-		String parameters = "data=<phone><command>GetMarkerFile</command><params><boundaryid>1</boundaryid><eventid>2</eventid></params></phone>";
+		String parameters = "data=<phone><command>GetMarkerFile</command><params><boundaryid>"
+				+ boundarytId
+				+ "</boundaryid><eventid>"
+				+ eventId
+				+ "</eventid></params></phone>";
 
 		try {
 			URL url = new URL(XML_COMMUNICATOR);
@@ -390,8 +394,8 @@ public class Connector {
 					+ lineEnd);
 
 			// Responses from the server (code and message)
-			//int serverResponseCode = connection.getResponseCode();
-			//String serverResponseMessage = connection.getResponseMessage();
+			// int serverResponseCode = connection.getResponseCode();
+			// String serverResponseMessage = connection.getResponseMessage();
 
 			fileInputStream.close();
 			outputStream.flush();

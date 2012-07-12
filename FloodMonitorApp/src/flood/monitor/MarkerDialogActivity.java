@@ -24,8 +24,8 @@ public class MarkerDialogActivity extends Activity {
 	// ===========================================================
 	// Fields
 	// ===========================================================
-	private int latitude;
-	private int longitude;
+	private double latitude;
+	private double longitude;
 	private int mode;
 	private boolean upload;
 	private MarkerDialogActivity activity;
@@ -42,30 +42,71 @@ public class MarkerDialogActivity extends Activity {
 		upload = false;
 		Bundle markerData = getIntent().getExtras();
 		if (markerData != null) {
-			latitude = (markerData.getInt("latitude"));
-			longitude = (markerData.getInt("longitude"));
+			latitude = (markerData.getDouble("latitude"));
+			longitude = (markerData.getDouble("longitude"));
 			mode = markerData.getInt("mode");
 			upload = markerData.getBoolean("upload");
+			TextView titleView;
+			TextView descView;
+			TextView latView;
+			TextView lonView;
+			TextView addressView;
+			ProgressBar circle;
+
 			switch (mode) {
 			case MapViewActivity.MARKER_LOCATION:
-				TextView latView = (TextView) findViewById(R.id.textViewLatitude);
-				TextView lonView = (TextView) findViewById(R.id.textViewLongitude);
-				latView.setText(Integer.toString(latitude));
-				lonView.setText(Integer.toString(longitude));
-				ProgressBar circle = (ProgressBar) findViewById(R.id.progressBarAddress);
+				titleView = (TextView) findViewById(R.id.textViewTitle);
+				descView = (TextView) findViewById(R.id.textViewDescription);
+				latView = (TextView) findViewById(R.id.textViewLatitude);
+				lonView = (TextView) findViewById(R.id.textViewLongitude);
+				addressView = (TextView) findViewById(R.id.textViewAddress);
+				circle = (ProgressBar) findViewById(R.id.progressBarAddress);
+
+				latView.setText(activity.getResources().getString(
+						R.string.text_Latitude)
+						+ ": " + Double.toString(latitude));
+				lonView.setText(activity.getResources().getString(
+						R.string.text_Longitude)
+						+ ": " + Double.toString(longitude));
+
+				titleView.setVisibility(View.GONE);
+				descView.setVisibility(View.GONE);
+				latView.setVisibility(View.VISIBLE);
+				lonView.setVisibility(View.VISIBLE);
+				addressView.setVisibility(View.VISIBLE);
 				circle.setVisibility(View.GONE);
 
-				TextView titleView = (TextView) findViewById(R.id.textViewTitle);
-				TextView descView = (TextView) findViewById(R.id.textViewDescription);
-				TextView addressView = (TextView) findViewById(R.id.textViewAddress);
-
-				titleView.setText("");
-				descView.setText("");
-				addressView.setText("");
 				new GetAddressTask().execute();
 				break;
 			case MapViewActivity.MARKER_UPLOAD:
+				titleView = (TextView) findViewById(R.id.textViewTitle);
+				descView = (TextView) findViewById(R.id.textViewDescription);
+				latView = (TextView) findViewById(R.id.textViewLatitude);
+				lonView = (TextView) findViewById(R.id.textViewLongitude);
+				addressView = (TextView) findViewById(R.id.textViewAddress);
+				circle = (ProgressBar) findViewById(R.id.progressBarAddress);
 
+				String title = (markerData.getString("title"));
+				String desc =  (markerData.getString("desc"));
+				titleView.setText(activity.getResources().getString(
+						R.string.text_Title)
+						+ ": " + title);
+				descView.setText(activity.getResources().getString(
+						R.string.text_Description)
+						+ ": " + desc);
+				latView.setText(activity.getResources().getString(
+						R.string.text_Latitude)
+						+ ": " + Double.toString(latitude));
+				lonView.setText(activity.getResources().getString(
+						R.string.text_Longitude)
+						+ ": " + Double.toString(longitude));
+
+				titleView.setVisibility(View.VISIBLE);
+				descView.setVisibility(View.VISIBLE);
+				latView.setVisibility(View.VISIBLE);
+				lonView.setVisibility(View.VISIBLE);
+				addressView.setVisibility(View.GONE);
+				circle.setVisibility(View.GONE);
 				break;
 			default:
 				break;
@@ -84,10 +125,8 @@ public class MarkerDialogActivity extends Activity {
 			@Override
 			public void onClick(View arg0) {
 				Intent intent = new Intent(activity, UploadFormActivity.class);
-				float lat = latitude / 1000000f;
-				float lon = longitude / 1000000f;
-				intent.putExtra("latitude", lat);
-				intent.putExtra("longitude", lon);
+				intent.putExtra("latitude", latitude);
+				intent.putExtra("longitude", longitude);
 				startActivityForResult(intent, MapViewActivity.UPLOAD_INTENT);
 			}
 		});
@@ -166,9 +205,7 @@ public class MarkerDialogActivity extends Activity {
 			Geocoder geocoder = new Geocoder(activity, Locale.getDefault());
 			List<Address> addressList;
 			try {
-				float lat = latitude / 1000000f;
-				float lon = longitude / 1000000f;
-				addressList = geocoder.getFromLocation(lat, lon, 1);
+				addressList = geocoder.getFromLocation(latitude, longitude, 1);
 				if (addressList.size() == 0) {
 					return null;
 				}
@@ -193,7 +230,10 @@ public class MarkerDialogActivity extends Activity {
 
 		@Override
 		protected void onPostExecute(Void none) {
-			((TextView) findViewById(R.id.textViewAddress)).setText(address);
+			((TextView) findViewById(R.id.textViewAddress)).setText(activity
+					.getResources().getString(R.string.text_Address)
+					+ ": "
+					+ address);
 			((ProgressBar) findViewById(R.id.progressBarAddress))
 					.setVisibility(View.GONE);
 		}
