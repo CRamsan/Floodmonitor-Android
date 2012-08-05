@@ -104,8 +104,8 @@ public class Connector {
 		File regions = new File(mediaStorageDir + File.separator + filename);
 
 		OutputStreamWriter request = null;
-		String parameters = "data=<phone><command>GetEventsByBoundaryID</command><params><boundaryid>"
-				+ regionId + "</boundaryid></params></phone>";
+		String parameters = "data=<phone><command>GetEventsByRegionID</command><params><regionid>"
+				+ regionId + "</regionid></params></phone>";
 
 		try {
 			URL url = new URL(XML_COMMUNICATOR);
@@ -136,7 +136,6 @@ public class Connector {
 			while ((current = bis.read()) != -1) {
 				baf.append((byte) current);
 			}
-
 			/* Convert the Bytes read to a String. */
 			FileOutputStream fos = new FileOutputStream(regions);
 			fos.write(baf.toByteArray());
