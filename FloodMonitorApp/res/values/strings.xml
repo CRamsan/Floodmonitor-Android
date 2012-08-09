@@ -20,6 +20,7 @@
     <string name="text_File">File</string>
     <string name="text_YourComment">Your comments:</string>
     <string name="text_Picture">Picture</string>
+    
     <string name="text_ChooseFile">ChooseFile</string>
     <string name="text_Submit">Submit</string>
     <string name="text_AboutURL">http://mouseriverflood2011.net/info.html</string>
@@ -43,6 +44,7 @@
     <string name="desc_drag">Drag the marker</string>
     <string name="desc_MarkerDialogImage">Drag the marker</string>
     <string name="desc_buttonLock">Center the map in your location</string>
+    <string name="desc_buttonLayerUp">Layer Up</string>
     <string name="desc_buttonAddMarker">Place a marker in this map</string>
     <string name="desc_buttonUploadMarker">Upload to the marked location</string>
     <string name="desc_buttonCancelMarker">Cancel this marker</string>

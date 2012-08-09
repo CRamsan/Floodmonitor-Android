@@ -26,6 +26,7 @@ import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
 import flood.monitor.modules.kmlparser.Marker;
+import flood.monitor.modules.kmlparser.Parser;
 
 public class Connector {
 
@@ -195,32 +196,17 @@ public class Connector {
 			 * Define InputStreams to read from the URLConnection.
 			 */
 			InputStream is = ucon.getInputStream();
-			BufferedInputStream bis = new BufferedInputStream(is);
-
-			/*
-			 * Read bytes to the Buffer until there is nothing more to read(-1).
-			 */
-			ByteArrayBuffer baf = new ByteArrayBuffer(50);
-			int current = 0;
-			while ((current = bis.read()) != -1) {
-				baf.append((byte) current);
-			}
-
-			String kmlURL = new String(baf.toByteArray());
-			kmlURL = kmlURL
-					.replace(
-							"<server><command>GetMarkerFile</command><response><kmlfile>",
-							"");
-			kmlURL = kmlURL.replace("</kmlfile></response></server>", "");
+			
+			String kmlURL = Parser.ParseFileNames(is);
 
 			url = new URL(kmlURL);
 
 			/* Open a connection to that URL. */
 			ucon = (HttpURLConnection) url.openConnection();
 			is = ucon.getInputStream();
-			bis = new BufferedInputStream(is);
-			baf = new ByteArrayBuffer(50);
-			current = 0;
+			BufferedInputStream bis = new BufferedInputStream(is);
+			ByteArrayBuffer baf = new ByteArrayBuffer(50);
+			int current = 0;
 			while ((current = bis.read()) != -1) {
 				baf.append((byte) current);
 			}

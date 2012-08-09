@@ -121,7 +121,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	private int buttonState;
 	private int mapLevel;
 	private boolean installedBefore;
-	
+
 	private int region;
 	private int event;
 
@@ -216,6 +216,15 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			@Override
 			public void onClick(View arg0) {
 				locationOverlay.showInfoDialog();
+			}
+		});
+
+		ImageButton layerUpButton = (ImageButton) findViewById(R.id.buttonLayerUp);
+		layerUpButton.setOnClickListener(new Button.OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				loadOverlayUp();
+				updateButton();
 			}
 		});
 
@@ -466,11 +475,12 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	public void loadOverlayUp() {
 		removeOverlay(markersOverlay);
 		addOverlay(georegionsOverlay);
+		limitedMapView.setMapLevel(MAP_LEVEL_REGION);
 	}
-	
+
 	public void loadOverlayDown(int regionId) {
 	}
-	
+
 	public void loadMarkerOverlay(Overlay remove) {
 		removeOverlay(remove);
 		addOverlay(markersOverlay);
@@ -549,16 +559,13 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			if (eventsFile == null) {
 				return null;
 			}
-			try {
-				ArrayList<Region> regions = getGeoRegions(eventsFile.getPath());
-				georegionsOverlay = new RegionsOverlay(regions);
-				georegionsOverlay.updateActivity(activity);
-				selectedOverlay = georegionsOverlay;
-				addOverlay((RegionsOverlay) selectedOverlay);
-				overlayState = OVERLAY_LOADED;
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
+			ArrayList<Region> regions = Parser.ParseRegions(eventsFile
+					.getPath());
+			georegionsOverlay = new RegionsOverlay(regions);
+			georegionsOverlay.updateActivity(activity);
+			selectedOverlay = georegionsOverlay;
+			addOverlay((RegionsOverlay) selectedOverlay);
+			overlayState = OVERLAY_LOADED;
 			return null;
 		}
 
@@ -594,12 +601,8 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			if (eventsFile == null) {
 				return null;
 			}
-			try {
-				((RegionsOverlay) selectedOverlay).setEvents(regionId,
-						getEvents(eventsFile.getPath()));
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
+			ArrayList<Event> events = Parser.ParseEvents(eventsFile.getPath());
+			((RegionsOverlay) selectedOverlay).setEvents(regionId, events);
 			return null;
 		}
 
@@ -614,6 +617,9 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	}
 
 	private class DownloadMarkersTask extends AsyncTask<Integer, Void, Void> {
+
+		protected boolean taskCompleted = false;
+
 		@Override
 		protected void onPreExecute() {
 			showDialog(EVENT_DOWNLOAD_DIALOG);
@@ -632,28 +638,29 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			if (eventsFile == null) {
 				return null;
 			}
-			try {
-				ArrayList<Marker> markers = getMarkers(eventsFile.getPath());
-				Drawable defaultDrawable = activity.getResources().getDrawable(
-						R.drawable.marker_green);
-				markersOverlay = new MarkersOverlay(defaultDrawable);
-				markersOverlay.updateActivity(activity);
-				markersOverlay.setOverlay(markers);
-				removeOverlay((Overlay) selectedOverlay);
-				selectedOverlay = markersOverlay;
-				addOverlay((MarkersOverlay) selectedOverlay);
-				overlayState = OVERLAY_LOADED;
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
+			ArrayList<Marker> markers = Parser.ParseMarkers(eventsFile
+					.getPath());
+			Drawable defaultDrawable = activity.getResources().getDrawable(
+					R.drawable.marker_green);
+			markersOverlay = new MarkersOverlay(defaultDrawable);
+			markersOverlay.updateActivity(activity);
+			markersOverlay.setOverlay(markers);
+			removeOverlay((Overlay) selectedOverlay);
+			selectedOverlay = markersOverlay;
+			addOverlay((MarkersOverlay) selectedOverlay);
+			overlayState = OVERLAY_LOADED;
+			taskCompleted = true;
 			return null;
 		}
 
 		@Override
 		protected void onPostExecute(Void none) {
-			mapLevel = MAP_LEVEL_MARKER;
-			limitedMapView.setMapLevel(mapLevel);
-			limitedMapView.invalidate();
+			if (taskCompleted) {
+				mapLevel = MAP_LEVEL_MARKER;
+				limitedMapView.setMapLevel(mapLevel);
+				limitedMapView.invalidate();
+				updateButton();
+			}
 			dismissDialog(EVENT_DOWNLOAD_DIALOG);
 		}
 	}
@@ -661,27 +668,6 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	// ===========================================================
 	// Debug
 	// ===========================================================
-
-	private ArrayList<Marker> getMarkers(String filename)
-			throws FileNotFoundException {
-		InputStream stream = new FileInputStream(filename);
-		Parser parser = new Parser();
-		return parser.ParseMarkers(filename, stream);
-	}
-
-	private ArrayList<Event> getEvents(String filename)
-			throws FileNotFoundException {
-		InputStream stream = new FileInputStream(filename);
-		Parser parser = new Parser();
-		return parser.ParseEvents(filename, stream);
-	}
-
-	private ArrayList<Region> getGeoRegions(String filename)
-			throws FileNotFoundException {
-		InputStream stream = new FileInputStream(filename);
-		Parser parser = new Parser();
-		return parser.ParseGeoRegions(filename, stream);
-	}
 
 	private static void focus(Location locationToZoom, int level) {
 		MapController mc = limitedMapView.getController();
@@ -718,6 +704,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		case MAP_LEVEL_MARKER:
 			switch (buttonState) {
 			case ENABLE_ADD:
+				findViewById(R.id.buttonLayerUp).setVisibility(View.VISIBLE);
 				findViewById(R.id.buttonUploadMarker).setVisibility(View.GONE);
 				findViewById(R.id.buttoCancelMarker).setVisibility(View.GONE);
 				findViewById(R.id.buttonAddMarker).setVisibility(View.VISIBLE);
@@ -726,6 +713,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			case ENABLE_UPLOAD:
 				findViewById(R.id.buttonUploadMarker).setVisibility(
 						View.VISIBLE);
+				findViewById(R.id.buttonLayerUp).setVisibility(View.VISIBLE);
 				findViewById(R.id.buttoCancelMarker)
 						.setVisibility(View.VISIBLE);
 				findViewById(R.id.buttonAddMarker).setVisibility(View.GONE);
@@ -736,12 +724,14 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		case MAP_LEVEL_REGION:
 			switch (buttonState) {
 			case ENABLE_ADD:
+				findViewById(R.id.buttonLayerUp).setVisibility(View.GONE);
 				findViewById(R.id.buttonUploadMarker).setVisibility(View.GONE);
 				findViewById(R.id.buttoCancelMarker).setVisibility(View.GONE);
 				findViewById(R.id.buttonAddMarker).setVisibility(View.VISIBLE);
 				findViewById(R.id.buttonInfoMarker).setVisibility(View.GONE);
 				break;
 			case ENABLE_UPLOAD:
+				findViewById(R.id.buttonLayerUp).setVisibility(View.GONE);
 				findViewById(R.id.buttonUploadMarker).setVisibility(View.GONE);
 				findViewById(R.id.buttoCancelMarker)
 						.setVisibility(View.VISIBLE);

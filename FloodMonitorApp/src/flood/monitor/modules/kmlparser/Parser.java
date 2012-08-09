@@ -1,5 +1,7 @@
 package flood.monitor.modules.kmlparser;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -12,171 +14,130 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import android.util.Log;
-
 import com.google.android.maps.GeoPoint;
 
 public class Parser {
 
-	public ArrayList<Marker> ParseMarkers(String file, InputStream stream) {
-
-		KMLHandler handler = new KMLHandler();
-
+	public static ArrayList<Region> ParseRegions(String filename) {
+		RegionHandler handler = new RegionHandler();
+		InputStream stream;
 		try {
-
+			stream = new FileInputStream(filename);
 			SAXParserFactory factory = SAXParserFactory.newInstance();
 			SAXParser saxParser = factory.newSAXParser();
 			saxParser.parse(stream, handler);
-
 		} catch (SAXException e) {
-			String message = e.getMessage();
-			Log.i(Parser.class.toString(), message);
 		} catch (ParserConfigurationException e) {
-			String message = e.getMessage();
-			Log.i(Parser.class.toString(), message);
+		} catch (FileNotFoundException e1) {
 		} catch (IOException e) {
-			String message = e.getMessage();
-			Log.i(Parser.class.toString(), message);
 		}
 		return handler.getResult();
 	}
 
-	public ArrayList<Event> ParseEvents(String file, InputStream stream) {
+	public static ArrayList<Event> ParseEvents(String filename) {
 
 		EventHandler handler = new EventHandler();
 
+		InputStream stream;
 		try {
-
+			stream = new FileInputStream(filename);
 			SAXParserFactory factory = SAXParserFactory.newInstance();
 			SAXParser saxParser = factory.newSAXParser();
 			saxParser.parse(stream, handler);
-
 		} catch (SAXException e) {
-			String message = e.getMessage();
-			Log.i(Parser.class.toString(), message);
 		} catch (ParserConfigurationException e) {
-			String message = e.getMessage();
-			Log.i(Parser.class.toString(), message);
+		} catch (FileNotFoundException e1) {
 		} catch (IOException e) {
-			String message = e.getMessage();
-			Log.i(Parser.class.toString(), message);
 		}
 		return handler.getResult();
 	}
 
-	public ArrayList<Region> ParseGeoRegions(String filename, InputStream stream) {
-		RegionHandler handler = new RegionHandler();
+	public static int ParseFileVersion(String filename) {
+		PropertyHandler handler = new PropertyHandler();
 
+		InputStream stream;
 		try {
-
+			stream = new FileInputStream(filename);
 			SAXParserFactory factory = SAXParserFactory.newInstance();
 			SAXParser saxParser = factory.newSAXParser();
 			saxParser.parse(stream, handler);
-
 		} catch (SAXException e) {
-			String message = e.getMessage();
-			Log.i(Parser.class.toString(), message);
 		} catch (ParserConfigurationException e) {
-			String message = e.getMessage();
-			Log.i(Parser.class.toString(), message);
+		} catch (FileNotFoundException e1) {
 		} catch (IOException e) {
-			String message = e.getMessage();
-			Log.i(Parser.class.toString(), message);
 		}
+		return handler.getIntResult();
+	}
+
+	public static int ParseFileVersion(InputStream stream) {
+		PropertyHandler handler = new PropertyHandler();
+
+		try {
+			SAXParserFactory factory = SAXParserFactory.newInstance();
+			SAXParser saxParser = factory.newSAXParser();
+			saxParser.parse(stream, handler);
+		} catch (SAXException e) {
+		} catch (ParserConfigurationException e) {
+		} catch (FileNotFoundException e1) {
+		} catch (IOException e) {
+		}
+		return handler.getIntResult();
+	}
+
+	public static String ParseFileNames(String filename) {
+		PropertyHandler handler = new PropertyHandler();
+
+		InputStream stream;
+		try {
+			stream = new FileInputStream(filename);
+			SAXParserFactory factory = SAXParserFactory.newInstance();
+			SAXParser saxParser = factory.newSAXParser();
+			saxParser.parse(stream, handler);
+		} catch (SAXException e) {
+		} catch (ParserConfigurationException e) {
+		} catch (FileNotFoundException e1) {
+		} catch (IOException e) {
+		}
+
+		return handler.getStringResult();
+	}
+
+	public static String ParseFileNames(InputStream stream) {
+		PropertyHandler handler = new PropertyHandler();
+
+		try {
+			SAXParserFactory factory = SAXParserFactory.newInstance();
+			SAXParser saxParser = factory.newSAXParser();
+			saxParser.parse(stream, handler);
+		} catch (SAXException e) {
+		} catch (ParserConfigurationException e) {
+		} catch (FileNotFoundException e1) {
+		} catch (IOException e) {
+		}
+
+		return handler.getStringResult();
+	}
+
+	public static ArrayList<Marker> ParseMarkers(String filename) {
+
+		MarkerHandler handler = new MarkerHandler();
+
+		InputStream stream;
+		try {
+			stream = new FileInputStream(filename);
+			SAXParserFactory factory = SAXParserFactory.newInstance();
+			SAXParser saxParser = factory.newSAXParser();
+			saxParser.parse(stream, handler);
+		} catch (SAXException e) {
+		} catch (ParserConfigurationException e) {
+		} catch (FileNotFoundException e1) {
+		} catch (IOException e) {
+		}
+
 		return handler.getResult();
 	}
 
-	private class EventHandler extends DefaultHandler {
-
-		private static final String EVENTS = "events";
-		private static final String EVENT = "event";
-
-		private static final String ID = "id";
-		private static final String NAME = "name";
-		private static final String ACTIVE = "active";
-		private static final String BEGINDATE = "begindate";
-		private static final String ENDDATE = "enddate";
-		private static final String BOUNDARIES = "boundaries";
-		private static final String BOUNDARY = "boundary";
-		
-		private ArrayList<Event> events;
-		private String temp;
-
-		private String beginDate;
-		private String endDate;
-		private String name;
-		private int regionId;
-		private boolean active;
-
-		public EventHandler() {
-			super();
-			this.temp = "";
-		}
-
-		@Override
-		public void startElement(String uri, String localName, String qName,
-				Attributes attributes) throws SAXException {
-
-			if (qName.equalsIgnoreCase(EVENTS)) {
-				this.events = new ArrayList<Event>(0);
-			} else if (qName.equalsIgnoreCase(EVENT)) {
-
-			} else if (qName.equalsIgnoreCase(ID)) {
-
-			} else if (qName.equalsIgnoreCase(NAME)) {
-
-			} else if (qName.equalsIgnoreCase(ACTIVE)) {
-
-			} else if (qName.equalsIgnoreCase(BEGINDATE)) {
-
-			} else if (qName.equalsIgnoreCase(ENDDATE)) {
-
-			} else if (qName.equalsIgnoreCase(BOUNDARIES)) {
-			} else if (qName.equalsIgnoreCase(BOUNDARY)) {
-
-			}
-			temp = "";
-		}
-
-		@Override
-		public void endElement(String uri, String localName, String qName)
-				throws SAXException {
-
-			if (qName.equalsIgnoreCase(EVENTS)) {
-
-			} else if (qName.equalsIgnoreCase(EVENT)) {
-				Event event = new Event(regionId, name, active, beginDate,
-						endDate);
-				this.events.add(event);
-			} else if (qName.equalsIgnoreCase(ID)) {
-				this.regionId = Integer.parseInt(temp);
-			} else if (qName.equalsIgnoreCase(NAME)) {
-				this.name = temp;
-			} else if (qName.equalsIgnoreCase(ACTIVE)) {
-				this.active = Boolean.parseBoolean(temp);
-			} else if (qName.equalsIgnoreCase(BEGINDATE)) {
-				this.beginDate = temp;
-			} else if (qName.equalsIgnoreCase(ENDDATE)) {
-				this.endDate = temp;
-			} else if (qName.equalsIgnoreCase(BOUNDARIES)) {
-			} else if (qName.equalsIgnoreCase(BOUNDARY)) {
-			}
-			temp = "";
-		}
-
-		@Override
-		public void characters(char ch[], int start, int length)
-				throws SAXException {
-			String input = new String(ch, start, length);
-			temp = temp + input.replaceAll("\n", "").replaceAll("\t", "");
-		}
-
-		public ArrayList<Event> getResult() {
-			return events;
-		}
-	}
-
-	private class RegionHandler extends DefaultHandler {
+	private static class RegionHandler extends DefaultHandler {
 
 		private static final String BOUNDARIES = "boundaries";
 		private static final String LIST = "regions";
@@ -277,7 +238,161 @@ public class Parser {
 		}
 	}
 
-	private class KMLHandler extends DefaultHandler {
+	private static class EventHandler extends DefaultHandler {
+
+		private static final String EVENTS = "events";
+		private static final String EVENT = "event";
+
+		private static final String ID = "id";
+		private static final String NAME = "name";
+		private static final String ACTIVE = "active";
+		private static final String BEGINDATE = "begindate";
+		private static final String ENDDATE = "enddate";
+		private static final String BOUNDARIES = "boundaries";
+		private static final String BOUNDARY = "boundary";
+
+		private ArrayList<Event> events;
+		private String temp;
+
+		private String beginDate;
+		private String endDate;
+		private String name;
+		private int regionId;
+		private boolean active;
+		private boolean skip;
+
+		public EventHandler() {
+			super();
+			this.temp = "";
+			this.skip = false;
+		}
+
+		@Override
+		public void startElement(String uri, String localName, String qName,
+				Attributes attributes) throws SAXException {
+
+			if (qName.equalsIgnoreCase(EVENTS)) {
+				this.events = new ArrayList<Event>(0);
+			} else if (qName.equalsIgnoreCase(EVENT)) {
+
+			} else if (qName.equalsIgnoreCase(ID)) {
+
+			} else if (qName.equalsIgnoreCase(NAME)) {
+
+			} else if (qName.equalsIgnoreCase(ACTIVE)) {
+
+			} else if (qName.equalsIgnoreCase(BEGINDATE)) {
+
+			} else if (qName.equalsIgnoreCase(ENDDATE)) {
+
+			} else if (qName.equalsIgnoreCase(BOUNDARIES)) {
+				skip = true;
+			} else if (qName.equalsIgnoreCase(BOUNDARY)) {
+
+			}
+			temp = "";
+		}
+
+		@Override
+		public void endElement(String uri, String localName, String qName)
+				throws SAXException {
+
+			if (qName.equalsIgnoreCase(BOUNDARIES)) {
+				skip = false;
+			} else if (skip)
+				return;
+
+			if (qName.equalsIgnoreCase(EVENTS)) {
+
+			} else if (qName.equalsIgnoreCase(EVENT)) {
+				Event event = new Event(regionId, name, active, beginDate,
+						endDate);
+				this.events.add(event);
+			} else if (qName.equalsIgnoreCase(ID)) {
+				this.regionId = Integer.parseInt(temp);
+			} else if (qName.equalsIgnoreCase(NAME)) {
+				this.name = temp;
+			} else if (qName.equalsIgnoreCase(ACTIVE)) {
+				this.active = Boolean.parseBoolean(temp);
+			} else if (qName.equalsIgnoreCase(BEGINDATE)) {
+				this.beginDate = temp;
+			} else if (qName.equalsIgnoreCase(ENDDATE)) {
+				this.endDate = temp;
+			} else if (qName.equalsIgnoreCase(BOUNDARIES)) {
+				skip = false;
+			} else if (qName.equalsIgnoreCase(BOUNDARY)) {
+			}
+			temp = "";
+		}
+
+		@Override
+		public void characters(char ch[], int start, int length)
+				throws SAXException {
+			String input = new String(ch, start, length);
+			temp = temp + input.replaceAll("\n", "").replaceAll("\t", "");
+		}
+
+		public ArrayList<Event> getResult() {
+			return events;
+		}
+	}
+
+	private static class PropertyHandler extends DefaultHandler {
+
+		private int version;
+		private String file;
+
+		private static final String VERSION = "version";
+		private static final String KMLFILE = "kmlfile";
+
+		private String temp = "";
+
+		public PropertyHandler() {
+			super();
+		}
+
+		@Override
+		public void startElement(String uri, String localName, String qName,
+				Attributes attributes) throws SAXException {
+
+			if (qName.equalsIgnoreCase(VERSION)) {
+				version = 0;
+			} else if (qName.equalsIgnoreCase(KMLFILE)) {
+				file = "";
+			}
+
+			temp = "";
+		}
+
+		@Override
+		public void endElement(String uri, String localName, String qName)
+				throws SAXException {
+
+			if (qName.equalsIgnoreCase(VERSION)) {
+				version = Integer.parseInt(temp);
+			} else if (qName.equalsIgnoreCase(KMLFILE)) {
+				file = temp;
+			}
+			temp = "";
+		}
+
+		@Override
+		public void characters(char ch[], int start, int length)
+				throws SAXException {
+			String input = new String(ch, start, length);
+			temp = temp + input.replaceAll("\n", "").replaceAll("\t", "");
+		}
+
+		public int getIntResult() {
+			return version;
+		}
+
+		public String getStringResult() {
+			return file;
+		}
+	}
+
+	private static class MarkerHandler extends DefaultHandler {
 
 		private ArrayList<Marker> mOverlay;
 
@@ -307,7 +422,7 @@ public class Parser {
 
 		private String temp = "";
 
-		public KMLHandler() {
+		public MarkerHandler() {
 			super();
 		}
 

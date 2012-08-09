@@ -9,7 +9,7 @@
         android:id="@+id/mapview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:apiKey="07r48M7l5UiVa_UiwTJ0obzICl3MXbGn_5FAzTA"
+        android:apiKey="07r48M7l5UiVLis3CJstAc182EgEl80h7yUT12A"
         android:clickable="true" />
 
     <ImageView
@@ -20,53 +20,68 @@
         android:src="@drawable/marker_white"
         android:visibility="gone" />
 
-    <ImageButton
-        android:id="@+id/buttonLock"
+    <LinearLayout
+        android:id="@+id/buttonLinearLayoutLeft"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="false"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="18dp"
+        android:layout_marginTop="26dp"
+        android:orientation="vertical" >
+
+        <ImageButton
+            android:id="@+id/buttonAddMarker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/desc_buttonAddMarker"
+            android:src="@drawable/addmarker" />
+
+        <ImageButton
+            android:id="@+id/buttonUploadMarker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/desc_buttonUploadMarker"
+            android:src="@drawable/uploadmarker" />
+
+        <ImageButton
+            android:id="@+id/buttoCancelMarker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/desc_buttonCancelMarker"
+            android:src="@drawable/cancelmarker" />
+
+        <ImageButton
+            android:id="@+id/buttonInfoMarker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/desc_buttonCancelMarker"
+            android:src="@drawable/infomarker" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/buttonLinearLayoutRight"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
         android:layout_marginRight="18dp"
         android:layout_marginTop="26dp"
-        android:contentDescription="@string/desc_buttonLock"
-        android:src="@drawable/gpslock" />
+        android:orientation="vertical" >
 
-    <ImageButton
-        android:id="@+id/buttonAddMarker"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_marginLeft="18dp"
-        android:layout_marginTop="26dp"
-        android:contentDescription="@string/desc_buttonAddMarker"
-        android:src="@drawable/addmarker" />
-
-    <ImageButton
-        android:id="@+id/buttonUploadMarker"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_marginLeft="18dp"
-        android:layout_marginTop="26dp"
-        android:contentDescription="@string/desc_buttonUploadMarker"
-        android:src="@drawable/uploadmarker" />
-
-    <ImageButton
-        android:id="@+id/buttoCancelMarker"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="18dp"
-        android:layout_marginTop="70dp"
-        android:contentDescription="@string/desc_buttonCancelMarker"
-        android:src="@drawable/cancelmarker" />
-    
-     <ImageButton
-        android:id="@+id/buttonInfoMarker"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="18dp"
-        android:layout_marginTop="114dp"
-        android:contentDescription="@string/desc_buttonCancelMarker"
-        android:src="@drawable/infomarker" />
+        <ImageButton
+            android:id="@+id/buttonLock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/desc_buttonLock"
+            android:src="@drawable/gpslock" />
+        
+                <ImageButton
+            android:id="@+id/buttonLayerUp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/desc_buttonLayerUp"
+            android:src="@drawable/layerup" />
+    </LinearLayout>
 
 </RelativeLayout>
