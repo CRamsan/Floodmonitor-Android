@@ -13,22 +13,21 @@ public class Marker extends OverlayItem {
 	// Fields
 	// ===========================================================
 	private String observationTime;
+	private String uploadTime;
 	private String userComment;
 	private String image;
 	private int severity;
 	private int id;
-	private int coverType;
-	private int coverHeight;
 
 	// ===========================================================
 	// Constructors
 	// ===========================================================
-	public Marker(GeoPoint point, String observationTime, String userComment, String image, int severity, int coverType, int coverHeight) {
+	public Marker(int id, GeoPoint point, String observationTime, String uploadTime, String userComment, String image, int severity) {
 		super(point, observationTime, userComment);
+		this.id = id;
 		this.image = image;
 		this.severity = severity;
-		this.coverType = coverType;
-		this.coverHeight =coverHeight;
+		this.uploadTime = uploadTime;
 	}
 	
 	// ===========================================================
@@ -67,27 +66,19 @@ public class Marker extends OverlayItem {
 		this.userComment = userComment;
 	}
 
-	public int getCoverType() {
-		return coverType;
-	}
-
-	public void setCoverType(int coverType) {
-		this.coverType = coverType;
-	}
-
-	public int getCoverHeight() {
-		return coverHeight;
-	}
-
-	public void setCoverHeight(int coverHeight) {
-		this.coverHeight = coverHeight;
-	}
-
 	public int getId() {
 		return id;
 	}
 
 	public void setId(int id) {
 		this.id = id;
+	}
+
+	public String getUploadTime() {
+		return uploadTime;
+	}
+
+	public void setUploadTime(String uploadTime) {
+		this.uploadTime = uploadTime;
 	}
 }

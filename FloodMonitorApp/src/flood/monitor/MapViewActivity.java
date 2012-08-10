@@ -475,7 +475,9 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	public void loadOverlayUp() {
 		removeOverlay(markersOverlay);
 		addOverlay(georegionsOverlay);
+		selectedOverlay = georegionsOverlay;
 		limitedMapView.setMapLevel(MAP_LEVEL_REGION);
+		this.mapLevel = MAP_LEVEL_REGION;
 	}
 
 	public void loadOverlayDown(int regionId) {
@@ -554,7 +556,13 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			if (networkInfo != null && networkInfo.isConnected()) {
 				eventsFile = Connector.downloadGeoRegions();
 			} else {
-
+				activity.runOnUiThread(new Runnable() {
+					public void run() {
+						Toast.makeText(activity,
+								"We could not contact the server.",
+								Toast.LENGTH_LONG).show();
+					}
+				});
 			}
 			if (eventsFile == null) {
 				return null;
@@ -895,8 +903,8 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 					GeoPoint pt = limitedMapView.getProjection().fromPixels(
 							x - xDragTouchOffset, y - yDragTouchOffset);
 
-					Marker toDrop = new Marker(pt, draggerMarker.getTitle(),
-							draggerMarker.getSnippet(), null, 0, 0, 0);
+					Marker toDrop = new Marker(0, pt, draggerMarker.getTitle(),
+							"", draggerMarker.getSnippet(), "", 0);
 
 					Drawable icon = uploadDrawable;
 					icon.setBounds(-icon.getIntrinsicWidth() / 2,

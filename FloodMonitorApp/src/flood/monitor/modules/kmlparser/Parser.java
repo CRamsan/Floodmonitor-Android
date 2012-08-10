@@ -397,10 +397,9 @@ public class Parser {
 		private ArrayList<Marker> mOverlay;
 
 		private String observationtime;
+		private String uploadtime;
 		private String usercomment;
 		private String image;
-		private int covertype;
-		private int coverHeight;
 
 		private int latitude;
 		private int longitude;
@@ -414,11 +413,10 @@ public class Parser {
 		private static final String SEVERITY = "styleUrl";
 		private static final String POINT = "Point";
 		private static final String COORDINATES = "coordinates";
+		private static final String UPLOADTIME = "mark:UploadTime";
 		private static final String OBSERVATIONTIME = "mark:ObservationTime";
 		private static final String USERCOMMENT = "mark:UserComment";
 		private static final String IMAGE = "mark:ImageUrl";
-		private static final String COVERTYPE = "mark:CoverType";
-		private static final String COVERHEIGHT = "mark:CoverHeight";
 
 		private String temp = "";
 
@@ -447,12 +445,7 @@ public class Parser {
 
 			} else if (qName.equalsIgnoreCase(IMAGE)) {
 
-			} else if (qName.equalsIgnoreCase(COVERTYPE)) {
-
-			} else if (qName.equalsIgnoreCase(COVERHEIGHT)) {
-
-			}
-
+			} 
 			temp = "";
 			// Log.i(Parser.class.toString(), "Start Element :" + qName);
 		}
@@ -464,8 +457,8 @@ public class Parser {
 			if (qName.equalsIgnoreCase(DOCUMENT)) {
 
 			} else if (qName.equalsIgnoreCase(PLACEMARK)) {
-				overlayitem = new Marker(point, observationtime, usercomment,
-						image, severity, covertype, coverHeight);
+				overlayitem = new Marker(0, point, observationtime, uploadtime, usercomment,
+						image, severity);
 
 				overlayitem.setMarker(null);
 				severity = 0;
@@ -489,11 +482,9 @@ public class Parser {
 				usercomment = temp;
 			} else if (qName.equalsIgnoreCase(IMAGE)) {
 				image = temp;
-			} else if (qName.equalsIgnoreCase(COVERTYPE)) {
-				covertype = (temp.charAt(0));
-			} else if (qName.equalsIgnoreCase(COVERHEIGHT)) {
-				coverHeight = Integer.parseInt(temp);
-			}
+			} else if (qName.equalsIgnoreCase(UPLOADTIME)) {
+				uploadtime = temp;
+			} 
 
 			temp = "";
 		}
