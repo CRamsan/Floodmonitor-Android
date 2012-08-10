@@ -22,7 +22,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
 	public static final String MARKERS_COLUMN_UPLOAD_TIME = "upload";
 	public static final String MARKERS_COLUMN_COMMENT = "comment";
 	public static final String MARKERS_COLUMN_IMAGEURL = "image";
-	public static final String MARKERS_COLUMN_REGIONID = "regionid";
+	public static final String MARKERS_COLUMN_BOUNDARYID = "boundaryid";
 	public static final String MARKERS_COLUMN_EVENTID = "eventid";
 
 	public static final String EVENTS_COLUMN_ID = "id";
@@ -44,27 +44,31 @@ public class SQLiteManager extends SQLiteOpenHelper {
 	public static final String BOUNDARIES_COLUMN_WEST = "west";
 
 	private static final String DATABASE_NAME = "floodmonitor.db";
-	private static final int DATABASE_VERSION = 8;
+	private static final int DATABASE_VERSION = 19;
 
 	private static final String CREATE_MARKER_TABLE = "create table "
 			+ TABLE_MARKERS_NAME + " ( " + UNIQUE_COLUMN_ID
-			+ " integer primary key autoincrement, " + MARKERS_COLUMN_ID
-			+ " int, " + MARKERS_COLUMN_REGIONID + " int, "
-			+ MARKERS_COLUMN_EVENTID + " int, " + MARKERS_COLUMN_LATITUDE
-			+ " text not null, " + MARKERS_COLUMN_LONGITUDE
-			+ " text not null, " + MARKERS_COLUMN_SEVERITY + " int, "
+			+ " integer primary key autoincrement, " 
+			+ MARKERS_COLUMN_ID + " int, " 
+			+ MARKERS_COLUMN_LATITUDE + " text not null, "
+			+ MARKERS_COLUMN_LONGITUDE + " text not null, "
 			+ MARKERS_COLUMN_OBSERVATION_TIME + " text not null, "
 			+ MARKERS_COLUMN_UPLOAD_TIME + " text not null, "
 			+ MARKERS_COLUMN_COMMENT + " text not null, "
-			+ MARKERS_COLUMN_IMAGEURL + " text not null);";
+			+ MARKERS_COLUMN_IMAGEURL + " text not null, "
+			+ MARKERS_COLUMN_SEVERITY + " int, " 
+			+ MARKERS_COLUMN_EVENTID+ " int, " 
+			+ MARKERS_COLUMN_BOUNDARYID + " int);";
 
 	private static final String CREATE_EVENT_TABLE = "create table "
 			+ TABLE_EVENTS_NAME + " (  " + UNIQUE_COLUMN_ID
-			+ " integer primary key autoincrement, " + EVENTS_COLUMN_ID
-			+ " int, " + EVENTS_COLUMN_REGIONID + " int, " + EVENTS_COLUMN_NAME
-			+ " text not null, " + EVENTS_COLUMN_ACTIVE + " int, "
-			+ EVENTS_COLUMN_BEGINDATE + " text not null, "
-			+ EVENTS_COLUMN_ENDDATE + " text not null );";
+			+ " integer primary key autoincrement, " 
+			+ EVENTS_COLUMN_ID		+ " int, " 
+			+ EVENTS_COLUMN_NAME 	+ " text not null, " 
+			+ EVENTS_COLUMN_ACTIVE 	+ " int, "
+			+ EVENTS_COLUMN_BEGINDATE	+ " text not null, "
+			+ EVENTS_COLUMN_ENDDATE 	+ " text not null, "
+			+ EVENTS_COLUMN_REGIONID 	+ " int );";
 
 	private static final String CREATE_BOUNDARY_TABLE = "create table "
 			+ TABLE_BOUNDARIES_NAME + " (  " + UNIQUE_COLUMN_ID

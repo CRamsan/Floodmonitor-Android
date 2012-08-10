@@ -141,7 +141,7 @@ public class Connector {
 			markers = Parser.ParseMarkers(is);
 			for(Marker marker : markers){
 				marker.setEventId(eventId);
-				marker.setRegionId(boundarytId);
+				marker.setBoundaryId(boundarytId);
 			}
 		} catch (IOException e) {
 			Log.d("Connector", "Error: " + e);

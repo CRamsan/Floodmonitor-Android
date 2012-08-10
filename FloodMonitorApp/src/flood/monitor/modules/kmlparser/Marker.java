@@ -16,7 +16,7 @@ public class Marker extends OverlayItem {
 	private String image;
 	private int severity;
 	private int id;
-	private int regionId;
+	private int boundaryId;
 	private int eventId;
 
 	// ===========================================================
@@ -28,6 +28,16 @@ public class Marker extends OverlayItem {
 		this.image = image;
 		this.severity = severity;
 		this.uploadTime = uploadTime;
+	}
+	
+	public Marker(int id, GeoPoint point, String observationTime, String uploadTime, String userComment, String image, int severity, int evetId, int boundaryId) {
+		super(point, observationTime, userComment);
+		this.id = id;
+		this.image = image;
+		this.severity = severity;
+		this.uploadTime = uploadTime;
+		this.eventId = evetId;
+		this.boundaryId = boundaryId;
 	}
 	
 	// ===========================================================
@@ -74,12 +84,12 @@ public class Marker extends OverlayItem {
 		this.uploadTime = uploadTime;
 	}
 
-	public int getRegionId() {
-		return regionId;
+	public int getBoundaryId() {
+		return boundaryId;
 	}
 
-	public void setRegionId(int regionId) {
-		this.regionId = regionId;
+	public void setBoundaryId(int boundaryId) {
+		this.boundaryId = boundaryId;
 	}
 
 	public int getEventId() {
@@ -91,7 +101,7 @@ public class Marker extends OverlayItem {
 	}
 	
 	public boolean equals(Marker o){
-		if(this.getId() == o.getId() && this.getRegionId() == o.getRegionId() && this.getEventId() == o.getEventId()){
+		if(this.getId() == o.getId() && this.getBoundaryId() == o.getBoundaryId() && this.getEventId() == o.getEventId()){
 			return true;
 		}else{
 			return false;

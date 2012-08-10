@@ -8,9 +8,9 @@ public class Event {
 	private String beginDate;
 	private String endDate;
 	private String name;
-	private int eventId;
+	private int eventId = -1;
 	private boolean active;
-	private int regionId;
+	private int regionId = -1;
 	private ArrayList<Marker> markers;
 
 	public Event(int eventId, String name, boolean active, String beginDate,
@@ -22,6 +22,16 @@ public class Event {
 		this.active = active;
 	}
 
+	public Event(int eventId, String name, boolean active, String beginDate,
+			String endDate, int regionId) {
+		this.beginDate = beginDate;
+		this.endDate = endDate;
+		this.name = name;
+		this.eventId = eventId;
+		this.active = active;
+		this.regionId = regionId;
+	}
+	
 	public String getName() {
 		return name;
 	}

@@ -49,6 +49,7 @@ import com.google.android.maps.OverlayItem;
 
 import flood.monitor.modules.Connector;
 import flood.monitor.modules.Locator;
+import flood.monitor.modules.kmlparser.Boundary;
 import flood.monitor.modules.kmlparser.Event;
 import flood.monitor.modules.kmlparser.Marker;
 import flood.monitor.modules.kmlparser.ObjectDataSource;
@@ -507,8 +508,8 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		new DownloadAndShowEventsTask().execute(regionId);
 	}
 
-	public void downloadMarkersDialog(int regionId, int eventId) {
-		new DownloadMarkersTask().execute(regionId, eventId);
+	public void downloadMarkersDialog(Region region) {
+		new DownloadMarkersTask().execute(region);
 	}
 
 	public void updateBestLocation() {
@@ -636,7 +637,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		}
 	}
 
-	private class DownloadMarkersTask extends AsyncTask<Integer, Void, Void> {
+	private class DownloadMarkersTask extends AsyncTask<Region, Void, Void> {
 
 		protected boolean taskCompleted = false;
 
@@ -646,18 +647,23 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		}
 
 		@Override
-		protected Void doInBackground(Integer... params) {
+		protected Void doInBackground(Region... params) {
 			ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 			NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 			if (networkInfo != null && networkInfo.isConnected()) {
-				ArrayList<Marker> markers = Connector.downloadMarkers(
-						params[0], params[1]);
-				data.applyMarkerDifferences(data.getAllMarkers(params[0], params[1]), markers);
+				Region region = params[0];
+				Event event = region.getEvents().get(region.getSelectedEvent());
+				ArrayList<Marker> allMarkers = new ArrayList<Marker>(0);
+				for(Boundary boundary : region.getBoundaries()){
+					ArrayList<Marker> markers = Connector.downloadMarkers(boundary.getId(), event.getEventId());
+					data.applyMarkerDifferences(data.getAllMarkers(boundary.getId(), event.getEventId()), markers);
+					allMarkers.addAll(markers);
+				}
 				Drawable defaultDrawable = activity.getResources().getDrawable(
 						R.drawable.marker_green);
 				markersOverlay = new MarkersOverlay(defaultDrawable);
 				markersOverlay.updateActivity(activity);
-				markersOverlay.setOverlay(markers);
+				markersOverlay.setOverlay(allMarkers);
 				removeOverlay((Overlay) selectedOverlay);
 				selectedOverlay = markersOverlay;
 				addOverlay((MarkersOverlay) selectedOverlay);
@@ -671,12 +677,18 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 								Toast.LENGTH_LONG).show();
 					}
 				});
-				ArrayList<Marker> markers = data.getAllMarkers(params[0], params[1]);
+				Region region = params[0];
+				Event event = region.getEvents().get(region.getSelectedEvent());
+				ArrayList<Marker> allMarkers = new ArrayList<Marker>(0);
+				for(Boundary boundary : region.getBoundaries()){
+					ArrayList<Marker> markers = data.getAllMarkers(boundary.getId(), event.getEventId());
+					allMarkers.addAll(markers);
+				}
 				Drawable defaultDrawable = activity.getResources().getDrawable(
 						R.drawable.marker_green);
 				markersOverlay = new MarkersOverlay(defaultDrawable);
 				markersOverlay.updateActivity(activity);
-				markersOverlay.setOverlay(markers);
+				markersOverlay.setOverlay(allMarkers);
 				removeOverlay((Overlay) selectedOverlay);
 				selectedOverlay = markersOverlay;
 				addOverlay((MarkersOverlay) selectedOverlay);

@@ -8,6 +8,8 @@ public class Region {
 	private ArrayList<Event> events;
 	private String name;
 	private int regionId;
+	
+	private int selectedEvent = -1;
 
 	public Region(int regionId, String name, ArrayList<Boundary> boundaries) {
 		this.setName(name);
@@ -52,6 +54,14 @@ public class Region {
 			return true;
 		else
 			return false;
+	}
+
+	public int getSelectedEvent() {
+		return selectedEvent;
+	}
+
+	public void setSelectedEvent(int selectedEvent) {
+		this.selectedEvent = selectedEvent;
 	}
 
 }
