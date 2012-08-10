@@ -84,8 +84,8 @@ public class RegionsOverlay extends Overlay implements IOverlay {
 			Region region = regions.get(i);
 			for (int j = 0; j < region.getBoundaries().size(); j++) {
 				Boundary boundary = region.getBoundaries().get(j);
-				GeoPoint northwest = new GeoPoint(boundary.north, boundary.west);
-				GeoPoint southeast = new GeoPoint(boundary.south, boundary.east);
+				GeoPoint northwest = new GeoPoint(boundary.getNorth(), boundary.getWest());
+				GeoPoint southeast = new GeoPoint(boundary.getSouth(), boundary.getEast());
 				((MapView) activity.findViewById(R.id.mapview)).getProjection()
 						.toPixels(northwest, nw);
 				((MapView) activity.findViewById(R.id.mapview)).getProjection()
@@ -191,10 +191,10 @@ public class RegionsOverlay extends Overlay implements IOverlay {
 			Region region = regions.get(i);
 			for (int j = 0; j < region.getBoundaries().size(); j++) {
 				Boundary boundary = region.getBoundaries().get(j);
-				if (p.getLatitudeE6() < boundary.north
-						&& p.getLongitudeE6() > boundary.west
-						&& p.getLatitudeE6() > boundary.south
-						&& p.getLongitudeE6() < boundary.east) {
+				if (p.getLatitudeE6() < boundary.getNorth()
+						&& p.getLongitudeE6() > boundary.getWest()
+						&& p.getLatitudeE6() > boundary.getSouth()
+						&& p.getLongitudeE6() < boundary.getEast()) {
 					return region.getRegionId();
 				}
 			}

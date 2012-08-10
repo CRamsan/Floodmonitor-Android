@@ -78,4 +78,11 @@ public class Event {
 		this.regionId = regionId;
 	}
 
+	public boolean equals(Event o){
+		if(this.getEventId() == o.getEventId() && this.getRegionId() == o.getRegionId()){
+			return true;
+		}else{
+			return false;
+		}
+	}
 }

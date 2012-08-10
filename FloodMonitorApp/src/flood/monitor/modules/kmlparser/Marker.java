@@ -89,4 +89,12 @@ public class Marker extends OverlayItem {
 	public void setEventId(int eventId) {
 		this.eventId = eventId;
 	}
+	
+	public boolean equals(Marker o){
+		if(this.getId() == o.getId() && this.getRegionId() == o.getRegionId() && this.getEventId() == o.getEventId()){
+			return true;
+		}else{
+			return false;
+		}
+	}
 }

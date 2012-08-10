@@ -199,8 +199,10 @@ public class Parser {
 		private ArrayList<Region> regions;
 		private ArrayList<Boundary> boundaries;
 		private String temp;
-
+		private boolean inBoundary = false;
 		private String name;
+		private int boundaryId;
+		private String boundaryName;
 		private int regionId;
 		private int south;
 		private int east;
@@ -226,6 +228,7 @@ public class Parser {
 
 			} else if (qName.equalsIgnoreCase(BOUNDARIES)) {
 				this.boundaries = new ArrayList<Boundary>(0);
+				inBoundary = true;
 			} else if (qName.equalsIgnoreCase(BOUNDARY)) {
 
 			} else if (qName.equalsIgnoreCase(NORTHWEST)) {
@@ -247,17 +250,28 @@ public class Parser {
 				this.boundaries = null;
 				this.regions.add(region);
 			} else if (qName.equalsIgnoreCase(ID)) {
-				this.regionId = Integer.parseInt(temp);
+				if (inBoundary) {
+					this.boundaryId = Integer.parseInt(temp);
+				} else {
+					this.regionId = Integer.parseInt(temp);
+				}
 			} else if (qName.equalsIgnoreCase(NAME)) {
-				this.name = temp;
+				if (inBoundary) {
+					this.boundaryName = temp;
+				} else {
+					this.name = temp;
+				}
 			} else if (qName.equalsIgnoreCase(BOUNDARIES)) {
-
+				inBoundary = false;
 			} else if (qName.equalsIgnoreCase(BOUNDARY)) {
 				Boundary boundary = new Boundary();
-				boundary.east = east;
-				boundary.west = west;
-				boundary.south = south;
-				boundary.north = north;
+				boundary.setEast(east);
+				boundary.setWest(west);
+				boundary.setSouth(south);
+				boundary.setNorth(north);
+				boundary.setRegionId(regionId);
+				boundary.setName(boundaryName);
+				boundary.setId(boundaryId);
 				boundaries.add(boundary);
 			} else if (qName.equalsIgnoreCase(NORTHWEST)) {
 				west = (int) (Double.parseDouble(temp.substring(0,
