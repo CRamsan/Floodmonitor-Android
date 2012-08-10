@@ -46,5 +46,12 @@ public class Region {
 	public void setBoundaries(ArrayList<Boundary> boundaries) {
 		this.boundaries = boundaries;
 	}
+	
+	public boolean equals(Region o){
+		if(this.getRegionId() == o.getRegionId() && this.getName() == o.getName())
+			return true;
+		else
+			return false;
+	}
 
 }

@@ -13,8 +13,7 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
@@ -25,8 +24,10 @@ import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
+import flood.monitor.modules.kmlparser.Event;
 import flood.monitor.modules.kmlparser.Marker;
 import flood.monitor.modules.kmlparser.Parser;
+import flood.monitor.modules.kmlparser.Region;
 
 public class Connector {
 
@@ -34,22 +35,12 @@ public class Connector {
 	public static final String DOWNLOAD_DIR = ".cache";
 	public static final String PUBLIC_DIR = "FLoodMonitor";
 
-	public static File downloadGeoRegions() {
-		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss")
-				.format(new Date());
-		String filename = "regions" + "-" + timeStamp;
-		File mediaStorageDir = new File(Environment
-				.getExternalStorageDirectory().getPath()
-				+ File.separator
-				+ PUBLIC_DIR + File.separator + DOWNLOAD_DIR);
-		if (!mediaStorageDir.exists()) {
-			mediaStorageDir.mkdirs();
-		}
-		File regions = new File(mediaStorageDir + File.separator + filename);
-
+	public static ArrayList<Region>  downloadGeoRegions() {
 		OutputStreamWriter request = null;
 		String parameters = "data=<phone><command>GetRegions</command></phone>";
-
+		
+		ArrayList<Region> regions = new ArrayList<Region>(0);
+		
 		try {
 			URL url = new URL(XML_COMMUNICATOR);
 
@@ -69,21 +60,7 @@ public class Connector {
 			 * Define InputStreams to read from the URLConnection.
 			 */
 			InputStream is = ucon.getInputStream();
-			BufferedInputStream bis = new BufferedInputStream(is);
-
-			/*
-			 * Read bytes to the Buffer until there is nothing more to read(-1).
-			 */
-			ByteArrayBuffer baf = new ByteArrayBuffer(50);
-			int current = 0;
-			while ((current = bis.read()) != -1) {
-				baf.append((byte) current);
-			}
-
-			/* Convert the Bytes read to a String. */
-			FileOutputStream fos = new FileOutputStream(regions);
-			fos.write(baf.toByteArray());
-			fos.close();
+			regions = Parser.ParseRegions(is);
 
 		} catch (IOException e) {
 			Log.d("Connector", "Error: " + e);
@@ -91,23 +68,12 @@ public class Connector {
 		return regions;
 	}
 
-	public static File downloadEvents(int regionId) {
-		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss")
-				.format(new Date());
-		String filename = "events" + "-" + regionId + "-" + timeStamp;
-		File mediaStorageDir = new File(Environment
-				.getExternalStorageDirectory().getPath()
-				+ File.separator
-				+ PUBLIC_DIR + File.separator + DOWNLOAD_DIR);
-		if (!mediaStorageDir.exists()) {
-			mediaStorageDir.mkdirs();
-		}
-		File regions = new File(mediaStorageDir + File.separator + filename);
+	public static ArrayList<Event> downloadEvents(int regionId) {
 
 		OutputStreamWriter request = null;
 		String parameters = "data=<phone><command>GetEventsByRegionID</command><params><regionid>"
 				+ regionId + "</regionid></params></phone>";
-
+		ArrayList<Event> events = new ArrayList<Event>(0);
 		try {
 			URL url = new URL(XML_COMMUNICATOR);
 
@@ -127,56 +93,24 @@ public class Connector {
 			 * Define InputStreams to read from the URLConnection.
 			 */
 			InputStream is = ucon.getInputStream();
-			BufferedInputStream bis = new BufferedInputStream(is);
-
-			/*
-			 * Read bytes to the Buffer until there is nothing more to read(-1).
-			 */
-			ByteArrayBuffer baf = new ByteArrayBuffer(50);
-			int current = 0;
-			while ((current = bis.read()) != -1) {
-				baf.append((byte) current);
+			events = Parser.ParseEvents(is);
+			for(Event event : events){
+				event.setRegionId(regionId);
 			}
-			/* Convert the Bytes read to a String. */
-			FileOutputStream fos = new FileOutputStream(regions);
-			fos.write(baf.toByteArray());
-			fos.close();
-
 		} catch (IOException e) {
 			Log.d("Connector", "Error: " + e);
 		}
-		return regions;
+		return events;
 	}
 
-	public static File downloadMarkers(int boundarytId, int eventId) {
-		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss")
-				.format(new Date());
-		String filename = "markers" + timeStamp + ".xml";
-		File mediaStorageDir = new File(
-				Environment.getExternalStorageDirectory(), "FloodMonitor");
-		File downloadDir = new File(mediaStorageDir.getPath() + File.separator
-				+ DOWNLOAD_DIR);
-		if (!mediaStorageDir.exists()) {
-			if (!mediaStorageDir.mkdirs()) {
-				Log.d("MyCameraApp", "failed to create directory");
-				return null;
-			}
-		}
-		if (!downloadDir.exists()) {
-			if (!downloadDir.mkdirs()) {
-				Log.d("MyCameraApp", "failed to create directory");
-				return null;
-			}
-		}
-		File file = new File(mediaStorageDir.getPath() + File.separator
-				+ DOWNLOAD_DIR + File.separator + filename);
+	public static ArrayList<Marker> downloadMarkers(int boundarytId, int eventId) {
 		OutputStreamWriter request = null;
 		String parameters = "data=<phone><command>GetMarkerFile</command><params><boundaryid>"
 				+ boundarytId
 				+ "</boundaryid><eventid>"
 				+ eventId
 				+ "</eventid></params></phone>";
-
+		ArrayList<Marker> markers = new ArrayList<Marker>(0);
 		try {
 			URL url = new URL(XML_COMMUNICATOR);
 
@@ -204,22 +138,15 @@ public class Connector {
 			/* Open a connection to that URL. */
 			ucon = (HttpURLConnection) url.openConnection();
 			is = ucon.getInputStream();
-			BufferedInputStream bis = new BufferedInputStream(is);
-			ByteArrayBuffer baf = new ByteArrayBuffer(50);
-			int current = 0;
-			while ((current = bis.read()) != -1) {
-				baf.append((byte) current);
+			markers = Parser.ParseMarkers(is);
+			for(Marker marker : markers){
+				marker.setEventId(eventId);
+				marker.setRegionId(boundarytId);
 			}
-
-			/* Convert the Bytes read to a String. */
-			FileOutputStream fos = new FileOutputStream(file);
-			fos.write(baf.toByteArray());
-			fos.close();
-
 		} catch (IOException e) {
 			Log.d("Connector", "Error: " + e);
 		}
-		return file;
+		return markers;
 	}
 
 	public static File downloadPicture(Marker marker, int id) {

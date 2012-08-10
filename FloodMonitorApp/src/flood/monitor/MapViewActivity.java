@@ -1,10 +1,6 @@
 package flood.monitor;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,7 +51,7 @@ import flood.monitor.modules.Connector;
 import flood.monitor.modules.Locator;
 import flood.monitor.modules.kmlparser.Event;
 import flood.monitor.modules.kmlparser.Marker;
-import flood.monitor.modules.kmlparser.Parser;
+import flood.monitor.modules.kmlparser.ObjectDataSource;
 import flood.monitor.modules.kmlparser.Region;
 import flood.monitor.overlay.IOverlay;
 import flood.monitor.overlay.LimitedMapView;
@@ -121,9 +117,6 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	private int buttonState;
 	private int mapLevel;
 	private boolean installedBefore;
-
-	private int region;
-	private int event;
 
 	// ===========================================================
 	// Methods from Activity
@@ -506,11 +499,6 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		new DownloadRegionsTask().execute();
 	}
 
-	/*
-	 * public void downloadEventsDialog(int regionId) { new
-	 * DownloadEventsTask().execute(regionId); }
-	 */
-
 	public void downloadEventsAndShowDialog(int regionId) {
 		new DownloadAndShowEventsTask().execute(regionId);
 	}
@@ -543,6 +531,8 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	// ===========================================================
 
 	private class DownloadRegionsTask extends AsyncTask<Void, Void, Void> {
+		protected boolean taskCompleted = false;
+
 		@Override
 		protected void onPreExecute() {
 			showDialog(EVENT_DOWNLOAD_DIALOG);
@@ -552,9 +542,16 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		protected Void doInBackground(Void... params) {
 			ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 			NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-			File eventsFile = null;
 			if (networkInfo != null && networkInfo.isConnected()) {
-				eventsFile = Connector.downloadGeoRegions();
+				ArrayList<Region> regions = Connector.downloadGeoRegions();
+				ObjectDataSource data = new ObjectDataSource(activity);
+				
+				georegionsOverlay = new RegionsOverlay(regions);
+				georegionsOverlay.updateActivity(activity);
+				selectedOverlay = georegionsOverlay;
+				addOverlay((RegionsOverlay) selectedOverlay);
+				overlayState = OVERLAY_LOADED;
+				taskCompleted = true;
 			} else {
 				activity.runOnUiThread(new Runnable() {
 					public void run() {
@@ -564,30 +561,24 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 					}
 				});
 			}
-			if (eventsFile == null) {
-				return null;
-			}
-			ArrayList<Region> regions = Parser.ParseRegions(eventsFile
-					.getPath());
-			georegionsOverlay = new RegionsOverlay(regions);
-			georegionsOverlay.updateActivity(activity);
-			selectedOverlay = georegionsOverlay;
-			addOverlay((RegionsOverlay) selectedOverlay);
-			overlayState = OVERLAY_LOADED;
 			return null;
 		}
 
 		@Override
 		protected void onPostExecute(Void none) {
-			mapLevel = MAP_LEVEL_REGION;
-			limitedMapView.setMapLevel(mapLevel);
-			limitedMapView.invalidate();
+			if (taskCompleted) {
+
+				mapLevel = MAP_LEVEL_REGION;
+				limitedMapView.setMapLevel(mapLevel);
+				limitedMapView.invalidate();
+			}
 			dismissDialog(EVENT_DOWNLOAD_DIALOG);
 		}
 	}
 
 	private class DownloadAndShowEventsTask extends
 			AsyncTask<Integer, Void, Void> {
+		protected boolean taskCompleted = false;
 		int regionId;
 
 		@Override
@@ -600,26 +591,31 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 			NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 			regionId = params[0];
-			File eventsFile = null;
 			if (networkInfo != null && networkInfo.isConnected()) {
-				eventsFile = Connector.downloadEvents(regionId);
+				ArrayList<Event> events = Connector.downloadEvents(regionId);
+				((RegionsOverlay) selectedOverlay).setEvents(regionId, events);
+				taskCompleted=true;
 			} else {
-
+				activity.runOnUiThread(new Runnable() {
+					public void run() {
+						Toast.makeText(activity,
+								"We could not contact the server.",
+								Toast.LENGTH_LONG).show();
+					}
+				});
 			}
-			if (eventsFile == null) {
-				return null;
-			}
-			ArrayList<Event> events = Parser.ParseEvents(eventsFile.getPath());
-			((RegionsOverlay) selectedOverlay).setEvents(regionId, events);
 			return null;
 		}
 
 		@Override
 		protected void onPostExecute(Void none) {
-			mapLevel = MAP_LEVEL_REGION;
-			limitedMapView.setMapLevel(mapLevel);
-			limitedMapView.invalidate();
-			dismissDialog(EVENT_DOWNLOAD_DIALOG);
+			if (taskCompleted) {
+
+				mapLevel = MAP_LEVEL_REGION;
+				limitedMapView.setMapLevel(mapLevel);
+				limitedMapView.invalidate();
+				dismissDialog(EVENT_DOWNLOAD_DIALOG);
+			}
 			((RegionsOverlay) selectedOverlay).showMarkerDialog(regionId);
 		}
 	}
@@ -637,27 +633,28 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		protected Void doInBackground(Integer... params) {
 			ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 			NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-			File eventsFile = null;
 			if (networkInfo != null && networkInfo.isConnected()) {
-				eventsFile = Connector.downloadMarkers(params[0], params[1]);
+				ArrayList<Marker> markers = Connector.downloadMarkers(
+						params[0], params[1]);
+				Drawable defaultDrawable = activity.getResources().getDrawable(
+						R.drawable.marker_green);
+				markersOverlay = new MarkersOverlay(defaultDrawable);
+				markersOverlay.updateActivity(activity);
+				markersOverlay.setOverlay(markers);
+				removeOverlay((Overlay) selectedOverlay);
+				selectedOverlay = markersOverlay;
+				addOverlay((MarkersOverlay) selectedOverlay);
+				overlayState = OVERLAY_LOADED;
+				taskCompleted = true;
 			} else {
-
+				activity.runOnUiThread(new Runnable() {
+					public void run() {
+						Toast.makeText(activity,
+								"We could not contact the server.",
+								Toast.LENGTH_LONG).show();
+					}
+				});
 			}
-			if (eventsFile == null) {
-				return null;
-			}
-			ArrayList<Marker> markers = Parser.ParseMarkers(eventsFile
-					.getPath());
-			Drawable defaultDrawable = activity.getResources().getDrawable(
-					R.drawable.marker_green);
-			markersOverlay = new MarkersOverlay(defaultDrawable);
-			markersOverlay.updateActivity(activity);
-			markersOverlay.setOverlay(markers);
-			removeOverlay((Overlay) selectedOverlay);
-			selectedOverlay = markersOverlay;
-			addOverlay((MarkersOverlay) selectedOverlay);
-			overlayState = OVERLAY_LOADED;
-			taskCompleted = true;
 			return null;
 		}
 

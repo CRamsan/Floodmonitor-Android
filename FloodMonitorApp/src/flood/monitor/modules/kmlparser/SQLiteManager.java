@@ -1,0 +1,80 @@
+package flood.monitor.modules.kmlparser;
+
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+
+public class SQLiteManager extends SQLiteOpenHelper {
+
+	public static final String TABLE_REGIONS_NAME = "regions";
+	public static final String TABLE_EVENTS_NAME = "events";
+	public static final String TABLE_MARKERS_NAME = "markers";
+	public static final String TABLE_EXTRA_NAME = "extra";
+
+	public static final String UNIQUE_COLUMN_ID = "_id";
+	
+	public static final String MARKERS_COLUMN_ID = "id";
+	public static final String MARKERS_COLUMN_SEVERITY = "severity";
+	public static final String MARKERS_COLUMN_LATITUDE = "latitude";
+	public static final String MARKERS_COLUMN_LONGITUDE = "longitude";
+	public static final String MARKERS_COLUMN_OBSERVATION_TIME = "observation";
+	public static final String MARKERS_COLUMN_UPLOAD_TIME = "upload";
+	public static final String MARKERS_COLUMN_COMMENT = "comment";
+	public static final String MARKERS_COLUMN_IMAGEURL = "image";
+	public static final String MARKERS_COLUMN_REGIONID = "comment";
+	public static final String MARKERS_COLUMN_EVENTID = "image";
+	
+
+	public static final String EVENTS_COLUMN_ID = "id";
+	public static final String EVENTS_COLUMN_NAME = "name";
+	public static final String EVENTS_COLUMN_BEGINDATE = "begindate";
+	public static final String EVENTS_COLUMN_ENDDATE = "enddate";
+	public static final String EVENTS_COLUMN_ACTIVE = "active";
+	public static final String EVENTS_COLUMN_REGIONID	= "active";
+
+	public static final String REGIONS_COLUMN_ID = "id";
+	public static final String REGIONS_COLUMN_NAME = "name";
+
+	private static final String DATABASE_NAME = "floodmonitor.db";
+	private static final int DATABASE_VERSION = 1;
+
+	private static final String CREATE_MARKER_TABLE = "create table "
+			+ TABLE_MARKERS_NAME + " ( integer primary key autoincrement, " + MARKERS_COLUMN_ID
+			+ " int, " + MARKERS_COLUMN_LATITUDE
+			+ " text not null, " + MARKERS_COLUMN_LONGITUDE
+			+ " text not null, " + MARKERS_COLUMN_SEVERITY + " int, "
+			+ MARKERS_COLUMN_OBSERVATION_TIME + " text not null, "
+			+ MARKERS_COLUMN_COMMENT + " text not null, "
+			+ MARKERS_COLUMN_IMAGEURL + " text not null);";
+
+	private static final String CREATE_EVENT_TABLE = "create table "
+			+ TABLE_EVENTS_NAME + " ( integer primary key autoincrement, " + EVENTS_COLUMN_ID
+			+ " int, " + EVENTS_COLUMN_NAME
+			+ " text not null, " + EVENTS_COLUMN_ACTIVE + " int, "
+			+ EVENTS_COLUMN_BEGINDATE + " text not null, "
+			+ EVENTS_COLUMN_ENDDATE + " text not null, );";
+
+	private static final String CREATE_REGION_TABLE = "create table "
+			+ TABLE_REGIONS_NAME + " ( integer primary key autoincrement, " + REGIONS_COLUMN_ID
+			+ " int, " + REGIONS_COLUMN_NAME
+			+ " text not null);";
+
+	public SQLiteManager(Context context) {
+		super(context, DATABASE_NAME, null, DATABASE_VERSION);
+	}
+
+	@Override
+	public void onCreate(SQLiteDatabase db) {
+		db.execSQL(CREATE_MARKER_TABLE);
+		db.execSQL(CREATE_REGION_TABLE);
+		db.execSQL(CREATE_EVENT_TABLE);
+	}
+
+	@Override
+	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+		db.execSQL("DROP TABLE IF EXISTS " + TABLE_MARKERS_NAME);
+		db.execSQL("DROP TABLE IF EXISTS " + TABLE_REGIONS_NAME);
+		db.execSQL("DROP TABLE IF EXISTS " + TABLE_EVENTS_NAME);
+		onCreate(db);
+	}
+}

@@ -34,6 +34,20 @@ public class Parser {
 		return handler.getResult();
 	}
 
+	public static ArrayList<Region> ParseRegions(InputStream stream) {
+		RegionHandler handler = new RegionHandler();
+		try {
+			SAXParserFactory factory = SAXParserFactory.newInstance();
+			SAXParser saxParser = factory.newSAXParser();
+			saxParser.parse(stream, handler);
+		} catch (SAXException e) {
+		} catch (ParserConfigurationException e) {
+		} catch (FileNotFoundException e1) {
+		} catch (IOException e) {
+		}
+		return handler.getResult();
+	}
+
 	public static ArrayList<Event> ParseEvents(String filename) {
 
 		EventHandler handler = new EventHandler();
@@ -41,6 +55,22 @@ public class Parser {
 		InputStream stream;
 		try {
 			stream = new FileInputStream(filename);
+			SAXParserFactory factory = SAXParserFactory.newInstance();
+			SAXParser saxParser = factory.newSAXParser();
+			saxParser.parse(stream, handler);
+		} catch (SAXException e) {
+		} catch (ParserConfigurationException e) {
+		} catch (FileNotFoundException e1) {
+		} catch (IOException e) {
+		}
+		return handler.getResult();
+	}
+
+	public static ArrayList<Event> ParseEvents(InputStream stream) {
+
+		EventHandler handler = new EventHandler();
+
+		try {
 			SAXParserFactory factory = SAXParserFactory.newInstance();
 			SAXParser saxParser = factory.newSAXParser();
 			saxParser.parse(stream, handler);
@@ -125,6 +155,23 @@ public class Parser {
 		InputStream stream;
 		try {
 			stream = new FileInputStream(filename);
+			SAXParserFactory factory = SAXParserFactory.newInstance();
+			SAXParser saxParser = factory.newSAXParser();
+			saxParser.parse(stream, handler);
+		} catch (SAXException e) {
+		} catch (ParserConfigurationException e) {
+		} catch (FileNotFoundException e1) {
+		} catch (IOException e) {
+		}
+
+		return handler.getResult();
+	}
+
+	public static ArrayList<Marker> ParseMarkers(InputStream stream) {
+
+		MarkerHandler handler = new MarkerHandler();
+
+		try {
 			SAXParserFactory factory = SAXParserFactory.newInstance();
 			SAXParser saxParser = factory.newSAXParser();
 			saxParser.parse(stream, handler);
@@ -445,7 +492,7 @@ public class Parser {
 
 			} else if (qName.equalsIgnoreCase(IMAGE)) {
 
-			} 
+			}
 			temp = "";
 			// Log.i(Parser.class.toString(), "Start Element :" + qName);
 		}
@@ -457,8 +504,8 @@ public class Parser {
 			if (qName.equalsIgnoreCase(DOCUMENT)) {
 
 			} else if (qName.equalsIgnoreCase(PLACEMARK)) {
-				overlayitem = new Marker(0, point, observationtime, uploadtime, usercomment,
-						image, severity);
+				overlayitem = new Marker(0, point, observationtime, uploadtime,
+						usercomment, image, severity);
 
 				overlayitem.setMarker(null);
 				severity = 0;
@@ -484,7 +531,7 @@ public class Parser {
 				image = temp;
 			} else if (qName.equalsIgnoreCase(UPLOADTIME)) {
 				uploadtime = temp;
-			} 
+			}
 
 			temp = "";
 		}

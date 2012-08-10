@@ -22,11 +22,10 @@
 
         <EditTextPreference
             android:defaultValue="@string/pref_DefaultCacheSize"
-            android:dialogMessage="@string/pref_CacheSizeDialog_message"
             android:dialogTitle="@string/pref_CacheSizeDialog_title"
             android:key="pref_CacheSize"
             android:summary="@string/pref_CacheSize_summary"
-            android:title="@string/pref_CacheSize_title" />
+            android:title="@string/pref_CacheSize_title" android:dialogLayout="@layout/cachesizedialogpreference"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_Visuals" >
         <CheckBoxPreference

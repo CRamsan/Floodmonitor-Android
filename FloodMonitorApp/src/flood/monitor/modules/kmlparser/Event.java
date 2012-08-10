@@ -10,6 +10,7 @@ public class Event {
 	private String name;
 	private int eventId;
 	private boolean active;
+	private int regionId;
 	private ArrayList<Marker> markers;
 
 	public Event(int eventId, String name, boolean active, String beginDate,
@@ -67,6 +68,14 @@ public class Event {
 
 	public void setMarkers(ArrayList<Marker> markers) {
 		this.markers = markers;
+	}
+
+	public int getRegionId() {
+		return regionId;
+	}
+
+	public void setRegionId(int regionId) {
+		this.regionId = regionId;
 	}
 
 }

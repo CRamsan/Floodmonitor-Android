@@ -12,12 +12,12 @@ public class Marker extends OverlayItem {
 	// ===========================================================
 	// Fields
 	// ===========================================================
-	private String observationTime;
 	private String uploadTime;
-	private String userComment;
 	private String image;
 	private int severity;
 	private int id;
+	private int regionId;
+	private int eventId;
 
 	// ===========================================================
 	// Constructors
@@ -43,11 +43,7 @@ public class Marker extends OverlayItem {
 	}
 
 	public String getObservationTime() {
-		return observationTime;
-	}
-
-	public void setObservationTime(String observationTime) {
-		this.observationTime = observationTime;
+		return this.getTitle();
 	}
 
 	public String getImage() {
@@ -59,11 +55,7 @@ public class Marker extends OverlayItem {
 	}
 
 	public String getUserComment() {
-		return userComment;
-	}
-
-	public void setUserComment(String userComment) {
-		this.userComment = userComment;
+		return this.getSnippet();
 	}
 
 	public int getId() {
@@ -80,5 +72,21 @@ public class Marker extends OverlayItem {
 
 	public void setUploadTime(String uploadTime) {
 		this.uploadTime = uploadTime;
+	}
+
+	public int getRegionId() {
+		return regionId;
+	}
+
+	public void setRegionId(int regionId) {
+		this.regionId = regionId;
+	}
+
+	public int getEventId() {
+		return eventId;
+	}
+
+	public void setEventId(int eventId) {
+		this.eventId = eventId;
 	}
 }
