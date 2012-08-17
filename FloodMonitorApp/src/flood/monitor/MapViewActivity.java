@@ -873,8 +873,8 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 
 		public Location getMarkerLocation() {
 			Location temp = new Location("Picture Marker");
-			temp.setLatitude(draggerMarker.getPoint().getLatitudeE6());
-			temp.setLongitude(draggerMarker.getPoint().getLongitudeE6());
+			temp.setLatitude(draggerMarker.getPoint().getLatitudeE6() / 1000000f);
+			temp.setLongitude(draggerMarker.getPoint().getLongitudeE6() / 1000000f);
 			return temp;
 		}
 

@@ -91,8 +91,11 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements
 		Intent intent = new Intent(activity, MarkerDialogActivity.class);
 		intent.putExtra("title", createItem(id).getTitle());
 		intent.putExtra("desc", createItem(id).getSnippet());
-		intent.putExtra("latitude", createItem(id).getPoint().getLatitudeE6() / 1000000d);
-		intent.putExtra("longitude", createItem(id).getPoint().getLongitudeE6()/ 1000000d);
+		intent.putExtra("latitude",
+				createItem(id).getPoint().getLatitudeE6() / 1000000d);
+		intent.putExtra("longitude",
+				createItem(id).getPoint().getLongitudeE6() / 1000000d);
+		intent.putExtra("image",markers.get(id).getImage());
 		intent.putExtra("mode", MapViewActivity.MARKER_UPLOAD);
 		boolean uploadButton = true;
 		intent.putExtra("upload", uploadButton);
@@ -124,6 +127,7 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements
 			icon = activity.getResources().getDrawable(R.drawable.marker_red);
 			break;
 		default:
+			icon = activity.getResources().getDrawable(R.drawable.marker_blue);
 			break;
 		}
 		icon.setBounds(-icon.getIntrinsicWidth() / 2,

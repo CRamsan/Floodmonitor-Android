@@ -5,15 +5,19 @@ import java.util.List;
 import java.util.Locale;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MarkerDialogActivity extends Activity {
 
@@ -236,6 +240,39 @@ public class MarkerDialogActivity extends Activity {
 					+ address);
 			((ProgressBar) findViewById(R.id.progressBarAddress))
 					.setVisibility(View.GONE);
+		}
+	}
+	
+	private class DownloadImageTask extends AsyncTask<Void, Void, Void> {
+		protected boolean taskCompleted = false;
+
+		@Override
+		protected void onPreExecute() {
+		}
+
+		@Override
+		protected Void doInBackground(Void... params) {
+			ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+			NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+			if (networkInfo != null && networkInfo.isConnected()) {
+				taskCompleted = true;
+			} else {
+				activity.runOnUiThread(new Runnable() {
+					public void run() {
+						Toast.makeText(activity,
+								"We could not contact the server.",
+								Toast.LENGTH_LONG).show();
+					}
+				});
+				taskCompleted = true;
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void none) {
+			if (taskCompleted) {
+			}
 		}
 	}
 

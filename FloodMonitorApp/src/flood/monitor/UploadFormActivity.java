@@ -17,7 +17,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.media.MediaScannerConnection;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -28,6 +31,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.maps.GeoPoint;
+
+import flood.monitor.modules.Connector;
+import flood.monitor.modules.kmlparser.Marker;
 
 public class UploadFormActivity extends Activity {
 
@@ -52,12 +60,12 @@ public class UploadFormActivity extends Activity {
 	private Context context = this;
 
 	private String file;
-
-	private ProgressDialog progressDialog;
-	private ProgressThread progressThread;
 	private Uri fileUri;
+
 	private double latitude;
 	private double longitude;
+	private int severity;
+	private String comment;
 
 	// ===========================================================
 	// Constructors
@@ -86,7 +94,7 @@ public class UploadFormActivity extends Activity {
 		buttonUploadImage.setOnClickListener(new Button.OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-				showDialog(UPLOADING_DIALOG);
+				uploadMarkerDialog();
 			}
 		});
 		Button buttonCancel = (Button) findViewById(R.id.cancelButton);
@@ -103,9 +111,10 @@ public class UploadFormActivity extends Activity {
 			longitude = (location.getDouble("longitude"));
 			TextView latText = (TextView) findViewById(R.id.latitudeValueView);
 			TextView lonText = (TextView) findViewById(R.id.longitudeValueView);
-			latText.setText(Double.toString(latitude));
-			lonText.setText(Double.toString(longitude));
+			latText.setText(Integer.toString((int) (latitude * 1000000)));
+			lonText.setText(Integer.toString((int) (longitude * 1000000)));
 		}
+		file = "";
 		setResult(RESULT_CANCELED);
 	}
 
@@ -216,7 +225,7 @@ public class UploadFormActivity extends Activity {
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
 		case UPLOADING_DIALOG: {
-			progressDialog = new ProgressDialog(context);
+			ProgressDialog progressDialog = new ProgressDialog(context);
 			progressDialog.setMessage("Please wait while loading...");
 			progressDialog.setIndeterminate(true);
 			progressDialog.setCancelable(false);
@@ -269,26 +278,8 @@ public class UploadFormActivity extends Activity {
 		}
 	}
 
-	@Override
-	protected void onPrepareDialog(int id, Dialog dialog) {
-		switch (id) {
-		case UPLOADING_DIALOG: {
-			final Handler handler = new Handler() {
-				public void handleMessage(Message msg) {
-					int state = msg.arg1;
-					if (state == UPLOAD_COMPLETE) {
-						setResult(RESULT_OK);
-						dismissDialog(UPLOADING_DIALOG);
-						activity.finish();
-					}
-				}
-			};
-			progressThread = new ProgressThread(handler);
-			progressThread.start();
-		}
-		default: {
-		}
-		}
+	public void uploadMarkerDialog() {
+		new UploadMarkerTask().execute();
 	}
 
 	// ===========================================================
@@ -409,8 +400,8 @@ public class UploadFormActivity extends Activity {
 					+ lineEnd);
 
 			// Responses from the server (code and message)
-			//int serverResponseCode = connection.getResponseCode();
-			//String serverResponseMessage = connection.getResponseMessage();
+			// int serverResponseCode = connection.getResponseCode();
+			// String serverResponseMessage = connection.getResponseMessage();
 
 			fileInputStream.close();
 			outputStream.flush();
@@ -427,27 +418,47 @@ public class UploadFormActivity extends Activity {
 	// ===========================================================
 	// Inner and Anonymous Classes
 	// ===========================================================
-	private class ProgressThread extends Thread {
-		private Handler mHandler;
+	private class UploadMarkerTask extends AsyncTask<Void, Void, Void> {
+		protected boolean taskCompleted = false;
 
-		public ProgressThread(Handler h) {
-			this.mHandler = h;
+		@Override
+		protected void onPreExecute() {
+			showDialog(UPLOADING_DIALOG);
 		}
 
-		public void run() {
-			Message msg1 = mHandler.obtainMessage();
-			msg1.arg1 = UPLOAD_RUNNING;
-			mHandler.sendMessage(msg1);
-			try {
-				Thread.sleep(2000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		@Override
+		protected Void doInBackground(Void... params) {
+			ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+			NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+			if (networkInfo != null && networkInfo.isConnected()) {
+				Marker marker = new Marker(0,
+						new GeoPoint((int) (latitude * 1000000),
+								(int) (longitude * 1000000)),
+						"03/12/2012 19:32", "", comment, "", severity);
+				File image = null;
+				if (!file.equalsIgnoreCase("")) {
+					image = new File(file);
+				}
+				Connector.SubmitMarker(marker, image);
+				taskCompleted = true;
+			} else {
+				activity.runOnUiThread(new Runnable() {
+					public void run() {
+						Toast.makeText(activity,
+								"We could not contact the server.",
+								Toast.LENGTH_LONG).show();
+					}
+				});
+				taskCompleted = true;
 			}
-			// UploadPicture(context, file);
-			Message msg2 = mHandler.obtainMessage();
-			msg2.arg1 = UPLOAD_COMPLETE;
-			mHandler.sendMessage(msg2);
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void none) {
+			if (taskCompleted) {
+			}
+			dismissDialog(UPLOADING_DIALOG);
 		}
 	}
 

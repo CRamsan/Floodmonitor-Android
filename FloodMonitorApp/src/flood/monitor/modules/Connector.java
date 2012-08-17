@@ -2,6 +2,7 @@ package flood.monitor.modules;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,7 +14,9 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
@@ -21,7 +24,10 @@ import java.util.Set;
 import org.apache.http.util.ByteArrayBuffer;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Environment;
+import android.util.Base64;
 import android.util.Log;
 import android.widget.Toast;
 import flood.monitor.modules.kmlparser.Event;
@@ -35,12 +41,12 @@ public class Connector {
 	public static final String DOWNLOAD_DIR = ".cache";
 	public static final String PUBLIC_DIR = "FLoodMonitor";
 
-	public static ArrayList<Region>  downloadGeoRegions() {
+	public static ArrayList<Region> downloadGeoRegions() {
 		OutputStreamWriter request = null;
 		String parameters = "data=<phone><command>GetRegions</command></phone>";
-		
+
 		ArrayList<Region> regions = new ArrayList<Region>(0);
-		
+
 		try {
 			URL url = new URL(XML_COMMUNICATOR);
 
@@ -94,7 +100,7 @@ public class Connector {
 			 */
 			InputStream is = ucon.getInputStream();
 			events = Parser.ParseEvents(is);
-			for(Event event : events){
+			for (Event event : events) {
 				event.setRegionId(regionId);
 			}
 		} catch (IOException e) {
@@ -130,7 +136,7 @@ public class Connector {
 			 * Define InputStreams to read from the URLConnection.
 			 */
 			InputStream is = ucon.getInputStream();
-			
+
 			String kmlURL = Parser.ParseFileNames(is);
 
 			url = new URL(kmlURL);
@@ -139,7 +145,7 @@ public class Connector {
 			ucon = (HttpURLConnection) url.openConnection();
 			is = ucon.getInputStream();
 			markers = Parser.ParseMarkers(is);
-			for(Marker marker : markers){
+			for (Marker marker : markers) {
 				marker.setEventId(eventId);
 				marker.setBoundaryId(boundarytId);
 			}
@@ -147,6 +153,61 @@ public class Connector {
 			Log.d("Connector", "Error: " + e);
 		}
 		return markers;
+	}
+
+	public static void SubmitMarker(Marker marker, File image) {
+		OutputStreamWriter request = null;
+		float lat = (marker.getPoint().getLatitudeE6() / 1000000f);
+		float lon = (marker.getPoint().getLongitudeE6() / 1000000f);
+		String timeStamp = new SimpleDateFormat("MM/dd/yyy HH:MM")
+				.format(new Date());
+		int severity = marker.getSeverity();
+		String data = "";
+		if (image != null) {
+			Bitmap bm = BitmapFactory.decodeFile(image.getAbsolutePath());
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			bm.compress(Bitmap.CompressFormat.JPEG, 100, baos); // bm is the
+																// bitmap
+																// object
+			byte[] b = baos.toByteArray();
+			data = Base64.encodeToString(b, Base64.DEFAULT);
+		}
+		String parameters = "data=<phone><command>SubmitMarker</command><params><latitude>"
+				+ lat
+				+ "</latitude><longitude>"
+				+ lon
+				+ "</longitude><observationTime>"
+				+ 3
+				+ "</observationTime><phoneNumber>"
+				+ "111-123-1234"
+				+ "</phoneNumber><severity>"
+				+ severity
+				+ "</severity><coverType>"
+				+ 2
+				+ "</coverType><coverHeight>"
+				+ 2
+				+ "</coverHeight><uploadTime>"
+				+ timeStamp
+				+ "</uploadTime><pictureData>"
+				+ data
+				+ "</pictureData></params></phone>";
+		try {
+			URL url = new URL(XML_COMMUNICATOR);
+
+			/* Open a connection to that URL. */
+
+			HttpURLConnection ucon = (HttpURLConnection) url.openConnection();
+			
+			 ucon.setDoOutput(true); ucon.setRequestProperty("Content-Type",
+			 "application/x-www-form-urlencoded");
+			 ucon.setRequestMethod("POST");
+			 
+			 request = new OutputStreamWriter(ucon.getOutputStream());
+			 request.write(parameters); request.flush(); request.close();
+			 
+		} catch (IOException e) {
+			Log.d("Connector", "Error: " + e);
+		}
 	}
 
 	public static File downloadPicture(Marker marker, int id) {
@@ -192,7 +253,7 @@ public class Connector {
 		return file;
 	}
 
-	public static void UploadData(Context context, String latitude,
+	private static void UploadData(Context context, String latitude,
 			String longitude, String hoursAgo, String minutesAgo,
 			String runoff, String coverDepth, String coverType, String comment,
 			String email) {
@@ -247,7 +308,7 @@ public class Connector {
 		}
 	}
 
-	public static void UploadPicture(Context context, String file) {
+	private static void UploadPicture(Context context, String file) {
 		HttpURLConnection connection = null;
 		DataOutputStream outputStream = null;
 
