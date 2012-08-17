@@ -177,7 +177,7 @@ public class Connector {
 				+ "</latitude><longitude>"
 				+ lon
 				+ "</longitude><observationTime>"
-				+ 3
+				+ timeStamp
 				+ "</observationTime><phoneNumber>"
 				+ "111-123-1234"
 				+ "</phoneNumber><severity>"

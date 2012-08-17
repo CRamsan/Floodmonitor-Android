@@ -10,20 +10,25 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.graphics.drawable.Drawable;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 
 import com.google.android.maps.GeoPoint;
+import com.google.android.maps.ItemizedOverlay;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
+import com.google.android.maps.OverlayItem;
 
 import flood.monitor.MapViewActivity;
 import flood.monitor.R;
 import flood.monitor.modules.kmlparser.Boundary;
 import flood.monitor.modules.kmlparser.Event;
+import flood.monitor.modules.kmlparser.Marker;
 import flood.monitor.modules.kmlparser.Region;
 
-public class RegionsOverlay extends Overlay implements IOverlay {
+public class RegionsOverlay extends ItemizedOverlay<OverlayItem> implements
+		IOverlay {
 
 	// ===========================================================
 	// Constants
@@ -32,9 +37,10 @@ public class RegionsOverlay extends Overlay implements IOverlay {
 	// ===========================================================
 	// Fields
 	// ===========================================================
+	private ArrayList<OverlayItem> markers;
 	private ArrayList<Region> regions;
 	private Activity activity;
-	
+
 	private int height = 0;
 	private int width = 0;
 	private int x;
@@ -43,8 +49,10 @@ public class RegionsOverlay extends Overlay implements IOverlay {
 	// ===========================================================
 	// Constructors
 	// ===========================================================
-	public RegionsOverlay(ArrayList<Region> regions) {
-		this.regions = regions;
+	public RegionsOverlay(Drawable defaultMarker, ArrayList<Region> regions) {
+		super(boundCenterBottom(defaultMarker));
+		this.markers = new ArrayList<OverlayItem>(0);
+		this.setRegions(regions);
 	}
 
 	// ===========================================================
@@ -56,16 +64,31 @@ public class RegionsOverlay extends Overlay implements IOverlay {
 
 	public void setRegions(ArrayList<Region> regions) {
 		this.regions = regions;
+		for(Region region : regions){
+			OverlayItem item = new OverlayItem(region.getCenter(), region.getName(), "");
+			markers.add(item);
+		}
+		populate();
 	}
 
 	public Region getRegionById(int regionId) {
-		for(Region region : regions){
-			if(region.getRegionId() == regionId)
+		for (Region region : regions) {
+			if (region.getRegionId() == regionId)
 				return region;
 		}
 		return null;
 	}
-	
+
+	@Override
+	protected OverlayItem createItem(int i) {
+		return markers.get(i);
+	}
+
+	@Override
+	public int size() {
+		return markers.size();
+	}
+
 	// ===========================================================
 	// Methods from Parent
 	// ===========================================================
@@ -84,8 +107,10 @@ public class RegionsOverlay extends Overlay implements IOverlay {
 			Region region = regions.get(i);
 			for (int j = 0; j < region.getBoundaries().size(); j++) {
 				Boundary boundary = region.getBoundaries().get(j);
-				GeoPoint northwest = new GeoPoint(boundary.getNorth(), boundary.getWest());
-				GeoPoint southeast = new GeoPoint(boundary.getSouth(), boundary.getEast());
+				GeoPoint northwest = new GeoPoint(boundary.getNorth(),
+						boundary.getWest());
+				GeoPoint southeast = new GeoPoint(boundary.getSouth(),
+						boundary.getEast());
 				((MapView) activity.findViewById(R.id.mapview)).getProjection()
 						.toPixels(northwest, nw);
 				((MapView) activity.findViewById(R.id.mapview)).getProjection()
@@ -201,9 +226,8 @@ public class RegionsOverlay extends Overlay implements IOverlay {
 		}
 		return -1;
 	}
-	
-	public void setEvents(int regionId, ArrayList<Event> events){
+
+	public void setEvents(int regionId, ArrayList<Event> events) {
 		getRegionById(regionId).setEvents(events);
 	}
-
 }

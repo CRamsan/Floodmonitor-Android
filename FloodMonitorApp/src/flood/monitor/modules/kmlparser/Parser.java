@@ -404,7 +404,7 @@ public class Parser {
 		private String file;
 
 		private static final String VERSION = "version";
-		private static final String KMLFILE = "kmlfile";
+		private static final String KMLFILE = "file";
 
 		private String temp = "";
 

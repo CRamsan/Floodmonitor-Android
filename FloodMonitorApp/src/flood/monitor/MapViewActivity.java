@@ -108,7 +108,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	private static Geocoder geocoder;
 	private static LocationOverlay locationOverlay;// 4
 	private static MarkersOverlay markersOverlay;// 3
-	private static RegionsOverlay georegionsOverlay;// 2
+	private static RegionsOverlay regionsOverlay;// 2
 	private static IOverlay selectedOverlay;
 	private static ObjectDataSource data;
 	private static MapViewActivity activity;
@@ -219,6 +219,9 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			public void onClick(View arg0) {
 				loadOverlayUp();
 				updateButton();
+				limitedMapView.setMapLevel(mapLevel);
+				limitedMapView.invalidate();
+				focus(limitedMapView.getMapCenter(), 12);
 			}
 		});
 
@@ -256,7 +259,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		super.onStart();
 		switch (mapLevel) {
 		case MapViewActivity.MAP_LEVEL_REGION:
-			selectedOverlay = georegionsOverlay;
+			selectedOverlay = regionsOverlay;
 			break;
 		case MapViewActivity.MAP_LEVEL_MARKER:
 			selectedOverlay = markersOverlay;
@@ -278,6 +281,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		}
 		boolean useSatellite = sharedPrefs.getBoolean("pref_UseSatellite",
 				false);
+		limitedMapView.setMapLevel(mapLevel);
 		limitedMapView.setSatellite(useSatellite);
 		limitedMapView.invalidate();
 		updateButton();
@@ -472,8 +476,8 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 
 	public void loadOverlayUp() {
 		removeOverlay(markersOverlay);
-		addOverlay(georegionsOverlay);
-		selectedOverlay = georegionsOverlay;
+		addOverlay(regionsOverlay);
+		selectedOverlay = regionsOverlay;
 		limitedMapView.setMapLevel(MAP_LEVEL_REGION);
 		this.mapLevel = MAP_LEVEL_REGION;
 	}
@@ -528,6 +532,13 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		installedBefore = true;
 		editor.putBoolean(INSTALL_STATE, installedBefore);
 		editor.commit();
+
+		SharedPreferences updateInterval = PreferenceManager
+				.getDefaultSharedPreferences(this);
+		SharedPreferences.Editor updateIntervalEditor = updateInterval.edit();
+		updateIntervalEditor.putInt("updateInterval", 30000);
+		updateIntervalEditor.commit();
+
 		// create DB
 	}
 
@@ -550,9 +561,11 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			if (networkInfo != null && networkInfo.isConnected()) {
 				ArrayList<Region> regions = Connector.downloadGeoRegions();
 				data.applyRegionDifferences(data.getAllRegions(), regions);
-				georegionsOverlay = new RegionsOverlay(regions);
-				georegionsOverlay.updateActivity(activity);
-				selectedOverlay = georegionsOverlay;
+				Drawable defaultDrawable = activity.getResources().getDrawable(
+						R.drawable.marker_green);
+				regionsOverlay = new RegionsOverlay(defaultDrawable,regions);
+				regionsOverlay.updateActivity(activity);
+				selectedOverlay = regionsOverlay;
 				addOverlay((RegionsOverlay) selectedOverlay);
 				overlayState = OVERLAY_LOADED;
 				taskCompleted = true;
@@ -565,9 +578,11 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 					}
 				});
 				ArrayList<Region> regions = data.getAllRegions();
-				georegionsOverlay = new RegionsOverlay(regions);
-				georegionsOverlay.updateActivity(activity);
-				selectedOverlay = georegionsOverlay;
+				Drawable defaultDrawable = activity.getResources().getDrawable(
+						R.drawable.marker_green);
+				regionsOverlay = new RegionsOverlay(defaultDrawable, regions);
+				regionsOverlay.updateActivity(activity);
+				selectedOverlay = regionsOverlay;
 				addOverlay((RegionsOverlay) selectedOverlay);
 				overlayState = OVERLAY_LOADED;
 				taskCompleted = true;
@@ -640,7 +655,8 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	private class DownloadMarkersTask extends AsyncTask<Region, Void, Void> {
 
 		protected boolean taskCompleted = false;
-
+		private Region selectedRegion;
+		private Event selectedEvent;
 		@Override
 		protected void onPreExecute() {
 			showDialog(EVENT_DOWNLOAD_DIALOG);
@@ -651,12 +667,12 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 			NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 			if (networkInfo != null && networkInfo.isConnected()) {
-				Region region = params[0];
-				Event event = region.getEvents().get(region.getSelectedEvent());
+				selectedRegion = params[0];
+				selectedEvent = selectedRegion.getEvents().get(selectedRegion.getSelectedEvent());
 				ArrayList<Marker> allMarkers = new ArrayList<Marker>(0);
-				for(Boundary boundary : region.getBoundaries()){
-					ArrayList<Marker> markers = Connector.downloadMarkers(boundary.getId(), event.getEventId());
-					data.applyMarkerDifferences(data.getAllMarkers(boundary.getId(), event.getEventId()), markers);
+				for(Boundary boundary : selectedRegion.getBoundaries()){
+					ArrayList<Marker> markers = Connector.downloadMarkers(boundary.getId(), selectedEvent.getEventId());
+					data.applyMarkerDifferences(data.getAllMarkers(boundary.getId(), selectedEvent.getEventId()), markers);
 					allMarkers.addAll(markers);
 				}
 				Drawable defaultDrawable = activity.getResources().getDrawable(
@@ -677,11 +693,11 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 								Toast.LENGTH_LONG).show();
 					}
 				});
-				Region region = params[0];
-				Event event = region.getEvents().get(region.getSelectedEvent());
+				selectedRegion = params[0];
+				selectedEvent = selectedRegion.getEvents().get(selectedRegion.getSelectedEvent());
 				ArrayList<Marker> allMarkers = new ArrayList<Marker>(0);
-				for(Boundary boundary : region.getBoundaries()){
-					ArrayList<Marker> markers = data.getAllMarkers(boundary.getId(), event.getEventId());
+				for(Boundary boundary : selectedRegion.getBoundaries()){
+					ArrayList<Marker> markers = data.getAllMarkers(boundary.getId(), selectedEvent.getEventId());
 					allMarkers.addAll(markers);
 				}
 				Drawable defaultDrawable = activity.getResources().getDrawable(
@@ -704,15 +720,12 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 				mapLevel = MAP_LEVEL_MARKER;
 				limitedMapView.setMapLevel(mapLevel);
 				limitedMapView.invalidate();
+				focus(selectedRegion.getCenter(), 15);
 				updateButton();
 			}
 			dismissDialog(EVENT_DOWNLOAD_DIALOG);
 		}
 	}
-
-	// ===========================================================
-	// Debug
-	// ===========================================================
 
 	private static void focus(Location locationToZoom, int level) {
 		MapController mc = limitedMapView.getController();
@@ -723,6 +736,13 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		limitedMapView.invalidate();
 	}
 
+	private static void focus(GeoPoint geopointToZoom, int level) {
+		MapController mc = limitedMapView.getController();
+		mc.animateTo(geopointToZoom);
+		mc.setZoom(level);
+		limitedMapView.invalidate();
+	}
+	
 	private static void focus(double lat, double lon, int level) {
 		MapController mc = limitedMapView.getController();
 		mc.animateTo(new GeoPoint((int) (lat * 1000000), (int) (lon * 1000000)));

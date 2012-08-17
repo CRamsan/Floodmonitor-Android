@@ -24,7 +24,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
 	public static final String MARKERS_COLUMN_IMAGEURL = "image";
 	public static final String MARKERS_COLUMN_BOUNDARYID = "boundaryid";
 	public static final String MARKERS_COLUMN_EVENTID = "eventid";
-
+	
 	public static final String EVENTS_COLUMN_ID = "id";
 	public static final String EVENTS_COLUMN_NAME = "name";
 	public static final String EVENTS_COLUMN_BEGINDATE = "begindate";
@@ -44,7 +44,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
 	public static final String BOUNDARIES_COLUMN_WEST = "west";
 
 	private static final String DATABASE_NAME = "floodmonitor.db";
-	private static final int DATABASE_VERSION = 19;
+	private static final int DATABASE_VERSION = 20;
 
 	private static final String CREATE_MARKER_TABLE = "create table "
 			+ TABLE_MARKERS_NAME + " ( " + UNIQUE_COLUMN_ID

@@ -2,6 +2,8 @@ package flood.monitor.modules.kmlparser;
 
 import java.util.ArrayList;
 
+import com.google.android.maps.GeoPoint;
+
 public class Region {
 
 	private ArrayList<Boundary> boundaries;
@@ -64,4 +66,13 @@ public class Region {
 		this.selectedEvent = selectedEvent;
 	}
 
+	public GeoPoint getCenter(){
+		GeoPoint center = null;
+		if(boundaries.size() > 0){
+			int latitude = (boundaries.get(0).getNorth() + boundaries.get(0).getSouth())/2;
+			int longitude = (boundaries.get(0).getEast() + boundaries.get(0).getWest())/2;
+			center = new GeoPoint(latitude, longitude);
+		}
+		return center;
+	}
 }

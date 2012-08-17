@@ -23,7 +23,7 @@
     
     <string name="text_ChooseFile">ChooseFile</string>
     <string name="text_Submit">Submit</string>
-    <string name="text_AboutURL">http://mouseriverflood2011.net/info.html</string>
+    <string name="text_AboutURL">http://flood.cs.ndsu.nodak.edu/info.html</string>
     <string name="text_Title">Title</string>
     <string name="text_Description">Description</string>
     <string name="pref_GPSLocation">GPS &amp; Location</string>
