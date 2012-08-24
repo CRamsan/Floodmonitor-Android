@@ -362,27 +362,28 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 
 	@Override
 	protected Dialog onCreateDialog(int id) {
+		ProgressDialog progressDialog = new ProgressDialog(this);
+		progressDialog.setIndeterminate(true);
+		progressDialog.setCancelable(false);
+
 		switch (id) {
 		case EVENT_DOWNLOAD_DIALOG: {
-			ProgressDialog progressDialog = new ProgressDialog(this);
-			progressDialog.setMessage("Getting list of current events");
-			progressDialog.setIndeterminate(true);
-			progressDialog.setCancelable(false);
-			return progressDialog;
+			progressDialog.setMessage(getResources().getString(R.string.text_GettingListofRegions));
+			break;
 		}
 		case REGION_DOWNLOAD_DIALOG: {
-			ProgressDialog progressDialog = new ProgressDialog(this);
-			progressDialog.setMessage("Getting data of this event");
-			progressDialog.setIndeterminate(true);
-			progressDialog.setCancelable(false);
-			return progressDialog;
+			progressDialog.setMessage(getResources().getString(R.string.text_GettingListofEvents));
+			break;
 		}
 		case MARKER_DOWNLOAD_DIALOG: {
+			progressDialog.setMessage(getResources().getString(R.string.text_GettingDataofEvent));
+			break;
 		}
 		default: {
-			return null;
 		}
 		}
+		return progressDialog;
+
 	}
 
 	@Override
@@ -563,7 +564,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 				data.applyRegionDifferences(data.getAllRegions(), regions);
 				Drawable defaultDrawable = activity.getResources().getDrawable(
 						R.drawable.marker_green);
-				regionsOverlay = new RegionsOverlay(defaultDrawable,regions);
+				regionsOverlay = new RegionsOverlay(defaultDrawable, regions);
 				regionsOverlay.updateActivity(activity);
 				selectedOverlay = regionsOverlay;
 				addOverlay((RegionsOverlay) selectedOverlay);
@@ -657,6 +658,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		protected boolean taskCompleted = false;
 		private Region selectedRegion;
 		private Event selectedEvent;
+
 		@Override
 		protected void onPreExecute() {
 			showDialog(EVENT_DOWNLOAD_DIALOG);
@@ -668,11 +670,15 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 			if (networkInfo != null && networkInfo.isConnected()) {
 				selectedRegion = params[0];
-				selectedEvent = selectedRegion.getEvents().get(selectedRegion.getSelectedEvent());
+				selectedEvent = selectedRegion.getEvents().get(
+						selectedRegion.getSelectedEvent());
 				ArrayList<Marker> allMarkers = new ArrayList<Marker>(0);
-				for(Boundary boundary : selectedRegion.getBoundaries()){
-					ArrayList<Marker> markers = Connector.downloadMarkers(boundary.getId(), selectedEvent.getEventId());
-					data.applyMarkerDifferences(data.getAllMarkers(boundary.getId(), selectedEvent.getEventId()), markers);
+				for (Boundary boundary : selectedRegion.getBoundaries()) {
+					ArrayList<Marker> markers = Connector.downloadMarkers(
+							boundary.getId(), selectedEvent.getEventId());
+					data.applyMarkerDifferences(
+							data.getAllMarkers(boundary.getId(),
+									selectedEvent.getEventId()), markers);
 					allMarkers.addAll(markers);
 				}
 				Drawable defaultDrawable = activity.getResources().getDrawable(
@@ -694,10 +700,12 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 					}
 				});
 				selectedRegion = params[0];
-				selectedEvent = selectedRegion.getEvents().get(selectedRegion.getSelectedEvent());
+				selectedEvent = selectedRegion.getEvents().get(
+						selectedRegion.getSelectedEvent());
 				ArrayList<Marker> allMarkers = new ArrayList<Marker>(0);
-				for(Boundary boundary : selectedRegion.getBoundaries()){
-					ArrayList<Marker> markers = data.getAllMarkers(boundary.getId(), selectedEvent.getEventId());
+				for (Boundary boundary : selectedRegion.getBoundaries()) {
+					ArrayList<Marker> markers = data.getAllMarkers(
+							boundary.getId(), selectedEvent.getEventId());
 					allMarkers.addAll(markers);
 				}
 				Drawable defaultDrawable = activity.getResources().getDrawable(
@@ -742,7 +750,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		mc.setZoom(level);
 		limitedMapView.invalidate();
 	}
-	
+
 	private static void focus(double lat, double lon, int level) {
 		MapController mc = limitedMapView.getController();
 		mc.animateTo(new GeoPoint((int) (lat * 1000000), (int) (lon * 1000000)));

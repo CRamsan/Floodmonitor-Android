@@ -20,6 +20,9 @@
     <string name="text_File">File</string>
     <string name="text_YourComment">Your comments:</string>
     <string name="text_Picture">Picture</string>
+    <string name="text_GettingListofRegions">Downloading the list of active events</string>
+    <string name="text_GettingListofEvents">Dowloading the list of events</string>
+    <string name="text_GettingDataofEvent">Downloading data of this event</string>
     
     <string name="text_ChooseFile">ChooseFile</string>
     <string name="text_Submit">Submit</string>
