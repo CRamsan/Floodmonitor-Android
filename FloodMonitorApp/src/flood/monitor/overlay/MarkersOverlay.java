@@ -27,7 +27,12 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements
 	// Fields
 	// ===========================================================
 	private ArrayList<Marker> markers = new ArrayList<Marker>();
+	private ArrayList<Marker> markersinPage = new ArrayList<Marker>();
 	private Activity activity;
+	private int page;
+	private int maxPage;
+	private int markersPerPage;
+	private boolean pageing;
 
 	// ===========================================================
 	// Constructors
@@ -36,6 +41,8 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements
 	public MarkersOverlay(Drawable defaultMarker) {
 		super(boundCenterBottom(defaultMarker));
 		this.markers = new ArrayList<Marker>(0);
+		this.pageing = false;
+		this.setPage(0);
 	}
 
 	// ===========================================================
@@ -54,17 +61,76 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements
 		populate();
 	}
 
+	public void enablePageing(int perPage) {
+		this.setPageing(true);
+		setMarkersPerPage(perPage);
+		if (perPage > markers.size()) {
+			perPage = markers.size();
+		}
+
+		setMaxPage(markers.size(), perPage);
+		this.markersinPage.clear();
+		this.markersinPage.addAll(markers.subList(0, perPage));
+
+		populate();
+	}
+
+	public void disablePageing() {
+		this.setPageing(false);
+
+		populate();
+	}
+
+	public void nextPage() {
+		int perPage = markersPerPage;
+		if (page + 1 >= maxPage) {
+			return;
+		}
+		this.markersinPage.clear();
+		page++;
+
+		if ((page + 1) * markersPerPage >= markers.size()) {
+			perPage = markers.size() % perPage;
+		}
+
+		this.markersinPage.addAll(markers.subList(page * markersPerPage, page
+				* markersPerPage + perPage));
+		populate();
+	}
+
+	public void previousPage() {
+		int perPage = markersPerPage;
+		if (page - 1 < 0) {
+			return;
+		}
+		this.markersinPage.clear();
+
+		page--;
+
+		this.markersinPage.addAll(markers.subList(page * markersPerPage, page
+				* markersPerPage + perPage));
+		populate();
+	}
+
 	// ===========================================================
 	// Methods from Parent
 	// ===========================================================
 	@Override
 	protected OverlayItem createItem(int i) {
-		return markers.get(i);
+		if (pageing) {
+			return markersinPage.get(i);
+		} else {
+			return markers.get(i);
+		}
 	}
 
 	@Override
 	public int size() {
-		return markers.size();
+		if (pageing) {
+			return markersinPage.size();
+		} else {
+			return markers.size();
+		}
 	}
 
 	@Override
@@ -95,7 +161,7 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements
 				createItem(id).getPoint().getLatitudeE6() / 1000000d);
 		intent.putExtra("longitude",
 				createItem(id).getPoint().getLongitudeE6() / 1000000d);
-		intent.putExtra("image",markers.get(id).getImage());
+		intent.putExtra("image", markers.get(id).getImage());
 		intent.putExtra("mode", MapViewActivity.MARKER_UPLOAD);
 		boolean uploadButton = true;
 		intent.putExtra("upload", uploadButton);
@@ -141,6 +207,41 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements
 			this.addOverlayMarker(overlay.get(i));
 		}
 		populate();
+	}
+
+	public boolean isPageing() {
+		return pageing;
+	}
+
+	public void setPageing(boolean pageing) {
+		this.pageing = pageing;
+	}
+
+	public int getMarkersPerPage() {
+		return markersPerPage;
+	}
+
+	public void setMarkersPerPage(int markersPerPage) {
+		this.markersPerPage = markersPerPage;
+	}
+
+	public int getPage() {
+		return page;
+	}
+
+	public void setPage(int page) {
+		this.page = page;
+	}
+
+	public int getMaxPage() {
+		return maxPage;
+	}
+
+	public void setMaxPage(int markers, int markersPerPage) {
+		this.maxPage = markers / markersPerPage;
+		if (markers % markersPerPage > 0) {
+			this.maxPage++;
+		}
 	}
 
 }

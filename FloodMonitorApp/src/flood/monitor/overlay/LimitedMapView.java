@@ -54,20 +54,20 @@ public class LimitedMapView extends MapView {
 		if (action == MotionEvent.ACTION_UP) {
 			switch (mapLevel) {
 			case MapViewActivity.MAP_LEVEL_REGION:
-				if (this.getZoomLevel() > REGION_MAX_ZOOM) {
+				/*if (this.getZoomLevel() > REGION_MAX_ZOOM) {
 					this.getController().setZoom(REGION_MAX_ZOOM);
 					Toast.makeText(activity, "Choose a region to zoom further",
 							Toast.LENGTH_LONG).show();
 					return true;
-				}
+				}*/
 				break;
 			case MapViewActivity.MAP_LEVEL_MARKER:
-				if (this.getZoomLevel() < REGION_MAX_ZOOM) {
+				/*if (this.getZoomLevel() < REGION_MAX_ZOOM) {
 					this.getController().setZoom(REGION_MAX_ZOOM);
 					Toast.makeText(activity, "Minimun zoom level for marker layer",
 							Toast.LENGTH_LONG).show();
 					return true;
-				}
+				}*/
 				break;
 			}
 		}

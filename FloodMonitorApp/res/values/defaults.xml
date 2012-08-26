@@ -1,6 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <string name="pref_DefaultUpdateInterval">30000</string>
     <string name="pref_DefaultCacheSize">5</string>
+    <string name="pref_DefaultMarkersPerPage">-1</string>
 
 </resources>

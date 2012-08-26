@@ -19,6 +19,24 @@
         <item name="60000">60000</item>
         <item name="300000">300000</item>
     </string-array>
+    <string-array name="markersPerPage">
+        <item name="-1">All Markers</item>
+        <item name="1">25 Markers per page</item>
+        <item name="2">50 Markers per page</item>
+        <item name="3">75 Markers per page</item>
+        <item name="4">100 Markers per page</item>
+        <item name="5">200 Markers per page</item>
+        <item name="6">500 Markers per page</item>
+    </string-array>
+    <string-array name="markersPerPageValues">
+        <item name="-1">-1</item>
+        <item name="1">25</item>
+        <item name="2">50</item>
+        <item name="3">75</item>
+        <item name="4">100</item>
+        <item name="5">200</item>
+        <item name="6">500</item>
+    </string-array>
     <string-array name="severities">
         <item name="1">1</item>
         <item name="2">2</item>

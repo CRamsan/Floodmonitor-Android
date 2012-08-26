@@ -18,12 +18,13 @@
     <string name="text_Severity">Severity</string>
     <string name="text_Address">Address</string>
     <string name="text_File">File</string>
+    <string name="text_Page">Page</string>
     <string name="text_YourComment">Your comments:</string>
     <string name="text_Picture">Picture</string>
-    <string name="text_GettingListofRegions">Downloading the list of active events</string>
+        <string name="text_PictureLoading">Loading picture</string>
+    <string name="text_GettingListofRegions">Downloading the list of regions</string>
     <string name="text_GettingListofEvents">Dowloading the list of events</string>
-    <string name="text_GettingDataofEvent">Downloading data of this event</string>
-    
+    <string name="text_GettingDataofEvent">Downloading data for this event</string>
     <string name="text_ChooseFile">ChooseFile</string>
     <string name="text_Submit">Submit</string>
     <string name="text_AboutURL">http://flood.cs.ndsu.nodak.edu/info.html</string>
@@ -31,6 +32,7 @@
     <string name="text_Description">Description</string>
     <string name="pref_GPSLocation">GPS &amp; Location</string>
     <string name="pref_GPSEnabled_title">GPS Enabled</string>
+    <string name="pref_PagesEnabled_title">Load markers by parts</string>
     <string name="pref_UpdateInterval_title">Update interval</string>
     <string name="pref_UpdateInterval_summary">Define how often location updates will be performed</string>
     <string name="pref_UpdateNow_title">Update now</string>
@@ -42,11 +44,16 @@
     <string name="pref_CacheSize_summary">Size in MB for the cache</string>
     <string name="pref_CacheSizeDialog_title">Cache size</string>
     <string name="pref_CacheSizeDialog_message">Choose a value in MB for the cache. A picture usually is 50 KB and you can store around 200 pictures in 10MB</string>
+    <string name="pref_MarkerPerPage_title">Markers per page</string>
+    <string name="pref_MarkerPerPage_summary">Numbers of markers loaded at the same time</string>
+    <string name="pref_MarkerPerPageDialog_title">Markers per Page</string>
+    <string name="pref_MarkerPerPageDialog_message">Based on the graphical capabilities of your device, a high volume of markers can cause a lose of responsiveness. You can choose the amount of markers you want to load at the same time based on your own preferences.</string>
     <string name="pref_Visuals">Visuals</string>
     <string name="pref_UseSatellite_title">Use satellite images</string>
     <string name="desc_drag">Drag the marker</string>
     <string name="desc_MarkerDialogImage">Drag the marker</string>
     <string name="desc_buttonLock">Center the map in your location</string>
+    <string name="desc_buttonGallery">Open a gallery from the collected markers</string>
     <string name="desc_buttonLayerUp">Layer Up</string>
     <string name="desc_buttonAddMarker">Place a marker in this map</string>
     <string name="desc_buttonUploadMarker">Upload to the marked location</string>
