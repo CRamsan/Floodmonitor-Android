@@ -252,6 +252,20 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			}
 		});
 
+		ImageButton zoomInButton = (ImageButton) findViewById(R.id.buttonZoomIn);
+		zoomInButton.setOnClickListener(new Button.OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				limitedMapView.getController().zoomIn();
+			}
+		});
+		ImageButton zoomOutButton = (ImageButton) findViewById(R.id.buttonZoomOut);
+		zoomOutButton.setOnClickListener(new Button.OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				limitedMapView.getController().zoomOut();
+			}
+		});
 		/*
 		 * We will check for any savedInstance, with this we will know if the
 		 * activity is created for the first time(requires install of database),
@@ -884,6 +898,16 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			break;
 		default:
 			break;
+		}
+		boolean useZoomControl = PreferenceManager
+				.getDefaultSharedPreferences(this).getBoolean("pref_UseZoomControl",
+						true);
+		if(useZoomControl){
+			findViewById(R.id.buttonZoomIn).setVisibility(View.VISIBLE);
+			findViewById(R.id.buttonZoomOut).setVisibility(View.VISIBLE);
+		}else{
+			findViewById(R.id.buttonZoomIn).setVisibility(View.GONE);
+			findViewById(R.id.buttonZoomOut).setVisibility(View.GONE);
 		}
 	}
 

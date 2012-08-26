@@ -52,6 +52,8 @@ public class MarkerDialogActivity extends Activity {
 			upload = markerData.getBoolean("upload");
 			TextView titleView;
 			TextView descView;
+			TextView imageView;
+			ProgressBar imageCircle;
 			TextView latView;
 			TextView lonView;
 			TextView addressView;
@@ -63,6 +65,8 @@ public class MarkerDialogActivity extends Activity {
 				descView = (TextView) findViewById(R.id.textViewDescription);
 				latView = (TextView) findViewById(R.id.textViewLatitude);
 				lonView = (TextView) findViewById(R.id.textViewLongitude);
+				imageView = (TextView) findViewById(R.id.textViewImageLoading);
+				imageCircle = (ProgressBar) findViewById(R.id.progressBarImageLoading);
 				addressView = (TextView) findViewById(R.id.textViewAddress);
 				circle = (ProgressBar) findViewById(R.id.progressBarAddress);
 
@@ -79,19 +83,23 @@ public class MarkerDialogActivity extends Activity {
 				lonView.setVisibility(View.VISIBLE);
 				addressView.setVisibility(View.VISIBLE);
 				circle.setVisibility(View.GONE);
+				imageView.setVisibility(View.GONE);
+				imageCircle.setVisibility(View.GONE);
 
 				new GetAddressTask().execute();
 				break;
 			case MapViewActivity.MARKER_UPLOAD:
 				titleView = (TextView) findViewById(R.id.textViewTitle);
 				descView = (TextView) findViewById(R.id.textViewDescription);
+				imageView = (TextView) findViewById(R.id.textViewImageLoading);
+				imageCircle = (ProgressBar) findViewById(R.id.progressBarImageLoading);
 				latView = (TextView) findViewById(R.id.textViewLatitude);
 				lonView = (TextView) findViewById(R.id.textViewLongitude);
 				addressView = (TextView) findViewById(R.id.textViewAddress);
 				circle = (ProgressBar) findViewById(R.id.progressBarAddress);
 
 				String title = (markerData.getString("title"));
-				String desc =  (markerData.getString("desc"));
+				String desc = (markerData.getString("desc"));
 				titleView.setText(activity.getResources().getString(
 						R.string.text_Title)
 						+ ": " + title);
@@ -111,6 +119,9 @@ public class MarkerDialogActivity extends Activity {
 				lonView.setVisibility(View.VISIBLE);
 				addressView.setVisibility(View.GONE);
 				circle.setVisibility(View.GONE);
+				imageView.setVisibility(View.VISIBLE);
+				imageCircle.setVisibility(View.VISIBLE);
+				new DownloadImageTask().execute();
 				break;
 			default:
 				break;
@@ -196,6 +207,7 @@ public class MarkerDialogActivity extends Activity {
 	}
 
 	private class GetAddressTask extends AsyncTask<Void, Void, Void> {
+		protected boolean taskCompleted = false;
 		private String address;
 
 		@Override
@@ -206,57 +218,36 @@ public class MarkerDialogActivity extends Activity {
 
 		@Override
 		protected Void doInBackground(Void... params) {
-			Geocoder geocoder = new Geocoder(activity, Locale.getDefault());
-			List<Address> addressList;
-			try {
-				addressList = geocoder.getFromLocation(latitude, longitude, 1);
-				if (addressList.size() == 0) {
-					return null;
-				}
-				StringBuffer sb = new StringBuffer(50);
-				String[] items = new String[addressList.size()];
-				for (int i = 0; i < addressList.size(); i++) {
-					int addSize = addressList.get(i).getMaxAddressLineIndex();
-					for (int j = 0; j < addSize; j++) {
-						sb.append(addressList.get(i).getAddressLine(j));
-						if (j < addSize - 1)
-							sb.append(", ");
-					}
-				}
-				items[0] = sb.toString();
-				address = items[0];
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
-			return null;
-		}
-
-		@Override
-		protected void onPostExecute(Void none) {
-			((TextView) findViewById(R.id.textViewAddress)).setText(activity
-					.getResources().getString(R.string.text_Address)
-					+ ": "
-					+ address);
-			((ProgressBar) findViewById(R.id.progressBarAddress))
-					.setVisibility(View.GONE);
-		}
-	}
-	
-	private class DownloadImageTask extends AsyncTask<Void, Void, Void> {
-		protected boolean taskCompleted = false;
-
-		@Override
-		protected void onPreExecute() {
-		}
-
-		@Override
-		protected Void doInBackground(Void... params) {
 			ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 			NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 			if (networkInfo != null && networkInfo.isConnected()) {
+				Geocoder geocoder = new Geocoder(activity, Locale.getDefault());
+				List<Address> addressList;
+				try {
+					addressList = geocoder.getFromLocation(latitude, longitude,
+							1);
+					if (addressList.size() == 0) {
+						return null;
+					}
+					StringBuffer sb = new StringBuffer(50);
+					String[] items = new String[addressList.size()];
+					for (int i = 0; i < addressList.size(); i++) {
+						int addSize = addressList.get(i)
+								.getMaxAddressLineIndex();
+						for (int j = 0; j < addSize; j++) {
+							sb.append(addressList.get(i).getAddressLine(j));
+							if (j < addSize - 1)
+								sb.append(", ");
+						}
+					}
+					items[0] = sb.toString();
+					address = items[0];
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 				taskCompleted = true;
 			} else {
+				address = "Could not be determined";
 				activity.runOnUiThread(new Runnable() {
 					public void run() {
 						Toast.makeText(activity,
@@ -272,7 +263,65 @@ public class MarkerDialogActivity extends Activity {
 		@Override
 		protected void onPostExecute(Void none) {
 			if (taskCompleted) {
+				((TextView) findViewById(R.id.textViewAddress))
+						.setText(activity.getResources().getString(
+								R.string.text_Address)
+								+ ": " + address);
+				((ProgressBar) findViewById(R.id.progressBarAddress))
+						.setVisibility(View.GONE);
+
 			}
+		}
+	}
+
+	private class DownloadImageTask extends AsyncTask<Void, Void, Void> {
+		protected boolean taskCompleted = false;
+		protected boolean imageLoaded = false;
+		private String message;
+
+		@Override
+		protected void onPreExecute() {
+		}
+
+		@Override
+		protected Void doInBackground(Void... params) {
+			ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+			NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+			if (networkInfo != null && networkInfo.isConnected()) {
+				taskCompleted = true;
+
+			} else {
+				message = "Image could not be loaded";
+				activity.runOnUiThread(new Runnable() {
+					public void run() {
+						Toast.makeText(activity,
+								"We could not contact the server.",
+								Toast.LENGTH_LONG).show();
+					}
+				});
+				taskCompleted = false;
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void none) {
+			if (taskCompleted) {
+				if (imageLoaded) {
+					((TextView) findViewById(R.id.textViewImageLoading))
+							.setVisibility(View.GONE);
+				} else {
+					((TextView) findViewById(R.id.textViewImageLoading))
+							.setVisibility(View.VISIBLE);
+				}
+			} else {
+				((TextView) findViewById(R.id.textViewImageLoading))
+						.setVisibility(View.VISIBLE);
+			}
+			((TextView) findViewById(R.id.textViewImageLoading))
+			.setText(message);
+			((ProgressBar) findViewById(R.id.progressBarImageLoading))
+					.setVisibility(View.GONE);
 		}
 	}
 

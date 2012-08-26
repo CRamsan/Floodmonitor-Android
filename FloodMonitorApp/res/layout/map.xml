@@ -82,41 +82,59 @@
             android:layout_height="wrap_content"
             android:contentDescription="@string/desc_buttonLayerUp"
             android:src="@drawable/layerup" />
-        <ImageButton
-            android:id="@+id/buttonGallery"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/desc_buttonGallery"
-            android:src="@drawable/layerup" />
     </LinearLayout>
 
-    <ImageButton
-        android:id="@+id/buttonNextPage"
+    <LinearLayout
+        android:id="@+id/linearLayout1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/buttonLinearLayoutRight"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="18dp"
-        android:contentDescription="@string/desc_buttonLock"
-        android:src="@drawable/gpslock" />
+        android:layout_centerHorizontal="true" >
+
+        <ImageButton
+            android:id="@+id/buttonZoomOut"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="18dp"
+            android:contentDescription="@string/desc_buttonZoomOut"
+            android:src="@drawable/zoomout" />
+
+        <ImageButton
+            android:id="@+id/buttonZoomIn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="18dp"
+            android:contentDescription="@string/desc_buttonZoomIn"
+            android:src="@drawable/zoomin" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/textViewPageNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/linearLayout1"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="16dp"
+        android:text="@string/text_Page"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <ImageButton
         android:id="@+id/buttonPrevPage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/buttonLinearLayoutLeft"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="18dp"
-        android:contentDescription="@string/desc_buttonLock"
-        android:src="@drawable/gpslock" />
+        android:layout_alignTop="@+id/textViewPageNumber"
+        android:contentDescription="@string/desc_buttonPrevPage"
+        android:src="@drawable/prev" />
 
-    <TextView
-        android:id="@+id/textViewPageNumber"
+    <ImageButton
+        android:id="@+id/buttonNextPage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/buttonNextPage"
-        android:layout_centerHorizontal="true"
-        android:text="@string/text_Page"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:layout_alignRight="@+id/buttonLinearLayoutRight"
+        android:layout_alignTop="@+id/textViewPageNumber"
+        android:contentDescription="@string/desc_buttonNextPage"
+        android:src="@drawable/next" />
 
 </RelativeLayout>

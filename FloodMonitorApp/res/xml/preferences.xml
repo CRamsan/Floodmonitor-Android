@@ -35,13 +35,17 @@
             android:key="pref_UseSatellite"
             android:title="@string/pref_UseSatellite_title" />
 
-         <ListPreference
+        <ListPreference
             android:defaultValue="@string/pref_DefaultMarkersPerPage"
             android:entries="@array/markersPerPage"
             android:entryValues="@array/markersPerPageValues"
             android:key="markersPerPage"
             android:summary="@string/pref_MarkerPerPage_summary"
             android:title="@string/pref_MarkerPerPage_title" />
+
+        <CheckBoxPreference
+            android:key="pref_UseZoomControl"
+            android:title="@string/pref_UseZoomControl_title" />
     </PreferenceCategory>
 
 </PreferenceScreen>
