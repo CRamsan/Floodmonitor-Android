@@ -171,6 +171,7 @@ public class Connector {
 																// object
 			byte[] b = baos.toByteArray();
 			data = Base64.encodeToString(b, Base64.DEFAULT);
+			data.replaceAll("+", "%2B");
 		}
 		String parameters = "data=<phone><command>SubmitMarker</command><params><latitude>"
 				+ lat
@@ -220,162 +221,26 @@ public class Connector {
 		if (!file.exists()) {
 			try {
 				URL url = new URL(marker.getImage());
-
-				/* Open a connection to that URL. */
-				HttpURLConnection ucon = (HttpURLConnection) url
-						.openConnection();
-
-				/*
-				 * Define InputStreams to read from the URLConnection.
-				 */
-				InputStream is = ucon.getInputStream();
-				BufferedInputStream bis = new BufferedInputStream(is);
-
-				/*
-				 * Read bytes to the Buffer until there is nothing more to
-				 * read(-1).
-				 */
-				ByteArrayBuffer baf = new ByteArrayBuffer(50);
-				int current = 0;
-				while ((current = bis.read()) != -1) {
-					baf.append((byte) current);
+				InputStream in = new BufferedInputStream(url.openStream());
+				ByteArrayOutputStream out = new ByteArrayOutputStream();
+				byte[] buf = new byte[1024];
+				int n = 0;
+				while (-1!=(n=in.read(buf)))
+				{
+				   out.write(buf, 0, n);
 				}
+				out.close();
+				in.close();
+				byte[] response = out.toByteArray();
 
-				/* Convert the Bytes read to a String. */
-				FileOutputStream fos = new FileOutputStream(file);
-				fos.write(baf.toByteArray());
-				fos.close();
-
+				FileOutputStream fos = new FileOutputStream("");
+			    fos.write(response);
+			    fos.close();
+			    
 			} catch (IOException e) {
 				Log.d("Connector", "Error: " + e);
 			}
 		}
 		return file;
-	}
-
-	private static void UploadData(Context context, String latitude,
-			String longitude, String hoursAgo, String minutesAgo,
-			String runoff, String coverDepth, String coverType, String comment,
-			String email) {
-		try {
-			URL siteUrl = new URL(
-					"http://192.168.0.100/plogger/plog-admin/plog-mobupload.php");
-			HttpURLConnection conn = (HttpURLConnection) siteUrl
-					.openConnection();
-			conn.setRequestMethod("POST");
-			conn.setDoOutput(true);
-			conn.setDoInput(true);
-
-			DataOutputStream out = new DataOutputStream(conn.getOutputStream());
-
-			HashMap<String, String> data = new HashMap<String, String>();
-			// Name&Value
-			data.put("latitude", latitude);
-			data.put("longitude", longitude);
-			data.put("hours", hoursAgo);
-			data.put("min", minutesAgo);
-			data.put("runoff", runoff);
-			data.put("depth", coverDepth);
-			data.put("cover", coverType);
-			data.put("comment", comment);
-			data.put("contact", email);
-
-			Set<String> keys = data.keySet();
-			Iterator<String> keyIter = keys.iterator();
-			String content = "";
-			for (int i = 0; keyIter.hasNext(); i++) {
-				Object key = keyIter.next();
-				if (i != 0) {
-					content += "&";
-				}
-				content += key + "="
-						+ URLEncoder.encode(data.get(key), "UTF-8");
-			}
-			System.out.println(content);
-			out.writeBytes(content);
-			out.flush();
-			out.close();
-			BufferedReader in = new BufferedReader(new InputStreamReader(
-					conn.getInputStream()));
-			String line = "";
-			while ((line = in.readLine()) != null) {
-				System.out.println(line);
-			}
-			in.close();
-		} catch (Exception ex) {
-			Toast.makeText(context, "Error Message: " + ex.getMessage(),
-					Toast.LENGTH_SHORT).show();
-		}
-	}
-
-	private static void UploadPicture(Context context, String file) {
-		HttpURLConnection connection = null;
-		DataOutputStream outputStream = null;
-
-		String pathToOurFile = file;
-		String urlServer = "http://192.168.0.100/plogger/plog-admin/plog-picture.php";
-		String lineEnd = "\r\n";
-		String twoHyphens = "--";
-		String boundary = "*****";
-
-		int bytesRead, bytesAvailable, bufferSize;
-		byte[] buffer;
-		int maxBufferSize = 1 * 1024 * 1024;
-
-		try {
-			FileInputStream fileInputStream = new FileInputStream(new File(
-					pathToOurFile));
-
-			URL url = new URL(urlServer);
-			connection = (HttpURLConnection) url.openConnection();
-
-			// Allow Inputs & Outputs
-			connection.setDoInput(true);
-			connection.setDoOutput(true);
-			connection.setUseCaches(false);
-
-			// Enable POST method
-			connection.setRequestMethod("POST");
-
-			connection.setRequestProperty("Connection", "Keep-Alive");
-			connection.setRequestProperty("Content-Type",
-					"multipart/form-data;boundary=" + boundary);
-
-			outputStream = new DataOutputStream(connection.getOutputStream());
-			outputStream.writeBytes(twoHyphens + boundary + lineEnd);
-			outputStream
-					.writeBytes("Content-Disposition: form-data; name=\"uploadedfile\";filename=\""
-							+ pathToOurFile + "\"" + lineEnd);
-			outputStream.writeBytes(lineEnd);
-
-			bytesAvailable = fileInputStream.available();
-			bufferSize = Math.min(bytesAvailable, maxBufferSize);
-			buffer = new byte[bufferSize];
-
-			// Read file
-			bytesRead = fileInputStream.read(buffer, 0, bufferSize);
-
-			while (bytesRead > 0) {
-				outputStream.write(buffer, 0, bufferSize);
-				bytesAvailable = fileInputStream.available();
-				bufferSize = Math.min(bytesAvailable, maxBufferSize);
-				bytesRead = fileInputStream.read(buffer, 0, bufferSize);
-			}
-
-			outputStream.writeBytes(lineEnd);
-			outputStream.writeBytes(twoHyphens + boundary + twoHyphens
-					+ lineEnd);
-
-			// Responses from the server (code and message)
-			// int serverResponseCode = connection.getResponseCode();
-			// String serverResponseMessage = connection.getResponseMessage();
-
-			fileInputStream.close();
-			outputStream.flush();
-			outputStream.close();
-		} catch (Exception ex) {
-			Toast.makeText(context, "Error Message: " + ex.getMessage(),
-					Toast.LENGTH_SHORT).show();
-		}
 	}
 }

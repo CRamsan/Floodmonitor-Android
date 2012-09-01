@@ -117,10 +117,11 @@ public class MarkerDialogActivity extends Activity {
 				descView.setVisibility(View.VISIBLE);
 				latView.setVisibility(View.VISIBLE);
 				lonView.setVisibility(View.VISIBLE);
-				addressView.setVisibility(View.GONE);
-				circle.setVisibility(View.GONE);
+				addressView.setVisibility(View.VISIBLE);
+				circle.setVisibility(View.VISIBLE);
 				imageView.setVisibility(View.VISIBLE);
 				imageCircle.setVisibility(View.VISIBLE);
+				new GetAddressTask().execute();
 				new DownloadImageTask().execute();
 				break;
 			default:

@@ -9,7 +9,7 @@
         android:id="@+id/mapview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:apiKey="07r48M7l5UiXDXXi-FGQtiZk7SpNK0OKz-P7a6A"
+        android:apiKey="07r48M7l5UiVLis3CJstAc182EgEl80h7yUT12A"
         android:clickable="true" />
 
     <ImageView
@@ -88,6 +88,7 @@
         android:id="@+id/linearLayout1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="26dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" >
 
@@ -115,7 +116,7 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/linearLayout1"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="26dp"
         android:text="@string/text_Page"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 

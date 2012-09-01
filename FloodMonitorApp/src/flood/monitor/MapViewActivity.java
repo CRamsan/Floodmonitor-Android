@@ -901,7 +901,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		}
 		boolean useZoomControl = PreferenceManager
 				.getDefaultSharedPreferences(this).getBoolean("pref_UseZoomControl",
-						true);
+						false);
 		if(useZoomControl){
 			findViewById(R.id.buttonZoomIn).setVisibility(View.VISIBLE);
 			findViewById(R.id.buttonZoomOut).setVisibility(View.VISIBLE);

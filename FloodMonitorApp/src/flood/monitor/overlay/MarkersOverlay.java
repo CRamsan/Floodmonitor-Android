@@ -69,6 +69,9 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements
 		}
 
 		setMaxPage(markers.size(), perPage);
+		if(page >= maxPage){
+			page = maxPage - 1;
+		}
 		this.markersinPage.clear();
 		this.markersinPage.addAll(markers.subList(0, perPage));
 
