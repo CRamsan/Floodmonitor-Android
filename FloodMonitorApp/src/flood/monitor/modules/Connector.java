@@ -41,6 +41,8 @@ public class Connector {
 	public static final String DOWNLOAD_DIR = ".cache";
 	public static final String PUBLIC_DIR = "FLoodMonitor";
 
+	public static final int PIECE_SIZE = 30000;
+	
 	public static ArrayList<Region> downloadGeoRegions() {
 		OutputStreamWriter request = null;
 		String parameters = "data=<phone><command>GetRegions</command></phone>";
@@ -166,29 +168,43 @@ public class Connector {
 		if (image != null) {
 			Bitmap bm = BitmapFactory.decodeFile(image.getAbsolutePath());
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			bm.compress(Bitmap.CompressFormat.JPEG, 100, baos); // bm is the
+			bm.compress(Bitmap.CompressFormat.JPEG, 75, baos); // bm is the
 																// bitmap
 																// object
 			byte[] b = baos.toByteArray();
 			data = Base64.encodeToString(b, Base64.DEFAULT);
-			data.replaceAll("+", "%2B");
+			StringBuilder sb = new StringBuilder();
+			int pieces = data.length() / PIECE_SIZE;
+			if(data.length() % PIECE_SIZE != 0){
+				pieces++;
+			}
+			for (int i = 0; i < pieces; i++) {
+				int offset = (i + 1) * 30000;
+				if (offset > data.length()) {
+					offset = data.length() - 1;
+				}
+
+				sb.append(data.substring(i * 30000, (offset)).replaceAll("\\+",
+						"%2B"));
+			}
+			data = sb.toString();
 		}
 		String parameters = "data=<phone><command>SubmitMarker</command><params><latitude>"
 				+ lat
 				+ "</latitude><longitude>"
 				+ lon
 				+ "</longitude><observationTime>"
-				+ timeStamp
+				+ "03/14/2012 12:12"
 				+ "</observationTime><phoneNumber>"
 				+ "111-123-1234"
 				+ "</phoneNumber><severity>"
-				+ severity
+				+ 3
 				+ "</severity><coverType>"
 				+ 2
 				+ "</coverType><coverHeight>"
 				+ 2
 				+ "</coverHeight><uploadTime>"
-				+ timeStamp
+				+ "03/14/2012 12:12"
 				+ "</uploadTime><pictureData>"
 				+ data
 				+ "</pictureData></params></phone>";
@@ -198,14 +214,29 @@ public class Connector {
 			/* Open a connection to that URL. */
 
 			HttpURLConnection ucon = (HttpURLConnection) url.openConnection();
-			
-			 ucon.setDoOutput(true); ucon.setRequestProperty("Content-Type",
-			 "application/x-www-form-urlencoded");
-			 ucon.setRequestMethod("POST");
-			 
-			 request = new OutputStreamWriter(ucon.getOutputStream());
-			 request.write(parameters); request.flush(); request.close();
-			 
+
+			ucon.setDoOutput(true);
+			ucon.setRequestProperty("Content-Type",
+					"application/x-www-form-urlencoded");
+			ucon.setRequestMethod("POST");
+
+			request = new OutputStreamWriter(ucon.getOutputStream());
+			request.write(parameters);
+			request.flush();
+			request.close();
+
+			// read it with BufferedReader
+			BufferedReader br = new BufferedReader(new InputStreamReader(
+					ucon.getInputStream()));
+			StringBuilder sb = new StringBuilder();
+
+			String line;
+			while ((line = br.readLine()) != null) {
+				sb.append(line);
+			}
+			line = sb.toString();
+			br.close();
+
 		} catch (IOException e) {
 			Log.d("Connector", "Error: " + e);
 		}
@@ -225,18 +256,17 @@ public class Connector {
 				ByteArrayOutputStream out = new ByteArrayOutputStream();
 				byte[] buf = new byte[1024];
 				int n = 0;
-				while (-1!=(n=in.read(buf)))
-				{
-				   out.write(buf, 0, n);
+				while (-1 != (n = in.read(buf))) {
+					out.write(buf, 0, n);
 				}
 				out.close();
 				in.close();
 				byte[] response = out.toByteArray();
 
 				FileOutputStream fos = new FileOutputStream("");
-			    fos.write(response);
-			    fos.close();
-			    
+				fos.write(response);
+				fos.close();
+
 			} catch (IOException e) {
 				Log.d("Connector", "Error: " + e);
 			}
