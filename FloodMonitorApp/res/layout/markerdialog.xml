@@ -14,15 +14,14 @@
             android:id="@+id/textViewTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/text_Title"
+            android:text="@string/text_ObservationDateTime"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <ImageView
             android:id="@+id/imageViewPictureUpload"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:contentDescription="@string/desc_MarkerDialogImage"
-            android:scaleType="matrix" />
+            android:contentDescription="@string/desc_MarkerDialogImage" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -99,6 +98,16 @@
                 android:layout_alignParentRight="true"
                 android:layout_alignParentTop="true"
                 android:text="@string/text_Upload" />
+
+            <Button
+                android:id="@+id/pictureDownloadButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_toLeftOf="@+id/markerSubmitButton"
+                android:text="@string/text_Download"/>
+
         </RelativeLayout>
     </LinearLayout>
+
 </ScrollView>

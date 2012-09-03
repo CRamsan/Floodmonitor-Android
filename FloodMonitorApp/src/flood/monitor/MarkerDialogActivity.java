@@ -10,6 +10,7 @@ import com.google.android.maps.GeoPoint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Address;
@@ -118,7 +119,7 @@ public class MarkerDialogActivity extends Activity {
 				circle = (ProgressBar) findViewById(R.id.progressBarAddress);
 
 				titleView.setText(activity.getResources().getString(
-						R.string.text_Title)
+						R.string.text_ObservationDateTime)
 						+ ": " + marker.getObservationTime());
 				descView.setText(activity.getResources().getString(
 						R.string.text_Description)
@@ -312,7 +313,6 @@ public class MarkerDialogActivity extends Activity {
 				return null;
 			}
 			if (networkInfo != null && networkInfo.isConnected()) {
-				taskCompleted = true;
 				File image = Connector.downloadPicture(marker);
 				if (image == null) {
 					imageLoaded = false;
@@ -321,6 +321,7 @@ public class MarkerDialogActivity extends Activity {
 					imageLoaded = true;
 					localImage = image.getAbsolutePath();
 				}
+				taskCompleted = true;
 			} else {
 				File image = new File(
 						Environment.getExternalStorageDirectory(),
@@ -340,8 +341,9 @@ public class MarkerDialogActivity extends Activity {
 					imageLoaded = false;
 					message = "No network connection";
 				} else {
-					imageLoaded = true;
 					localImage = image.getAbsolutePath();
+					imageLoaded = true;
+
 				}
 				taskCompleted = true;
 			}
@@ -354,10 +356,11 @@ public class MarkerDialogActivity extends Activity {
 				if (imageLoaded) {
 					((TextView) findViewById(R.id.textViewImageLoading))
 							.setVisibility(View.GONE);
-					Bitmap myBitmap = BitmapFactory.decodeFile(localImage);
-
+					// Bitmap myBitmap = BitmapFactory.decodeFile(localImage);
 					ImageView myImage = (ImageView) findViewById(R.id.imageViewPictureUpload);
-					myImage.setImageBitmap(myBitmap);
+					// myImage.setImageBitmap(myBitmap);
+					myImage.setImageBitmap(decodeSampledBitmapFromFile(
+							localImage, 50));
 					myImage.setVisibility(View.VISIBLE);
 				} else {
 					((TextView) findViewById(R.id.textViewImageLoading))
@@ -365,9 +368,48 @@ public class MarkerDialogActivity extends Activity {
 				}
 			}
 			((TextView) findViewById(R.id.textViewImageLoading))
-					.setText(message);
+					.setText(activity.getResources().getString(
+							R.string.text_Picture)
+							+ ": " + message);
 			((ProgressBar) findViewById(R.id.progressBarImageLoading))
 					.setVisibility(View.GONE);
+		}
+
+		public Bitmap decodeSampledBitmapFromFile(String filePath, int reqWidth) {
+
+			// First decode with inJustDecodeBounds=true to check dimensions
+			final BitmapFactory.Options options = new BitmapFactory.Options();
+			options.inJustDecodeBounds = true;
+			Bitmap sample = BitmapFactory.decodeFile(filePath);
+			int width = sample.getWidth();
+			int height = sample.getHeight();
+			float ratio = (float) width / (float) height;
+			// Calculate inSampleSize
+			options.inSampleSize = calculateInSampleSize(sample.getWidth(),
+					sample.getWidth(), reqWidth,
+					(int) ((float) reqWidth / (float) ratio));
+
+			// Decode bitmap with inSampleSize set
+			options.inJustDecodeBounds = false;
+			return BitmapFactory.decodeFile(filePath, options);
+		}
+
+		public int calculateInSampleSize(int realWidth, int realHeight,
+				int reqWidth, int reqHeight) {
+			// Raw height and width of image
+			final int height = realHeight;
+			final int width = realWidth;
+			int inSampleSize = 2;
+
+			if (height > reqHeight || width > reqWidth) {
+				if (width > height) {
+					inSampleSize = Math.round((float) height
+							/ (float) reqHeight);
+				} else {
+					inSampleSize = Math.round((float) width / (float) reqWidth);
+				}
+			}
+			return inSampleSize;
 		}
 	}
 

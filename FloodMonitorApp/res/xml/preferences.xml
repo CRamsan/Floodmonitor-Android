@@ -20,7 +20,6 @@
             android:key="pref_ClearCache"
             android:summary="@string/pref_CLearCache_summary"
             android:title="@string/pref_CLearCache_title" />
-
         <EditTextPreference
             android:defaultValue="@string/pref_DefaultCacheSize"
             android:dialogLayout="@layout/cachesizedialogpreference"

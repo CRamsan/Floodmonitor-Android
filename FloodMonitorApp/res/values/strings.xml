@@ -9,6 +9,7 @@
     <string name="text_Settings">Settings</string>
     <string name="text_Help">Help</string>
     <string name="text_About">About</string>
+    <string name="text_Download">Download</string>
     <string name="text_Exit">Exit</string>
     <string name="text_Cancel">Cancel</string>
     <string name="text_Latitude">Latitude</string>
@@ -40,7 +41,7 @@
     <string name="pref_UseZoomControl_title">Enable zoom buttons</string>
     <string name="pref_DataStorage">Data &amp; Storage</string>
     <string name="pref_CLearCache_title">Clear cache</string>
-    <string name="pref_CLearCache_summary">Removes all the pictures and data downloaded</string>
+    <string name="pref_CLearCache_summary">Removes all the downloaded pictures</string>
     <string name="pref_CacheSize_title">Cache size</string>
     <string name="pref_CacheSize_summary">Size in MB for the cache</string>
     <string name="pref_CacheSizeDialog_title">Cache size</string>

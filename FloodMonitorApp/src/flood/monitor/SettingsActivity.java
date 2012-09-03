@@ -1,7 +1,12 @@
 package flood.monitor;
 
+import java.io.File;
+
 import android.os.Bundle;
+import android.preference.Preference;
+import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
+import flood.monitor.modules.Connector;
 
 public class SettingsActivity extends PreferenceActivity {
 
@@ -30,6 +35,17 @@ public class SettingsActivity extends PreferenceActivity {
 		// The activity is launched or restarted after been killed.
 		// Display the fragment as the main content.
 		addPreferencesFromResource(R.xml.preferences);
+		Preference clearCache = (Preference) findPreference("pref_ClearCache");
+		clearCache.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+		             public boolean onPreferenceClick(Preference preference) {
+		            	 File cache = Connector.getCacheDir();
+		            	 if(cache.exists())
+		            	 {
+		            		 removeDirectory(cache);
+		            	 }
+		                 return true;
+		             }
+		         });
 
 	}
 
@@ -77,13 +93,20 @@ public class SettingsActivity extends PreferenceActivity {
 	// ===========================================================
 	// Methods
 	// ===========================================================
-	
+	private boolean removeDirectory(File file) {
+		if (file.isDirectory()) {
+			for (File child : file.listFiles()) {
+				if(!removeDirectory(child)){
+					return false;
+				}
+			}
+			return file.delete();
+		}else{
+			return file.delete();
+		}
+	}
 	// ===========================================================
 	// Inner and Anonymous Classes
-	// ===========================================================
-
-	// ===========================================================
-	// Debug
 	// ===========================================================
 
 }

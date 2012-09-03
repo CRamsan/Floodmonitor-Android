@@ -278,4 +278,13 @@ public class Connector {
 		}
 		return file;
 	}
+
+	public static File getPublicDir() {
+		return new File(Environment.getExternalStorageDirectory(), PUBLIC_DIR);
+	}
+
+	public static File getCacheDir() {
+		return new File(Environment.getExternalStorageDirectory(), PUBLIC_DIR
+				+ File.separator + DOWNLOAD_DIR);
+	}
 }
