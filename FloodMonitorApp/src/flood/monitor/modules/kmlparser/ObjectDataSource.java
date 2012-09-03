@@ -20,7 +20,6 @@ public class ObjectDataSource {
 			SQLiteManager.MARKERS_COLUMN_LATITUDE,
 			SQLiteManager.MARKERS_COLUMN_LONGITUDE,
 			SQLiteManager.MARKERS_COLUMN_OBSERVATION_TIME,
-			SQLiteManager.MARKERS_COLUMN_UPLOAD_TIME,
 			SQLiteManager.MARKERS_COLUMN_COMMENT,
 			SQLiteManager.MARKERS_COLUMN_IMAGEURL, 
 			SQLiteManager.MARKERS_COLUMN_SEVERITY,
@@ -92,8 +91,6 @@ public class ObjectDataSource {
 				.getLongitudeE6());
 		values.put(SQLiteManager.MARKERS_COLUMN_OBSERVATION_TIME,
 				marker.getObservationTime());
-		values.put(SQLiteManager.MARKERS_COLUMN_UPLOAD_TIME,
-				marker.getUploadTime());
 		values.put(SQLiteManager.MARKERS_COLUMN_COMMENT,
 				marker.getUserComment());
 		values.put(SQLiteManager.MARKERS_COLUMN_IMAGEURL, marker.getImage());
@@ -139,18 +136,17 @@ public class ObjectDataSource {
 	}
 
 	private Marker cursorToMarker(Cursor cursor) {
-		int severity = cursor.getInt(7);
+		int severity = cursor.getInt(6);
 		Marker marker = new Marker(
 				cursor.getInt(0), new GeoPoint(
 				(int) cursor.getLong(1), 
 				(int) cursor.getLong(2)),
 				cursor.getString(3), 
 				cursor.getString(4), 
-				cursor.getString(5),
-				cursor.getString(6), 
+				cursor.getString(5), 
 				severity, 
-				cursor.getInt(8),
-				cursor.getInt(9));
+				cursor.getInt(7),
+				cursor.getInt(8));
 		return marker;
 	}
 

@@ -3,9 +3,7 @@ package flood.monitor.modules;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,23 +11,15 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Set;
 
-import org.apache.http.util.ByteArrayBuffer;
-
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.util.Base64;
 import android.util.Log;
-import android.widget.Toast;
 import flood.monitor.modules.kmlparser.Event;
 import flood.monitor.modules.kmlparser.Marker;
 import flood.monitor.modules.kmlparser.Parser;
@@ -39,10 +29,10 @@ public class Connector {
 
 	public static final String XML_COMMUNICATOR = "http://flood.cs.ndsu.nodak.edu/~ander773/flood/server/index.php";
 	public static final String DOWNLOAD_DIR = ".cache";
-	public static final String PUBLIC_DIR = "FLoodMonitor";
+	public static final String PUBLIC_DIR = "FloodMonitor";
 
 	public static final int PIECE_SIZE = 30000;
-	
+
 	public static ArrayList<Region> downloadGeoRegions() {
 		OutputStreamWriter request = null;
 		String parameters = "data=<phone><command>GetRegions</command></phone>";
@@ -111,7 +101,8 @@ public class Connector {
 		return events;
 	}
 
-	public static ArrayList<Marker> downloadMarkers(int boundarytId, int eventId) {
+	public static ArrayList<Marker> downloadMarkers(int boundarytId,
+			int eventId, int regionId) {
 		OutputStreamWriter request = null;
 		String parameters = "data=<phone><command>GetMarkerFile</command><params><boundaryid>"
 				+ boundarytId
@@ -150,6 +141,7 @@ public class Connector {
 			for (Marker marker : markers) {
 				marker.setEventId(eventId);
 				marker.setBoundaryId(boundarytId);
+				marker.setRegionId(regionId);
 			}
 		} catch (IOException e) {
 			Log.d("Connector", "Error: " + e);
@@ -159,8 +151,8 @@ public class Connector {
 
 	public static void SubmitMarker(Marker marker, File image) {
 		OutputStreamWriter request = null;
-		float lat = (marker.getPoint().getLatitudeE6() / 1000000f);
-		float lon = (marker.getPoint().getLongitudeE6() / 1000000f);
+		double lat = (marker.getLatitude());
+		double lon = (marker.getLongitude());
 		String timeStamp = new SimpleDateFormat("MM/dd/yyy HH:MM")
 				.format(new Date());
 		int severity = marker.getSeverity();
@@ -175,7 +167,7 @@ public class Connector {
 			data = Base64.encodeToString(b, Base64.DEFAULT);
 			StringBuilder sb = new StringBuilder();
 			int pieces = data.length() / PIECE_SIZE;
-			if(data.length() % PIECE_SIZE != 0){
+			if (data.length() % PIECE_SIZE != 0) {
 				pieces++;
 			}
 			for (int i = 0; i < pieces; i++) {
@@ -242,13 +234,24 @@ public class Connector {
 		}
 	}
 
-	public static File downloadPicture(Marker marker, int id) {
+	public static File downloadPicture(Marker marker) {
 		File mediaStorageDir = new File(
-				Environment.getExternalStorageDirectory(), "FloodMonitor");
-		String subDir = "tmp";
-		File file = new File(mediaStorageDir.getPath() + File.separator
-				+ DOWNLOAD_DIR + File.separator + subDir + File.separator
-				+ marker.getId());
+				Environment.getExternalStorageDirectory(), PUBLIC_DIR
+						+ File.separator + DOWNLOAD_DIR + File.separator
+						+ marker.getRegionId() + File.separator
+						+ marker.getEventId() + marker.getBoundaryId()
+						+ File.separator);
+
+		if (!mediaStorageDir.exists()) {
+			if (!mediaStorageDir.mkdirs()) {
+				Log.d("Connector", "failed to create directory");
+				return null;
+			}
+		}
+
+		File file = new File(mediaStorageDir.getAbsoluteFile() + File.separator
+				+ marker.getId() + ".jpg");
+
 		if (!file.exists()) {
 			try {
 				URL url = new URL(marker.getImage());
@@ -263,13 +266,15 @@ public class Connector {
 				in.close();
 				byte[] response = out.toByteArray();
 
-				FileOutputStream fos = new FileOutputStream("");
+				FileOutputStream fos = new FileOutputStream(file);
 				fos.write(response);
 				fos.close();
 
 			} catch (IOException e) {
 				Log.d("Connector", "Error: " + e);
 			}
+		} else {
+			return file;
 		}
 		return file;
 	}

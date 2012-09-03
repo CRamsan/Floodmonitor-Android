@@ -737,7 +737,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			if (networkInfo != null && networkInfo.isConnected()) {
 				for (Boundary boundary : selectedRegion.getBoundaries()) {
 					ArrayList<Marker> markers = Connector.downloadMarkers(
-							boundary.getId(), selectedEvent.getEventId());
+							boundary.getId(), selectedEvent.getEventId(), selectedRegion.getRegionId());
 					data.applyMarkerDifferences(
 							data.getAllMarkers(boundary.getId(),
 									selectedEvent.getEventId()), markers);
@@ -1061,7 +1061,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 							x - xDragTouchOffset, y - yDragTouchOffset);
 
 					Marker toDrop = new Marker(0, pt, draggerMarker.getTitle(),
-							"", draggerMarker.getSnippet(), "", 0);
+							"", draggerMarker.getSnippet(), 0);
 
 					Drawable icon = uploadDrawable;
 					icon.setBounds(-icon.getIntrinsicWidth() / 2,

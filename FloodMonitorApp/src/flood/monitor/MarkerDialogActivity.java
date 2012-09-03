@@ -1,23 +1,32 @@
 package flood.monitor;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
+import com.google.android.maps.GeoPoint;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import flood.monitor.modules.Connector;
+import flood.monitor.modules.kmlparser.Marker;
 
 public class MarkerDialogActivity extends Activity {
 
@@ -28,10 +37,10 @@ public class MarkerDialogActivity extends Activity {
 	// ===========================================================
 	// Fields
 	// ===========================================================
-	private double latitude;
-	private double longitude;
 	private int mode;
 	private boolean upload;
+	private String localImage;
+	private Marker marker;
 	private MarkerDialogActivity activity;
 
 	// ===========================================================
@@ -46,8 +55,16 @@ public class MarkerDialogActivity extends Activity {
 		upload = false;
 		Bundle markerData = getIntent().getExtras();
 		if (markerData != null) {
-			latitude = (markerData.getDouble("latitude"));
-			longitude = (markerData.getDouble("longitude"));
+			marker = new Marker(markerData.getInt("id"), new GeoPoint(
+					(int) (markerData.getDouble("latitude") * 1000000),
+					(int) (markerData.getDouble("longitude") * 1000000)),
+					markerData.getString("title"),
+					markerData.getString("desc"),
+					markerData.getString("image"),
+					markerData.getInt("severity"));
+			marker.setRegionId(markerData.getInt("regionId"));
+			marker.setEventId(markerData.getInt("eventId"));
+
 			mode = markerData.getInt("mode");
 			upload = markerData.getBoolean("upload");
 			TextView titleView;
@@ -72,10 +89,12 @@ public class MarkerDialogActivity extends Activity {
 
 				latView.setText(activity.getResources().getString(
 						R.string.text_Latitude)
-						+ ": " + Double.toString(latitude));
+						+ ": "
+						+ Double.toString(marker.getPoint().getLatitudeE6() / 1000000f));
 				lonView.setText(activity.getResources().getString(
 						R.string.text_Longitude)
-						+ ": " + Double.toString(longitude));
+						+ ": "
+						+ Double.toString(marker.getPoint().getLongitudeE6() / 1000000f));
 
 				titleView.setVisibility(View.GONE);
 				descView.setVisibility(View.GONE);
@@ -98,20 +117,18 @@ public class MarkerDialogActivity extends Activity {
 				addressView = (TextView) findViewById(R.id.textViewAddress);
 				circle = (ProgressBar) findViewById(R.id.progressBarAddress);
 
-				String title = (markerData.getString("title"));
-				String desc = (markerData.getString("desc"));
 				titleView.setText(activity.getResources().getString(
 						R.string.text_Title)
-						+ ": " + title);
+						+ ": " + marker.getObservationTime());
 				descView.setText(activity.getResources().getString(
 						R.string.text_Description)
-						+ ": " + desc);
+						+ ": " + marker.getUserComment());
 				latView.setText(activity.getResources().getString(
 						R.string.text_Latitude)
-						+ ": " + Double.toString(latitude));
+						+ ": " + Double.toString(marker.getLatitude()));
 				lonView.setText(activity.getResources().getString(
 						R.string.text_Longitude)
-						+ ": " + Double.toString(longitude));
+						+ ": " + Double.toString(marker.getLongitude()));
 
 				titleView.setVisibility(View.VISIBLE);
 				descView.setVisibility(View.VISIBLE);
@@ -141,8 +158,10 @@ public class MarkerDialogActivity extends Activity {
 			@Override
 			public void onClick(View arg0) {
 				Intent intent = new Intent(activity, UploadFormActivity.class);
-				intent.putExtra("latitude", latitude);
-				intent.putExtra("longitude", longitude);
+				intent.putExtra("latitude",
+						marker.getPoint().getLatitudeE6() / 1000000f);
+				intent.putExtra("longitude",
+						marker.getPoint().getLongitudeE6() / 1000000f);
 				startActivityForResult(intent, MapViewActivity.UPLOAD_INTENT);
 			}
 		});
@@ -225,8 +244,8 @@ public class MarkerDialogActivity extends Activity {
 				Geocoder geocoder = new Geocoder(activity, Locale.getDefault());
 				List<Address> addressList;
 				try {
-					addressList = geocoder.getFromLocation(latitude, longitude,
-							1);
+					addressList = geocoder.getFromLocation(
+							marker.getLatitude(), marker.getLongitude(), 1);
 					if (addressList.size() == 0) {
 						return null;
 					}
@@ -288,11 +307,28 @@ public class MarkerDialogActivity extends Activity {
 		protected Void doInBackground(Void... params) {
 			ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 			NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+			if (marker.getImage().equals("")) {
+				message = "No picture";
+				return null;
+			}
 			if (networkInfo != null && networkInfo.isConnected()) {
 				taskCompleted = true;
-
+				File image = Connector.downloadPicture(marker);
+				if (image == null) {
+					imageLoaded = false;
+					message = "Image could not be downloaded";
+				} else {
+					imageLoaded = true;
+					localImage = image.getAbsolutePath();
+				}
 			} else {
-				message = "Image could not be loaded";
+				File image = new File(
+						Environment.getExternalStorageDirectory(),
+						Connector.PUBLIC_DIR + File.separator
+								+ Connector.DOWNLOAD_DIR + File.separator
+								+ marker.getRegionId() + File.separator
+								+ marker.getEventId() + marker.getBoundaryId()
+								+ File.separator + marker.getId() + ".jpg");
 				activity.runOnUiThread(new Runnable() {
 					public void run() {
 						Toast.makeText(activity,
@@ -300,7 +336,14 @@ public class MarkerDialogActivity extends Activity {
 								Toast.LENGTH_LONG).show();
 					}
 				});
-				taskCompleted = false;
+				if (!image.exists()) {
+					imageLoaded = false;
+					message = "No network connection";
+				} else {
+					imageLoaded = true;
+					localImage = image.getAbsolutePath();
+				}
+				taskCompleted = true;
 			}
 			return null;
 		}
@@ -311,16 +354,18 @@ public class MarkerDialogActivity extends Activity {
 				if (imageLoaded) {
 					((TextView) findViewById(R.id.textViewImageLoading))
 							.setVisibility(View.GONE);
+					Bitmap myBitmap = BitmapFactory.decodeFile(localImage);
+
+					ImageView myImage = (ImageView) findViewById(R.id.imageViewPictureUpload);
+					myImage.setImageBitmap(myBitmap);
+					myImage.setVisibility(View.VISIBLE);
 				} else {
 					((TextView) findViewById(R.id.textViewImageLoading))
 							.setVisibility(View.VISIBLE);
 				}
-			} else {
-				((TextView) findViewById(R.id.textViewImageLoading))
-						.setVisibility(View.VISIBLE);
 			}
 			((TextView) findViewById(R.id.textViewImageLoading))
-			.setText(message);
+					.setText(message);
 			((ProgressBar) findViewById(R.id.progressBarImageLoading))
 					.setVisibility(View.GONE);
 		}

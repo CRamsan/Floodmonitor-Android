@@ -69,7 +69,7 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements
 		}
 
 		setMaxPage(markers.size(), perPage);
-		if(page >= maxPage){
+		if (page >= maxPage) {
 			page = maxPage - 1;
 		}
 		this.markersinPage.clear();
@@ -157,14 +157,18 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements
 
 	@Override
 	public void showMarkerDialog(int id) {
+		Marker dialogMarker = (Marker) createItem(id);
 		Intent intent = new Intent(activity, MarkerDialogActivity.class);
-		intent.putExtra("title", createItem(id).getTitle());
-		intent.putExtra("desc", createItem(id).getSnippet());
-		intent.putExtra("latitude",
-				createItem(id).getPoint().getLatitudeE6() / 1000000d);
-		intent.putExtra("longitude",
-				createItem(id).getPoint().getLongitudeE6() / 1000000d);
-		intent.putExtra("image", markers.get(id).getImage());
+		intent.putExtra("id", dialogMarker.getId());
+		intent.putExtra("title", dialogMarker.getTitle());
+		intent.putExtra("desc", dialogMarker.getSnippet());
+		intent.putExtra("severity", dialogMarker.getSeverity());
+		intent.putExtra("latitude", dialogMarker.getLatitude());
+		intent.putExtra("longitude", dialogMarker.getLongitude());
+		intent.putExtra("image", dialogMarker.getImage());
+		intent.putExtra("regionId", dialogMarker.getRegionId());
+		intent.putExtra("eventId", dialogMarker.getEventId());
+		intent.putExtra("markerId", dialogMarker.getId());
 		intent.putExtra("mode", MapViewActivity.MARKER_UPLOAD);
 		boolean uploadButton = true;
 		intent.putExtra("upload", uploadButton);

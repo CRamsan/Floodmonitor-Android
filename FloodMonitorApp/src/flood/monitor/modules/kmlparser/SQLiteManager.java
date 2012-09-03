@@ -19,7 +19,6 @@ public class SQLiteManager extends SQLiteOpenHelper {
 	public static final String MARKERS_COLUMN_LATITUDE = "latitude";
 	public static final String MARKERS_COLUMN_LONGITUDE = "longitude";
 	public static final String MARKERS_COLUMN_OBSERVATION_TIME = "observation";
-	public static final String MARKERS_COLUMN_UPLOAD_TIME = "upload";
 	public static final String MARKERS_COLUMN_COMMENT = "comment";
 	public static final String MARKERS_COLUMN_IMAGEURL = "image";
 	public static final String MARKERS_COLUMN_BOUNDARYID = "boundaryid";
@@ -44,7 +43,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
 	public static final String BOUNDARIES_COLUMN_WEST = "west";
 
 	private static final String DATABASE_NAME = "floodmonitor.db";
-	private static final int DATABASE_VERSION = 21;
+	private static final int DATABASE_VERSION = 22;
 
 	private static final String CREATE_MARKER_TABLE = "create table "
 			+ TABLE_MARKERS_NAME + " ( " + UNIQUE_COLUMN_ID
@@ -53,7 +52,6 @@ public class SQLiteManager extends SQLiteOpenHelper {
 			+ MARKERS_COLUMN_LATITUDE + " text not null, "
 			+ MARKERS_COLUMN_LONGITUDE + " text not null, "
 			+ MARKERS_COLUMN_OBSERVATION_TIME + " text not null, "
-			+ MARKERS_COLUMN_UPLOAD_TIME + " text not null, "
 			+ MARKERS_COLUMN_COMMENT + " text not null, "
 			+ MARKERS_COLUMN_IMAGEURL + " text not null, "
 			+ MARKERS_COLUMN_SEVERITY + " int, " 

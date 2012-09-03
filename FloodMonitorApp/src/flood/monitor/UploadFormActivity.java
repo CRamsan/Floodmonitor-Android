@@ -432,7 +432,7 @@ public class UploadFormActivity extends Activity {
 				Marker marker = new Marker(0,
 						new GeoPoint((int) (latitude * 1000000),
 								(int) (longitude * 1000000)),
-						"03/12/2012 19:32", "", comment, "", severity);
+						"03/12/2012 19:32", comment, "", severity);
 				File image = null;
 				if (!file.equalsIgnoreCase("")) {
 					image = new File(file);
