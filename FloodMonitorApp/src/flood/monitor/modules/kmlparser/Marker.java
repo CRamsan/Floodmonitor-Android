@@ -3,7 +3,7 @@ package flood.monitor.modules.kmlparser;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.OverlayItem;
 
-public class Marker extends OverlayItem {
+public class Marker extends OverlayItem implements Comparable<Marker> {
 
 	// ===========================================================
 	// Constants
@@ -125,5 +125,11 @@ public class Marker extends OverlayItem {
 		} else {
 			return false;
 		}
+	}
+
+	@Override
+	public int compareTo(Marker another) {
+		return this.getObservationTime().compareToIgnoreCase(
+				another.getObservationTime());
 	}
 }

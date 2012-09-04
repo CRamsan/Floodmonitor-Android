@@ -2,6 +2,7 @@ package flood.monitor;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import android.annotation.SuppressLint;
@@ -743,6 +744,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 									selectedEvent.getEventId()), markers);
 					allMarkers.addAll(markers);
 				}
+				Collections.sort(allMarkers);
 
 			} else {
 				activity.runOnUiThread(new Runnable() {

@@ -20,7 +20,9 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -356,11 +358,24 @@ public class MarkerDialogActivity extends Activity {
 				if (imageLoaded) {
 					((TextView) findViewById(R.id.textViewImageLoading))
 							.setVisibility(View.GONE);
-					// Bitmap myBitmap = BitmapFactory.decodeFile(localImage);
 					ImageView myImage = (ImageView) findViewById(R.id.imageViewPictureUpload);
-					// myImage.setImageBitmap(myBitmap);
-					myImage.setImageBitmap(decodeSampledBitmapFromFile(
-							localImage, 50));
+					Bitmap myBitmap = BitmapFactory.decodeFile(localImage);
+
+					WindowManager mWinMgr = (WindowManager) activity
+							.getSystemService(Context.WINDOW_SERVICE);
+					int displayWidth = mWinMgr.getDefaultDisplay().getWidth();
+					int displayHeight = mWinMgr.getDefaultDisplay().getHeight();
+					if (myBitmap.getWidth() > ((float) displayWidth * 0.90f)
+							|| myBitmap.getHeight() > ((float) displayHeight * 0.90f)) {
+						Log.i("MarkerDialogActivity", "Image is been processed");
+						myImage.setImageBitmap(decodeSampledBitmapFromFile(
+								localImage, (int) (displayWidth * 0.90)));
+					} else {
+						Log.i("MarkerDialogActivity",
+								"Image is loaded without been processed");
+						myImage.setImageBitmap(myBitmap);
+					}
+
 					myImage.setVisibility(View.VISIBLE);
 				} else {
 					((TextView) findViewById(R.id.textViewImageLoading))

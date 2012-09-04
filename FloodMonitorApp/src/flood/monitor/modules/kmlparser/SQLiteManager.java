@@ -43,7 +43,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
 	public static final String BOUNDARIES_COLUMN_WEST = "west";
 
 	private static final String DATABASE_NAME = "floodmonitor.db";
-	private static final int DATABASE_VERSION = 22;
+	private static final int DATABASE_VERSION = 23;
 
 	private static final String CREATE_MARKER_TABLE = "create table "
 			+ TABLE_MARKERS_NAME + " ( " + UNIQUE_COLUMN_ID
