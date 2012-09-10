@@ -5,12 +5,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
-import com.google.android.maps.GeoPoint;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Address;
@@ -28,6 +25,9 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.maps.GeoPoint;
+
 import flood.monitor.modules.Connector;
 import flood.monitor.modules.kmlparser.Marker;
 

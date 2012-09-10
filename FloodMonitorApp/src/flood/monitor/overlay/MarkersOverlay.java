@@ -28,7 +28,7 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements
 	// ===========================================================
 	private ArrayList<Marker> markers = new ArrayList<Marker>();
 	private ArrayList<Marker> markersinPage = new ArrayList<Marker>();
-	private Activity activity;
+	private MapViewActivity activity;
 	private int page;
 	private int maxPage;
 	private int markersPerPage;
@@ -151,7 +151,7 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements
 	// Methods from Interfaces
 	// ===========================================================
 	@Override
-	public void updateActivity(Activity newActivity) {
+	public void updateActivity(MapViewActivity newActivity) {
 		this.activity = newActivity;
 	}
 

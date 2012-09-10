@@ -27,6 +27,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -38,8 +39,8 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.maps.GeoPoint;
@@ -75,14 +76,11 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	// Constants
 	// ===========================================================
 	// BUTTON STATES
-	public final static int ENABLE_ADD = 1;
-	public final static int ENABLE_UPLOAD = 2;
+	public final static int ADD_BUTTON_ENABLED = 1;
+	public final static int UPLOAD_BUTTON_ENABLED = 2;
 	// MAP LEVEL
 	public final static int MAP_LEVEL_REGION = 1;
 	public final static int MAP_LEVEL_MARKER = 2;
-	// OVERLAY STATES
-	public final static int OVERLAY_NULL = 1;
-	public final static int OVERLAY_LOADED = 2;
 	// MARKER DIALOG MODES
 	public final static int MARKER_LOCATION = 1;
 	public final static int MARKER_UPLOAD = 2;
@@ -93,35 +91,37 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	public final static int EVENT_DOWNLOAD_DIALOG = 100;
 	public final static int REGION_DOWNLOAD_DIALOG = 300;
 	public final static int MARKER_DOWNLOAD_DIALOG = 400;
+	// START MODE
+	public final static int START_INSTALL = 100;
+	public final static int START_CREATE = 300;
+	public final static int START_RECREATE = 400;
 
 	// PREFERENCES
-	public final static String PREFS_NAME = "MapViewPref";
 	public final static String INSTALL_STATE = "Install_State";
 	public final static String MAP_STATE = "MapState";
 	public final static String BUTTON_STATE = "buttonState";
-	public final static String OVERLAY_STATE = "overlayState";
-	// UI
-	public final static String SUBTITLE_TEXT = "subtitleText";
-	public final static String SEARCH_TEXT = "searchText";
+	public final static String OVERLAY_STATE = "overlayLoaded";
 
 	// ===========================================================
 	// Fields
 	// ===========================================================
-	private Locator locator;
-	private static Geocoder geocoder;
-	private static LocationOverlay locationOverlay;// 4
-	private static MarkersOverlay markersOverlay;// 3
-	private static RegionsOverlay regionsOverlay;// 2
-	private static IOverlay selectedOverlay;
-	private static ObjectDataSource data;
-	private static MapViewActivity activity;
+	private static LocationOverlay locationOverlay;
 	private static LimitedMapView limitedMapView;
+	private static MarkersOverlay markersOverlay;
+	private static RegionsOverlay regionsOverlay;
+	private static IOverlay selectedOverlay;
+	private static MapViewActivity activity;
+	private static AsyncTask runningTask;
+	private static Geocoder geocoder;
 
-	private int overlayState;
+	private ObjectDataSource data;
+
+	private Locator locator;
+
+	public boolean init;
 	private int buttonState;
-	private int mapLevel;
 	private int markersPerPage;
-	private boolean installedBefore;
+	private boolean overlayLoaded;
 
 	// ===========================================================
 	// Methods from Activity
@@ -137,162 +137,137 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		 * configuration change(screen rotation).
 		 */
 
-		MapViewActivity.activity = this;
 		setContentView(R.layout.map);
-
+		activity = this;
 		limitedMapView = (LimitedMapView) findViewById(R.id.mapview);
-		limitedMapView.updateActivity(this);
 		limitedMapView.displayZoomControls(true);
 
 		locator = new Locator(this);
-		locator.updateOldLocation();
+		locator.updateLocationFromLastKnownLocation();
 
 		geocoder = new Geocoder(this);
 
-		ImageButton buttonLock = (ImageButton) findViewById(R.id.buttonLock);
-		buttonLock.setOnClickListener(new Button.OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				SharedPreferences sharedPrefs = PreferenceManager
-						.getDefaultSharedPreferences(activity);
-				boolean useGPS = sharedPrefs.getBoolean("pref_GPSEnabled",
-						false);
-				if (useGPS) {
-					locator.updateListening(activity);
-				}
-				switch (mapLevel) {
-				case MapViewActivity.MAP_LEVEL_REGION:
-					focus(locator.getBestLocation(), 10);
-					break;
-				case MapViewActivity.MAP_LEVEL_MARKER:
-					focus(locator.getBestLocation(), 15);
-					break;
-				}
-			}
-		});
+		
+		findViewById(R.id.buttonLock).setOnClickListener(
+				new Button.OnClickListener() {
+					@Override
+					public void onClick(View arg0) {
+						lockGPS();
+					}
+				});
 
-		ImageButton addMarker = (ImageButton) findViewById(R.id.buttonAddMarker);
-		addMarker.setOnClickListener(new Button.OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				buttonState = ENABLE_UPLOAD;
-				locationOverlay.initiateDragMarker(limitedMapView
-						.getMapCenter());
-				updateButton();
-				((MapView) findViewById(R.id.mapview)).invalidate();
-			}
-		});
+		findViewById(R.id.buttonAddMarker).setOnClickListener(
+				new Button.OnClickListener() {
+					@Override
+					public void onClick(View arg0) {
+						addMarkerToMap();
+					}
+				});
 
-		ImageButton cancelMarker = (ImageButton) findViewById(R.id.buttoCancelMarker);
-		cancelMarker.setOnClickListener(new Button.OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				buttonState = ENABLE_ADD;
-				locationOverlay.stopDragMarker();
-				updateButton();
-				((MapView) findViewById(R.id.mapview)).invalidate();
+		findViewById(R.id.buttoCancelMarker).setOnClickListener(
+				new Button.OnClickListener() {
+					@Override
+					public void onClick(View arg0) {
+						removeMarkerFromMap();
+					}
+				});
 
-			}
-		});
+		findViewById(R.id.buttonUploadMarker).setOnClickListener(
+				new Button.OnClickListener() {
+					@Override
+					public void onClick(View arg0) {
+						uploadMarker();
+					}
+				});
 
-		ImageButton uploadMarker = (ImageButton) findViewById(R.id.buttonUploadMarker);
-		uploadMarker.setOnClickListener(new Button.OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				Intent intent = new Intent(MapViewActivity.this,
-						UploadFormActivity.class);
-				intent.putExtra("latitude", locationOverlay.getMarkerLocation()
-						.getLatitude());
-				intent.putExtra("longitude", locationOverlay
-						.getMarkerLocation().getLongitude());
-				startActivityForResult(intent, UPLOAD_INTENT);
-			}
-		});
-
-		ImageButton infoMarker = (ImageButton) findViewById(R.id.buttonInfoMarker);
-		infoMarker.setOnClickListener(new Button.OnClickListener() {
+		findViewById(R.id.buttonInfoMarker).setOnClickListener(new Button.OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
 				locationOverlay.showInfoDialog();
 			}
 		});
 
-		ImageButton layerUpButton = (ImageButton) findViewById(R.id.buttonLayerUp);
-		layerUpButton.setOnClickListener(new Button.OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				loadOverlayUp();
-				updateButton();
-				limitedMapView.setMapLevel(mapLevel);
-				limitedMapView.invalidate();
-				focus(limitedMapView.getMapCenter(), 12);
-			}
-		});
+		findViewById(R.id.buttonLayerUp).setOnClickListener(
+				new Button.OnClickListener() {
+					@Override
+					public void onClick(View arg0) {
+						layerUp();
+					}
+				});
 
-		ImageButton nextPageButton = (ImageButton) findViewById(R.id.buttonNextPage);
-		nextPageButton.setOnClickListener(new Button.OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				markersOverlay.nextPage();
-				((TextView) findViewById(R.id.textViewPageNumber))
-						.setText("Page" + ": " + (markersOverlay.getPage() + 1)
-								+ "/" + markersOverlay.getMaxPage());
-				((MapView) findViewById(R.id.mapview)).invalidate();
-			}
-		});
+		findViewById(R.id.buttonNextPage).setOnClickListener(
+				new Button.OnClickListener() {
+					@Override
+					public void onClick(View arg0) {
+						nextPage();
+					}
+				});
 
-		ImageButton prevPageButton = (ImageButton) findViewById(R.id.buttonPrevPage);
-		prevPageButton.setOnClickListener(new Button.OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				markersOverlay.previousPage();
-				((TextView) findViewById(R.id.textViewPageNumber))
-						.setText("Page" + ": " + (markersOverlay.getPage() + 1)
-								+ "/" + markersOverlay.getMaxPage());
-				((MapView) findViewById(R.id.mapview)).invalidate();
-			}
-		});
+		findViewById(R.id.buttonPrevPage).setOnClickListener(
+				new Button.OnClickListener() {
+					@Override
+					public void onClick(View arg0) {
+						previousPage();
+					}
+				});
 
-		ImageButton zoomInButton = (ImageButton) findViewById(R.id.buttonZoomIn);
-		zoomInButton.setOnClickListener(new Button.OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				limitedMapView.getController().zoomIn();
-			}
-		});
-		ImageButton zoomOutButton = (ImageButton) findViewById(R.id.buttonZoomOut);
-		zoomOutButton.setOnClickListener(new Button.OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				limitedMapView.getController().zoomOut();
-			}
-		});
+		findViewById(R.id.buttonZoomIn).setOnClickListener(
+				new Button.OnClickListener() {
+					@Override
+					public void onClick(View arg0) {
+						limitedMapView.getController().zoomIn();
+					}
+				});
+
+		findViewById(R.id.buttonZoomOut).setOnClickListener(
+				new Button.OnClickListener() {
+					@Override
+					public void onClick(View arg0) {
+						limitedMapView.getController().zoomOut();
+					}
+				});
+
 		/*
 		 * We will check for any savedInstance, with this we will know if the
 		 * activity is created for the first time(requires install of database),
 		 * if the activity is been created or if it is been
 		 * recreated(configuration change).
 		 */
+
 		if (savedInstanceState != null) {
 			buttonState = savedInstanceState.getInt(BUTTON_STATE);
-			overlayState = savedInstanceState.getInt(OVERLAY_STATE);
-			mapLevel = savedInstanceState.getInt(MAP_STATE);
+			overlayLoaded = savedInstanceState.getBoolean(OVERLAY_STATE);
+			setMapLevel(savedInstanceState.getInt(MAP_STATE));
+			init = true;
+
 		} else {
-			buttonState = ENABLE_ADD;
-			mapLevel = MAP_LEVEL_REGION;
-			overlayState = OVERLAY_NULL;
-			SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-			installedBefore = settings.getBoolean(INSTALL_STATE, false);
-			if (installedBefore) {
+			if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(
+					INSTALL_STATE, false)) {
 				onInstall();
 			}
+
+			buttonState = ADD_BUTTON_ENABLED;
+			setMapLevel(MAP_LEVEL_REGION);
+			overlayLoaded = false;
 			locationOverlay = new LocationOverlay(this.getResources()
 					.getDrawable(R.drawable.marker_white));
-			limitedMapView.getOverlays().add(locationOverlay);
-			data = new ObjectDataSource(activity);
-			data.open();
-			downloadRegionsDialog();
+			init = false;
 		}
+		if (overlayLoaded) {
+			addOverlay((Overlay) selectedOverlay);
+			selectedOverlay.updateActivity(this);
+		}
+		
+		if (runningTask != null) {
+			if (runningTask instanceof DownloadRegionsTask) {
+				((DownloadRegionsTask) runningTask).setActivity(this);
+			} else if (runningTask instanceof DownloadAndShowEventsTask) {
+				((DownloadAndShowEventsTask) runningTask).setActivity(this);
+			} else if (runningTask instanceof DownloadMarkersTask) {
+				((DownloadMarkersTask) runningTask).setActivity(this);
+			}
+		}
+
 
 	}
 
@@ -302,8 +277,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		markersPerPage = Integer.parseInt(PreferenceManager
 				.getDefaultSharedPreferences(this).getString("markersPerPage",
 						"-1"));
-
-		switch (mapLevel) {
+		switch (getMapLevel()) {
 		case MapViewActivity.MAP_LEVEL_REGION:
 			selectedOverlay = regionsOverlay;
 			break;
@@ -318,34 +292,36 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			break;
 		}
 		bindOverlays();
+
 		// The activity is about to become visible.
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-		SharedPreferences sharedPrefs = PreferenceManager
-				.getDefaultSharedPreferences(this);
 
-		boolean useGPS = sharedPrefs.getBoolean("pref_GPSEnabled", false);
-		if (useGPS) {
+		if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(
+				"pref_GPSEnabled", false)) {
 			locator.startListening(this);
 		}
-		boolean useSatellite = sharedPrefs.getBoolean("pref_UseSatellite",
-				false);
-		limitedMapView.setMapLevel(mapLevel);
-		limitedMapView.setSatellite(useSatellite);
+
+		limitedMapView.setSatellite(PreferenceManager
+				.getDefaultSharedPreferences(this).getBoolean(
+						"pref_UseSatellite", false));
 		limitedMapView.invalidate();
 
 		updateButton();
-		data.open();
+
+		if (!init) {
+			downloadRegionsDialog();
+		}
 		// The activity has become visible (it is now "resumed").
 	}
 
 	@Override
 	protected void onPause() {
 		super.onPause();
-		data.close();
+
 		// Another activity is taking focus (this activity is about to
 		// be"paused")
 	}
@@ -355,7 +331,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		super.onStop();
 		// The activity is no longer visible (it is now "stopped")
 		locator.stopListening(this);
-		switch (mapLevel) {
+		switch (getMapLevel()) {
 		case MapViewActivity.MAP_LEVEL_REGION:
 			break;
 		case MapViewActivity.MAP_LEVEL_MARKER:
@@ -373,6 +349,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
+		// stopRunningProcess();
 	}
 
 	@Override
@@ -466,7 +443,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 
 	@Override
 	public boolean onSearchRequested() {
-		ActivityUtil.updateOptionsMenu(activity);
+		ActivityUtil.updateOptionsMenu(this);
 		return super.onSearchRequested();
 	}
 
@@ -477,7 +454,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		switch (requestCode) {
 		case UPLOAD_INTENT:
 			if (resultCode == RESULT_OK) {
-				buttonState = ENABLE_ADD;
+				buttonState = ADD_BUTTON_ENABLED;
 				locationOverlay.stopDragMarker();
 				updateButton();
 				limitedMapView.invalidate();
@@ -485,7 +462,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			break;
 		case DIALOG_INTENT:
 			if (resultCode == RESULT_OK) {
-				buttonState = ENABLE_ADD;
+				buttonState = ADD_BUTTON_ENABLED;
 				locationOverlay.stopDragMarker();
 				updateButton();
 				limitedMapView.invalidate();
@@ -501,14 +478,9 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	@SuppressLint("NewApi")
 	public void onSaveInstanceState(Bundle savedInstanceState) {
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-			savedInstanceState.putCharSequence(SUBTITLE_TEXT, getActionBar()
-					.getSubtitle());
-		}
 		savedInstanceState.putInt(BUTTON_STATE, buttonState);
-		savedInstanceState.putInt(MAP_STATE, mapLevel);
-		savedInstanceState.putInt(OVERLAY_STATE, overlayState);
-		// savedInstanceState.putString(SEARCH_TEXT, mapLevel);
+		savedInstanceState.putInt(MAP_STATE, getMapLevel());
+		savedInstanceState.putBoolean(OVERLAY_STATE, overlayLoaded);
 
 		super.onSaveInstanceState(savedInstanceState);
 	}
@@ -521,10 +493,6 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	// ===========================================================
 	// Getter & Setter
 	// ===========================================================
-
-	public int getMapLevel() {
-		return this.mapLevel;
-	}
 
 	// ===========================================================
 	// Methods from Parent
@@ -542,8 +510,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		removeOverlay(markersOverlay);
 		addOverlay(regionsOverlay);
 		selectedOverlay = regionsOverlay;
-		limitedMapView.setMapLevel(MAP_LEVEL_REGION);
-		this.mapLevel = MAP_LEVEL_REGION;
+		this.setMapLevel(MAP_LEVEL_REGION);
 	}
 
 	public void loadOverlayDown(int regionId) {
@@ -569,15 +536,22 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	}
 
 	public void downloadRegionsDialog() {
-		new DownloadRegionsTask().execute();
+		if (!isProcessRunning()) {
+			runningTask = new DownloadRegionsTask(this).execute();
+		}
+
 	}
 
 	public void downloadEventsAndShowDialog(int regionId) {
-		new DownloadAndShowEventsTask().execute(regionId);
+		if (!isProcessRunning()) {
+			runningTask = new DownloadAndShowEventsTask(this).execute(regionId);
+		}
 	}
 
 	public void downloadMarkersDialog(Region region) {
-		new DownloadMarkersTask().execute(region);
+		if (!isProcessRunning()) {
+			runningTask = new DownloadMarkersTask(this).execute(region);
+		}
 	}
 
 	public void updateBestLocation() {
@@ -591,10 +565,10 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	}
 
 	private void onInstall() {
-		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+		SharedPreferences settings = PreferenceManager
+				.getDefaultSharedPreferences(this);
 		SharedPreferences.Editor editor = settings.edit();
-		installedBefore = true;
-		editor.putBoolean(INSTALL_STATE, installedBefore);
+		editor.putBoolean(INSTALL_STATE, true);
 		editor.commit();
 
 		SharedPreferences updateInterval = PreferenceManager
@@ -606,20 +580,128 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		// create DB
 	}
 
+	private void lockGPS() {
+		SharedPreferences sharedPrefs = PreferenceManager
+				.getDefaultSharedPreferences(this);
+		boolean useGPS = sharedPrefs.getBoolean("pref_GPSEnabled", false);
+		if (useGPS) {
+			locator.updateListening(this);
+		}
+		switch (getMapLevel()) {
+		case MapViewActivity.MAP_LEVEL_REGION:
+			focus(locator.getBestLocation(), 10);
+			break;
+		case MapViewActivity.MAP_LEVEL_MARKER:
+			focus(locator.getBestLocation(), 15);
+			break;
+		}
+	}
+
+	private boolean isProcessRunning() {
+		if (runningTask == null) {
+			return false;
+		} else {
+			if (!(runningTask.getStatus() == AsyncTask.Status.RUNNING)
+					|| runningTask.getStatus() == AsyncTask.Status.FINISHED) {
+				return false;
+			} else {
+				return true;
+			}
+		}
+	}
+
+	private void stopRunningProcess() {
+		if (isProcessRunning()) {
+			this.runningTask.cancel(true);
+		}
+	}
+
+	protected void previousPage() {
+		markersOverlay.previousPage();
+		((TextView) findViewById(R.id.textViewPageNumber)).setText("Page"
+				+ ": " + (markersOverlay.getPage() + 1) + "/"
+				+ markersOverlay.getMaxPage());
+		((MapView) findViewById(R.id.mapview)).invalidate();
+	}
+
+	protected void nextPage() {
+		markersOverlay.nextPage();
+		((TextView) findViewById(R.id.textViewPageNumber)).setText("Page"
+				+ ": " + (markersOverlay.getPage() + 1) + "/"
+				+ markersOverlay.getMaxPage());
+		((MapView) findViewById(R.id.mapview)).invalidate();
+	}
+
+	protected void layerUp() {
+		loadOverlayUp();
+		updateButton();
+		limitedMapView.invalidate();
+		focus(limitedMapView.getMapCenter(), 12);
+
+	}
+
+	protected void uploadMarker() {
+		Intent intent = new Intent(MapViewActivity.this,
+				UploadFormActivity.class);
+		intent.putExtra("latitude", locationOverlay.getMarkerLocation()
+				.getLatitude());
+		intent.putExtra("longitude", locationOverlay.getMarkerLocation()
+				.getLongitude());
+		startActivityForResult(intent, UPLOAD_INTENT);
+	}
+
+	protected void removeMarkerFromMap() {
+		buttonState = ADD_BUTTON_ENABLED;
+		locationOverlay.stopDragMarker();
+		updateButton();
+		((MapView) findViewById(R.id.mapview)).invalidate();
+	}
+
+	protected void addMarkerToMap() {
+		buttonState = UPLOAD_BUTTON_ENABLED;
+		locationOverlay.initiateDragMarker(limitedMapView.getMapCenter());
+		updateButton();
+		((MapView) findViewById(R.id.mapview)).invalidate();
+
+	}
+
+	private void getResults(Address address) {
+		updateSearchResult(address);
+		buttonState = UPLOAD_BUTTON_ENABLED;
+		switch (getMapLevel()) {
+		case MapViewActivity.MAP_LEVEL_REGION:
+			focus(address.getLatitude(), address.getLongitude(), 9);
+			break;
+		case MapViewActivity.MAP_LEVEL_MARKER:
+			focus(address.getLatitude(), address.getLongitude(), 15);
+			break;
+		}
+		activity.updateButton();
+		limitedMapView.invalidate();
+	}
+
 	// ===========================================================
 	// Inner and Anonymous Classes
 	// ===========================================================
 
 	private class DownloadRegionsTask extends AsyncTask<Void, Void, Void> {
 		protected boolean taskCompleted = false;
+		protected MapViewActivity activity = null;
+
+		public DownloadRegionsTask(MapViewActivity activity) {
+			setActivity(activity);
+		}
 
 		@Override
 		protected void onPreExecute() {
-			showDialog(REGION_DOWNLOAD_DIALOG);
+			// showDialog(REGION_DOWNLOAD_DIALOG);
+			data = new ObjectDataSource(activity);
+			data.open();
 		}
 
 		@Override
 		protected Void doInBackground(Void... params) {
+
 			ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 			NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 			if (networkInfo != null && networkInfo.isConnected()) {
@@ -631,7 +713,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 				regionsOverlay.updateActivity(activity);
 				selectedOverlay = regionsOverlay;
 				addOverlay((RegionsOverlay) selectedOverlay);
-				overlayState = OVERLAY_LOADED;
+				overlayLoaded = true;
 				taskCompleted = true;
 			} else {
 				activity.runOnUiThread(new Runnable() {
@@ -648,7 +730,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 				regionsOverlay.updateActivity(activity);
 				selectedOverlay = regionsOverlay;
 				addOverlay((RegionsOverlay) selectedOverlay);
-				overlayState = OVERLAY_LOADED;
+				overlayLoaded = true;
 				taskCompleted = true;
 			}
 			return null;
@@ -658,11 +740,18 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		protected void onPostExecute(Void none) {
 			if (taskCompleted) {
 
-				mapLevel = MAP_LEVEL_REGION;
-				limitedMapView.setMapLevel(mapLevel);
+				setMapLevel(MAP_LEVEL_REGION);
 				limitedMapView.invalidate();
 			}
-			dismissDialog(REGION_DOWNLOAD_DIALOG);
+			data.close();
+			activity.init = true;
+			// dismissDialog(REGION_DOWNLOAD_DIALOG);
+		}
+
+		public void setActivity(MapViewActivity activity) {
+			this.activity = activity;
+			Log.i("DownloadRegionsTask",
+					"Activity set to " + activity.getTaskId());
 		}
 	}
 
@@ -670,10 +759,18 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			AsyncTask<Integer, Void, Void> {
 		protected boolean taskCompleted = false;
 		int regionId;
+		protected MapViewActivity activity = null;
+
+		public DownloadAndShowEventsTask(MapViewActivity activity) {
+			setActivity(activity);
+		}
 
 		@Override
 		protected void onPreExecute() {
-			showDialog(EVENT_DOWNLOAD_DIALOG);
+			// showDialog(EVENT_DOWNLOAD_DIALOG);
+			data = new ObjectDataSource(activity);
+			data.open();
+			Log.i("MapViewActivity", "DownloadAndShowEventsTask started");
 		}
 
 		@Override
@@ -698,6 +795,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 				((RegionsOverlay) selectedOverlay).setEvents(regionId, events);
 				taskCompleted = true;
 			}
+			Log.i("MapViewActivity", "DownloadAndShowEventsTask job finished");
 			return null;
 		}
 
@@ -705,15 +803,22 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		protected void onPostExecute(Void none) {
 			if (taskCompleted) {
 
-				mapLevel = MAP_LEVEL_REGION;
-				limitedMapView.setMapLevel(mapLevel);
+				setMapLevel(MAP_LEVEL_REGION);
 				limitedMapView.invalidate();
 				((RegionsOverlay) selectedOverlay).showMarkerDialog(regionId);
 
 			}
-			dismissDialog(EVENT_DOWNLOAD_DIALOG);
-
+			// dismissDialog(EVENT_DOWNLOAD_DIALOG);
+			data.close();
+			Log.i("MapViewActivity", "DownloadAndShowEventsTask ended");
 		}
+
+		public void setActivity(MapViewActivity activity) {
+			this.activity = activity;
+			Log.i("DownloadRegionsTask",
+					"Activity set to " + activity.getTaskId());
+		}
+
 	}
 
 	private class DownloadMarkersTask extends AsyncTask<Region, Void, Void> {
@@ -721,10 +826,19 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		protected boolean taskCompleted = false;
 		private Region selectedRegion;
 		private Event selectedEvent;
+		private MapViewActivity activity;
+		private ArrayList<Marker> allMarkers;
+
+		public DownloadMarkersTask(MapViewActivity activity) {
+			setActivity(activity);
+		}
 
 		@Override
 		protected void onPreExecute() {
-			showDialog(MARKER_DOWNLOAD_DIALOG);
+			// showDialog(MARKER_DOWNLOAD_DIALOG);
+			data = new ObjectDataSource(activity);
+			data.open();
+			Log.i("MapViewActivity", "DownloadMarkersTask started");
 		}
 
 		@Override
@@ -734,11 +848,12 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			selectedRegion = params[0];
 			selectedEvent = selectedRegion.getEvents().get(
 					selectedRegion.getSelectedEvent());
-			ArrayList<Marker> allMarkers = new ArrayList<Marker>(0);
+			allMarkers = new ArrayList<Marker>(0);
 			if (networkInfo != null && networkInfo.isConnected()) {
 				for (Boundary boundary : selectedRegion.getBoundaries()) {
 					ArrayList<Marker> markers = Connector.downloadMarkers(
-							boundary.getId(), selectedEvent.getEventId(), selectedRegion.getRegionId());
+							boundary.getId(), selectedEvent.getEventId(),
+							selectedRegion.getRegionId());
 					data.applyMarkerDifferences(
 							data.getAllMarkers(boundary.getId(),
 									selectedEvent.getEventId()), markers);
@@ -760,38 +875,55 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 					allMarkers.addAll(markers);
 				}
 			}
-			Drawable defaultDrawable = activity.getResources().getDrawable(
-					R.drawable.marker_green);
-			markersOverlay = new MarkersOverlay(defaultDrawable);
-			markersOverlay.updateActivity(activity);
-			markersOverlay.setOverlay(allMarkers);
-
-			if (markersPerPage != -1) {
-				markersOverlay.enablePageing(markersPerPage);
-			}
-
-			removeOverlay((Overlay) selectedOverlay);
-			selectedOverlay = markersOverlay;
-			addOverlay((MarkersOverlay) selectedOverlay);
-			overlayState = OVERLAY_LOADED;
 			taskCompleted = true;
+			Log.i("MapViewActivity", "DownloadMarkersTask job finished");
 			return null;
 		}
 
 		@Override
 		protected void onPostExecute(Void none) {
 			if (taskCompleted) {
-				mapLevel = MAP_LEVEL_MARKER;
-				limitedMapView.setMapLevel(mapLevel);
+				Drawable defaultDrawable = activity.getResources().getDrawable(
+						R.drawable.marker_green);
+				markersOverlay = new MarkersOverlay(defaultDrawable);
+				markersOverlay.updateActivity(activity);
+				markersOverlay.setOverlay(allMarkers);
+
+				if (markersPerPage != -1) {
+					markersOverlay.enablePageing(markersPerPage);
+				}
+
+				removeOverlay((Overlay) selectedOverlay);
+				selectedOverlay = markersOverlay;
+				addOverlay((MarkersOverlay) selectedOverlay);
+				overlayLoaded = true;
+				setMapLevel(MAP_LEVEL_MARKER);
 				limitedMapView.invalidate();
 				focus(selectedRegion.getCenter(), 15);
 				updateButton();
 			}
-			dismissDialog(MARKER_DOWNLOAD_DIALOG);
+			// dismissDialog(MARKER_DOWNLOAD_DIALOG);
+			data.close();
+			Log.i("MapViewActivity", "DownloadMarkersTask ended");
 		}
+
+		public void setActivity(MapViewActivity activity) {
+			this.activity = activity;
+			Log.i("DownloadRegionsTask",
+					"Activity set to " + activity.getTaskId());
+		}
+
 	}
 
-	private static void focus(Location locationToZoom, int level) {
+	private void setMapLevel(int mapLevel) {
+		this.limitedMapView.setMapLevel(mapLevel);
+	}
+
+	private int getMapLevel() {
+		return this.limitedMapView.getMapLevel();
+	}
+
+	private void focus(Location locationToZoom, int level) {
 		MapController mc = limitedMapView.getController();
 		mc.animateTo(new GeoPoint(
 				(int) (locationToZoom.getLatitude() * 1000000),
@@ -800,14 +932,14 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		limitedMapView.invalidate();
 	}
 
-	private static void focus(GeoPoint geopointToZoom, int level) {
+	private void focus(GeoPoint geopointToZoom, int level) {
 		MapController mc = limitedMapView.getController();
 		mc.animateTo(geopointToZoom);
 		mc.setZoom(level);
 		limitedMapView.invalidate();
 	}
 
-	private static void focus(double lat, double lon, int level) {
+	private void focus(double lat, double lon, int level) {
 		MapController mc = limitedMapView.getController();
 		mc.animateTo(new GeoPoint((int) (lat * 1000000), (int) (lon * 1000000)));
 		mc.setZoom(level);
@@ -819,30 +951,22 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		if (!overlays.contains(locationOverlay)) {
 			overlays.add(locationOverlay);
 		}
-		locationOverlay.updateActivity(activity);
-		if (overlayState == OVERLAY_LOADED) {
-			if (!overlays.contains(selectedOverlay)) {
-				addOverlay((Overlay) selectedOverlay);
-			}
-			selectedOverlay.updateActivity(activity);
-		}
+		locationOverlay.updateActivity(this);
 	}
 
 	private void updateButton() {
-		switch (mapLevel) {
+		switch (getMapLevel()) {
 		case MAP_LEVEL_MARKER:
 			switch (buttonState) {
-			case ENABLE_ADD:
-				findViewById(R.id.buttonLayerUp).setVisibility(View.VISIBLE);
+			case ADD_BUTTON_ENABLED:
 				findViewById(R.id.buttonUploadMarker).setVisibility(View.GONE);
 				findViewById(R.id.buttoCancelMarker).setVisibility(View.GONE);
 				findViewById(R.id.buttonAddMarker).setVisibility(View.VISIBLE);
 				findViewById(R.id.buttonInfoMarker).setVisibility(View.GONE);
 				break;
-			case ENABLE_UPLOAD:
+			case UPLOAD_BUTTON_ENABLED:
 				findViewById(R.id.buttonUploadMarker).setVisibility(
 						View.VISIBLE);
-				findViewById(R.id.buttonLayerUp).setVisibility(View.VISIBLE);
 				findViewById(R.id.buttoCancelMarker)
 						.setVisibility(View.VISIBLE);
 				findViewById(R.id.buttonAddMarker).setVisibility(View.GONE);
@@ -874,26 +998,24 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 				findViewById(R.id.buttonNextPage).setVisibility(View.GONE);
 				findViewById(R.id.buttonPrevPage).setVisibility(View.GONE);
 			}
-
+			findViewById(R.id.buttonLayerUp).setVisibility(View.VISIBLE);
 			break;
 		case MAP_LEVEL_REGION:
 			switch (buttonState) {
-			case ENABLE_ADD:
-				findViewById(R.id.buttonLayerUp).setVisibility(View.GONE);
-				findViewById(R.id.buttonUploadMarker).setVisibility(View.GONE);
+			case ADD_BUTTON_ENABLED:
 				findViewById(R.id.buttoCancelMarker).setVisibility(View.GONE);
 				findViewById(R.id.buttonAddMarker).setVisibility(View.VISIBLE);
 				findViewById(R.id.buttonInfoMarker).setVisibility(View.GONE);
 				break;
-			case ENABLE_UPLOAD:
-				findViewById(R.id.buttonLayerUp).setVisibility(View.GONE);
-				findViewById(R.id.buttonUploadMarker).setVisibility(View.GONE);
+			case UPLOAD_BUTTON_ENABLED:
 				findViewById(R.id.buttoCancelMarker)
 						.setVisibility(View.VISIBLE);
 				findViewById(R.id.buttonAddMarker).setVisibility(View.GONE);
 				findViewById(R.id.buttonInfoMarker).setVisibility(View.VISIBLE);
 				break;
 			}
+			findViewById(R.id.buttonUploadMarker).setVisibility(View.GONE);
+			findViewById(R.id.buttonLayerUp).setVisibility(View.GONE);
 			findViewById(R.id.buttonNextPage).setVisibility(View.GONE);
 			findViewById(R.id.buttonPrevPage).setVisibility(View.GONE);
 			findViewById(R.id.textViewPageNumber).setVisibility(View.GONE);
@@ -901,13 +1023,11 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		default:
 			break;
 		}
-		boolean useZoomControl = PreferenceManager
-				.getDefaultSharedPreferences(this).getBoolean("pref_UseZoomControl",
-						false);
-		if(useZoomControl){
+		if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(
+				"pref_UseZoomControl", false)) {
 			findViewById(R.id.buttonZoomIn).setVisibility(View.VISIBLE);
 			findViewById(R.id.buttonZoomOut).setVisibility(View.VISIBLE);
-		}else{
+		} else {
 			findViewById(R.id.buttonZoomIn).setVisibility(View.GONE);
 			findViewById(R.id.buttonZoomOut).setVisibility(View.GONE);
 		}
@@ -1106,7 +1226,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 					.getLongitudeE6() / 1000000d);
 			intent.putExtra("mode", MARKER_LOCATION);
 			boolean uploadButton = false;
-			if (activity.mapLevel == MapViewActivity.MAP_LEVEL_MARKER
+			if (getMapLevel() == MapViewActivity.MAP_LEVEL_MARKER
 					&& createItem(id) != draggerMarker)
 				uploadButton = true;
 			intent.putExtra("upload", uploadButton);
@@ -1114,7 +1234,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		}
 
 		@Override
-		public void updateActivity(Activity newActivity) {
+		public void updateActivity(MapViewActivity newActivity) {
 			dragImage = (ImageView) newActivity.findViewById(R.id.drag);
 			xDragImageOffset = dragImage.getDrawable().getIntrinsicWidth() / 2;
 			yDragImageOffset = dragImage.getDrawable().getIntrinsicHeight();
@@ -1163,8 +1283,8 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 					}
 					items[i] = sb.toString();
 				}
-				ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-						activity, android.R.layout.simple_list_item_1, items);
+				ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+						android.R.layout.simple_list_item_1, items);
 				setListAdapter(adapter);
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -1176,7 +1296,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		public void onResume() {
 			super.onResume();
 			if (addressList == null) {
-				Toast.makeText(activity, "No results found", Toast.LENGTH_SHORT)
+				Toast.makeText(this, "No results found", Toast.LENGTH_SHORT)
 						.show();
 				this.finish();
 			}
@@ -1185,20 +1305,10 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		@Override
 		protected void onListItemClick(ListView l, View v, int position, long id) {
 			Address address = addressList.get(position);
-			activity.updateSearchResult(address);
-			activity.buttonState = ENABLE_UPLOAD;
-			switch (activity.mapLevel) {
-			case MapViewActivity.MAP_LEVEL_REGION:
-				focus(address.getLatitude(), address.getLongitude(), 9);
-				break;
-			case MapViewActivity.MAP_LEVEL_MARKER:
-				focus(address.getLatitude(), address.getLongitude(), 15);
-				break;
-			}
-			activity.updateButton();
-			limitedMapView.invalidate();
+			activity.getResults(address);
 			this.finish();
 		}
 
 	}
+
 }

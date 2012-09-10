@@ -65,7 +65,7 @@ public class Locator {
 
 	}
 
-	public void updateOldLocation() {
+	public void updateLocationFromLastKnownLocation() {
 		Location currentLocation = locationManager
 				.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 		if (currentLocation == null) {

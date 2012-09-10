@@ -3,7 +3,6 @@ package flood.monitor.overlay;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-import android.widget.Toast;
 
 import com.google.android.maps.MapView;
 
@@ -14,7 +13,6 @@ public class LimitedMapView extends MapView {
 	// MEMBERS
 	// ========================================================================
 	public static final int REGION_MAX_ZOOM = 12;
-	private MapViewActivity activity;
 	private int mapLevel;
 
 	// ========================================================================
@@ -41,7 +39,7 @@ public class LimitedMapView extends MapView {
 		this.mapLevel = mapLevel;
 	}
 
-	public int getMapLever() {
+	public int getMapLevel() {
 		return this.mapLevel;
 	}
 
@@ -77,8 +75,5 @@ public class LimitedMapView extends MapView {
 	// ===========================================================
 	// Methods
 	// ===========================================================
-	public void updateActivity(MapViewActivity newActivity) {
-		this.activity = newActivity;
-		this.mapLevel = activity.getMapLevel();
-	}
+
 }
