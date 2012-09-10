@@ -17,14 +17,12 @@ import android.view.MotionEvent;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.ItemizedOverlay;
 import com.google.android.maps.MapView;
-import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
 
 import flood.monitor.MapViewActivity;
 import flood.monitor.R;
 import flood.monitor.modules.kmlparser.Boundary;
 import flood.monitor.modules.kmlparser.Event;
-import flood.monitor.modules.kmlparser.Marker;
 import flood.monitor.modules.kmlparser.Region;
 
 public class RegionsOverlay extends ItemizedOverlay<OverlayItem> implements
@@ -39,7 +37,7 @@ public class RegionsOverlay extends ItemizedOverlay<OverlayItem> implements
 	// ===========================================================
 	private ArrayList<OverlayItem> markers;
 	private ArrayList<Region> regions;
-	private Activity activity;
+	private MapViewActivity activity;
 
 	private int height = 0;
 	private int width = 0;
@@ -199,7 +197,7 @@ public class RegionsOverlay extends ItemizedOverlay<OverlayItem> implements
 	}
 
 	@Override
-	public void updateActivity(Activity newActivity) {
+	public void updateActivity(MapViewActivity newActivity) {
 		this.activity = newActivity;
 		DisplayMetrics displaymetrics = new DisplayMetrics();
 		activity.getWindowManager().getDefaultDisplay()
