@@ -114,6 +114,10 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	private static AsyncTask runningTask;
 	private static Geocoder geocoder;
 
+	private static Dialog downloadRegionsDialog;
+	private static Dialog downloadEventsDialog;
+	private static Dialog downloadMarkersDialog;
+
 	private ObjectDataSource data;
 
 	private Locator locator;
@@ -147,7 +151,6 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 
 		geocoder = new Geocoder(this);
 
-		
 		findViewById(R.id.buttonLock).setOnClickListener(
 				new Button.OnClickListener() {
 					@Override
@@ -180,12 +183,13 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 					}
 				});
 
-		findViewById(R.id.buttonInfoMarker).setOnClickListener(new Button.OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				locationOverlay.showInfoDialog();
-			}
-		});
+		findViewById(R.id.buttonInfoMarker).setOnClickListener(
+				new Button.OnClickListener() {
+					@Override
+					public void onClick(View arg0) {
+						locationOverlay.showInfoDialog();
+					}
+				});
 
 		findViewById(R.id.buttonLayerUp).setOnClickListener(
 				new Button.OnClickListener() {
@@ -257,7 +261,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			addOverlay((Overlay) selectedOverlay);
 			selectedOverlay.updateActivity(this);
 		}
-		
+
 		if (runningTask != null) {
 			if (runningTask instanceof DownloadRegionsTask) {
 				((DownloadRegionsTask) runningTask).setActivity(this);
@@ -267,7 +271,6 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 				((DownloadMarkersTask) runningTask).setActivity(this);
 			}
 		}
-
 
 	}
 
@@ -349,6 +352,14 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
+		/*
+		 * if (runningTask != null) { if (runningTask instanceof
+		 * DownloadRegionsTask) { dismissDialog(REGION_DOWNLOAD_DIALOG); } else
+		 * if (runningTask instanceof DownloadAndShowEventsTask) {
+		 * dismissDialog(EVENT_DOWNLOAD_DIALOG); } else if (runningTask
+		 * instanceof DownloadMarkersTask) {
+		 * dismissDialog(MARKER_DOWNLOAD_DIALOG); } }
+		 */
 		// stopRunningProcess();
 	}
 
@@ -407,21 +418,25 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		case EVENT_DOWNLOAD_DIALOG: {
 			progressDialog.setMessage(getResources().getString(
 					R.string.text_GettingListofEvents));
+			downloadEventsDialog = progressDialog;
 			break;
 		}
 		case REGION_DOWNLOAD_DIALOG: {
 			progressDialog.setMessage(getResources().getString(
 					R.string.text_GettingListofRegions));
+			downloadRegionsDialog = progressDialog;
 			break;
 		}
 		case MARKER_DOWNLOAD_DIALOG: {
 			progressDialog.setMessage(getResources().getString(
 					R.string.text_GettingDataofEvent));
+			downloadMarkersDialog = progressDialog;
 			break;
 		}
 		default: {
 		}
 		}
+
 		return progressDialog;
 
 	}
@@ -694,7 +709,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 
 		@Override
 		protected void onPreExecute() {
-			// showDialog(REGION_DOWNLOAD_DIALOG);
+			showDialog(REGION_DOWNLOAD_DIALOG);
 			data = new ObjectDataSource(activity);
 			data.open();
 		}
@@ -745,7 +760,8 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			}
 			data.close();
 			activity.init = true;
-			// dismissDialog(REGION_DOWNLOAD_DIALOG);
+			dismissDialog(REGION_DOWNLOAD_DIALOG);
+			runningTask = null;
 		}
 
 		public void setActivity(MapViewActivity activity) {
@@ -767,7 +783,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 
 		@Override
 		protected void onPreExecute() {
-			// showDialog(EVENT_DOWNLOAD_DIALOG);
+			showDialog(EVENT_DOWNLOAD_DIALOG);
 			data = new ObjectDataSource(activity);
 			data.open();
 			Log.i("MapViewActivity", "DownloadAndShowEventsTask started");
@@ -805,16 +821,18 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 
 				setMapLevel(MAP_LEVEL_REGION);
 				limitedMapView.invalidate();
+				selectedOverlay.updateActivity(activity);
 				((RegionsOverlay) selectedOverlay).showMarkerDialog(regionId);
 
 			}
-			// dismissDialog(EVENT_DOWNLOAD_DIALOG);
+			dismissDialog(EVENT_DOWNLOAD_DIALOG);
 			data.close();
 			Log.i("MapViewActivity", "DownloadAndShowEventsTask ended");
+			runningTask = null;
 		}
 
-		public void setActivity(MapViewActivity activity) {
-			this.activity = activity;
+		public void setActivity(MapViewActivity newActivity) {
+			this.activity = newActivity;
 			Log.i("DownloadRegionsTask",
 					"Activity set to " + activity.getTaskId());
 		}
@@ -835,7 +853,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 
 		@Override
 		protected void onPreExecute() {
-			// showDialog(MARKER_DOWNLOAD_DIALOG);
+			showDialog(MARKER_DOWNLOAD_DIALOG);
 			data = new ObjectDataSource(activity);
 			data.open();
 			Log.i("MapViewActivity", "DownloadMarkersTask started");
@@ -902,9 +920,11 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 				focus(selectedRegion.getCenter(), 15);
 				updateButton();
 			}
-			// dismissDialog(MARKER_DOWNLOAD_DIALOG);
 			data.close();
+			// dismissDialog(MARKER_DOWNLOAD_DIALOG);
+			downloadMarkersDialog.cancel();
 			Log.i("MapViewActivity", "DownloadMarkersTask ended");
+			runningTask = null;
 		}
 
 		public void setActivity(MapViewActivity activity) {
