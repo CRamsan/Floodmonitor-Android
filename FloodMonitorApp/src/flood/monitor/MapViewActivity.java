@@ -36,7 +36,6 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -352,15 +351,24 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		/*
-		 * if (runningTask != null) { if (runningTask instanceof
-		 * DownloadRegionsTask) { dismissDialog(REGION_DOWNLOAD_DIALOG); } else
-		 * if (runningTask instanceof DownloadAndShowEventsTask) {
-		 * dismissDialog(EVENT_DOWNLOAD_DIALOG); } else if (runningTask
-		 * instanceof DownloadMarkersTask) {
-		 * dismissDialog(MARKER_DOWNLOAD_DIALOG); } }
-		 */
-		// stopRunningProcess();
+
+		if (isProcessRunning()) {
+			if (runningTask instanceof DownloadRegionsTask) {
+				((DownloadRegionsTask) runningTask).removeActivity();
+			} else if (runningTask instanceof DownloadAndShowEventsTask) {
+				((DownloadAndShowEventsTask) runningTask).removeActivity();
+			} else if (runningTask instanceof DownloadMarkersTask) {
+				((DownloadMarkersTask) runningTask).removeActivity();
+			}
+		}
+		switch (getMapLevel()) {
+		case MapViewActivity.MAP_LEVEL_REGION:
+			regionsOverlay.cancelDialog();
+			break;
+		case MapViewActivity.MAP_LEVEL_MARKER:
+			break;
+		}
+
 	}
 
 	@Override
@@ -769,6 +777,11 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			Log.i("DownloadRegionsTask",
 					"Activity set to " + activity.getTaskId());
 		}
+
+		public void removeActivity() {
+			this.activity = null;
+			Log.i("DownloadRegionsTask", "Activity set to null");
+		}
 	}
 
 	private class DownloadAndShowEventsTask extends
@@ -835,6 +848,11 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			this.activity = newActivity;
 			Log.i("DownloadRegionsTask",
 					"Activity set to " + activity.getTaskId());
+		}
+
+		public void removeActivity() {
+			this.activity = null;
+			Log.i("DownloadRegionsTask", "Activity set to null");
 		}
 
 	}
@@ -918,7 +936,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 				setMapLevel(MAP_LEVEL_MARKER);
 				limitedMapView.invalidate();
 				focus(selectedRegion.getCenter(), 15);
-				updateButton();
+				activity.updateButton();
 			}
 			data.close();
 			// dismissDialog(MARKER_DOWNLOAD_DIALOG);
@@ -933,14 +951,18 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 					"Activity set to " + activity.getTaskId());
 		}
 
+		public void removeActivity() {
+			this.activity = null;
+			Log.i("DownloadRegionsTask", "Activity set to null");
+		}
 	}
 
 	private void setMapLevel(int mapLevel) {
-		this.limitedMapView.setMapLevel(mapLevel);
+		limitedMapView.setMapLevel(mapLevel);
 	}
 
 	private int getMapLevel() {
-		return this.limitedMapView.getMapLevel();
+		return limitedMapView.getMapLevel();
 	}
 
 	private void focus(Location locationToZoom, int level) {

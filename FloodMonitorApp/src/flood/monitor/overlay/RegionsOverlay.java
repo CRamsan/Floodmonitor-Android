@@ -38,7 +38,7 @@ public class RegionsOverlay extends ItemizedOverlay<OverlayItem> implements
 	private ArrayList<OverlayItem> markers;
 	private ArrayList<Region> regions;
 	private MapViewActivity activity;
-
+	private AlertDialog alertDialog;
 	private int height = 0;
 	private int width = 0;
 	private int x;
@@ -168,7 +168,6 @@ public class RegionsOverlay extends ItemizedOverlay<OverlayItem> implements
 	@Override
 	public void showMarkerDialog(final int id) {
 		AlertDialog.Builder builder;
-		AlertDialog alertDialog;
 
 		Context mContext = activity;
 		builder = new AlertDialog.Builder(mContext);
@@ -228,5 +227,11 @@ public class RegionsOverlay extends ItemizedOverlay<OverlayItem> implements
 
 	public void setEvents(int regionId, ArrayList<Event> events) {
 		getRegionById(regionId).setEvents(events);
+	}
+
+	public void cancelDialog() {
+		if (alertDialog != null) {
+			this.alertDialog.cancel();
+		}
 	}
 }
