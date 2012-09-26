@@ -8,6 +8,7 @@ import java.util.List;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
@@ -87,6 +88,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	public final static int UPLOAD_INTENT = 100;
 	public final static int DIALOG_INTENT = 150;
 	// DIALOGS ID
+	public final static int FIRST_RUN_DIALOG = 500;
 	public final static int EVENT_DOWNLOAD_DIALOG = 100;
 	public final static int REGION_DOWNLOAD_DIALOG = 300;
 	public final static int MARKER_DOWNLOAD_DIALOG = 400;
@@ -122,6 +124,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	private Locator locator;
 
 	public boolean init;
+	public boolean install;
 	private int buttonState;
 	private int markersPerPage;
 	private boolean overlayLoaded;
@@ -237,6 +240,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		 * recreated(configuration change).
 		 */
 
+		install = false;
 		if (savedInstanceState != null) {
 			buttonState = savedInstanceState.getInt(BUTTON_STATE);
 			overlayLoaded = savedInstanceState.getBoolean(OVERLAY_STATE);
@@ -395,15 +399,8 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			intent = new Intent(MapViewActivity.this, SettingsActivity.class);
 			startActivity(intent);
 			return true;
-		case R.id.menuItemExit:// Exit
-			finish();
-			return true;
 		case R.id.menuItemAbout: // ABout
 			intent = new Intent(MapViewActivity.this, AboutActivity.class);
-			startActivity(intent);
-			return true;
-		case R.id.menuItemHelp: // Help
-			intent = new Intent(MapViewActivity.this, HelpActivity.class);
 			startActivity(intent);
 			return true;
 		default:
@@ -418,34 +415,46 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 
 	@Override
 	protected Dialog onCreateDialog(int id) {
-		ProgressDialog progressDialog = new ProgressDialog(this);
-		progressDialog.setIndeterminate(true);
-		progressDialog.setCancelable(false);
 
 		switch (id) {
 		case EVENT_DOWNLOAD_DIALOG: {
+			ProgressDialog progressDialog = new ProgressDialog(this);
+			progressDialog.setIndeterminate(true);
+			progressDialog.setCancelable(false);
 			progressDialog.setMessage(getResources().getString(
 					R.string.text_GettingListofEvents));
 			downloadEventsDialog = progressDialog;
-			break;
+			return progressDialog;
 		}
 		case REGION_DOWNLOAD_DIALOG: {
+			ProgressDialog progressDialog = new ProgressDialog(this);
+			progressDialog.setIndeterminate(true);
+			progressDialog.setCancelable(false);
 			progressDialog.setMessage(getResources().getString(
 					R.string.text_GettingListofRegions));
 			downloadRegionsDialog = progressDialog;
-			break;
+			return progressDialog;
 		}
 		case MARKER_DOWNLOAD_DIALOG: {
+			ProgressDialog progressDialog = new ProgressDialog(this);
+			progressDialog.setIndeterminate(true);
+			progressDialog.setCancelable(false);
 			progressDialog.setMessage(getResources().getString(
 					R.string.text_GettingDataofEvent));
 			downloadMarkersDialog = progressDialog;
-			break;
+			return progressDialog;
+		}
+		case FIRST_RUN_DIALOG: {
+			Dialog dialog = new Dialog(this);
+			dialog.setContentView(R.layout.about);
+			dialog.setCancelable(true);
+			return dialog;
 		}
 		default: {
 		}
 		}
 
-		return progressDialog;
+		return null;
 
 	}
 
@@ -546,6 +555,11 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 
 	private void addOverlay(Overlay overlay) {
 		List<Overlay> mapOverlays = limitedMapView.getOverlays();
+		if (overlay instanceof RegionsOverlay) {
+			((RegionsOverlay)overlay).updateActivity(this);
+		} else if (overlay instanceof MarkersOverlay) {
+			((MarkersOverlay)overlay).updateActivity(this);
+		} 
 		int index = mapOverlays.size() - 1;
 		if (index > 0)
 			mapOverlays.add(index, overlay);
@@ -599,8 +613,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		SharedPreferences.Editor updateIntervalEditor = updateInterval.edit();
 		updateIntervalEditor.putInt("updateInterval", 30000);
 		updateIntervalEditor.commit();
-
-		// create DB
+		install = true;
 	}
 
 	private void lockGPS() {
@@ -770,6 +783,9 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			activity.init = true;
 			dismissDialog(REGION_DOWNLOAD_DIALOG);
 			runningTask = null;
+			if (install) {
+				showDialog(FIRST_RUN_DIALOG);
+			}
 		}
 
 		public void setActivity(MapViewActivity activity) {

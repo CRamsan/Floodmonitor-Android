@@ -42,8 +42,6 @@
         </activity>
         <activity android:name=".AboutActivity" >
         </activity>
-        <activity android:name=".HelpActivity" >
-        </activity>
         <activity
             android:name="MapViewActivity$SearchActivity"
             android:theme="@style/ThemeSelectorDialog" >

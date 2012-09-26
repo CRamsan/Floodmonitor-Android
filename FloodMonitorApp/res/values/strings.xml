@@ -22,6 +22,7 @@
     <string name="text_Address">Address</string>
     <string name="text_File">File</string>
     <string name="text_Page">Page</string>
+    <string name="text_Continue">Continue</string>
     <string name="text_YourComment">Your comments:</string>
     <string name="text_Picture">Picture</string>
     <string name="text_PictureLoading">Loading picture...</string>
@@ -66,5 +67,9 @@
     <string name="desc_buttonZoomIn">Zoom in</string>
     <string name="desc_buttonZoomOut">Zoom out</string>
     <string name="desc_buttonCancelMarker">Cancel this marker</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_wellcome_screen">WellcomeScreenActivity</string>
+    <string name="text_activity_wellcome_screen">The following application was developed in NDSU under the direction of Dr. Anne Denton from the Computer Science Department.\nThe project came out of a course project in NDSUs course CSci 372: Comparative Programming Languages.\n\nThe project was later reimplemented thanks to Adam Helsene, Anne Denton, Cesar Ramirez and Justin Andersen\n\nFor further questions please contact anne.denton@gmail.com.</string>
 
 </resources>

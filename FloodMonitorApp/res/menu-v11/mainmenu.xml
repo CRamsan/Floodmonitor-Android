@@ -12,20 +12,12 @@
         android:icon="@drawable/menuitem_settings"
         android:showAsAction="ifRoom|withText"
         android:title="@string/text_Settings"/>
-    <item
-        android:id="@+id/menuItemHelp"
-        android:icon="@drawable/menuitem_help"
-        android:showAsAction="ifRoom|withText"
-        android:title="@string/text_Help"/>
+
     <item
         android:id="@+id/menuItemAbout"
         android:icon="@drawable/menuitem_about"
         android:showAsAction="ifRoom|withText"
         android:title="@string/text_About"/>
-    <item
-        android:id="@+id/menuItemExit"
-        android:icon="@drawable/menuitem_exit"
-        android:showAsAction="ifRoom|withText"
-        android:title="@string/text_Exit"/>
+
 
 </menu>
