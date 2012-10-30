@@ -209,6 +209,7 @@ public class RegionsOverlay extends ItemizedOverlay<OverlayItem> implements
 	// ===========================================================
 	// Methods
 	// ===========================================================
+
 	private int checkHit(GeoPoint p) {
 		for (int i = 0; i < regions.size(); i++) {
 			Region region = regions.get(i);
