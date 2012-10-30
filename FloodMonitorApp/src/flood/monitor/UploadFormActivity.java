@@ -8,6 +8,7 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -21,12 +22,14 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -111,6 +114,10 @@ public class UploadFormActivity extends Activity {
 			TextView lonText = (TextView) findViewById(R.id.longitudeValueView);
 			latText.setText(Integer.toString((int) (latitude * 1000000)));
 			lonText.setText(Integer.toString((int) (longitude * 1000000)));
+		}
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			((DatePicker) findViewById(R.id.datePicker1))
+					.setCalendarViewShown(false);
 		}
 		file = "";
 		setResult(RESULT_CANCELED);

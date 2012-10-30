@@ -16,8 +16,8 @@
     <string name="text_Longitude">Longitude</string>
     <string name="text_ObservationDateTime">Observation Date &amp; Time </string>
     <string name="text_Email">Email:</string>
-    <string name="text_Date">Fecha</string>
-    <string name="text_Time">Hora</string>
+    <string name="text_Date">Date</string>
+    <string name="text_Time">Time</string>
     <string name="text_Severity">Severity</string>
     <string name="text_Address">Address</string>
     <string name="text_File">File</string>

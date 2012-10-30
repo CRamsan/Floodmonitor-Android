@@ -16,23 +16,23 @@
             android:text="@string/text_ObservationDateTime"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
+        <DatePicker
+            android:id="@+id/datePicker1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingRight="25dp" />
+
+        <TimePicker
+            android:id="@+id/timePicker1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingRight="25dp" />
+
         <LinearLayout
             xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal" >
-
-            <Button
-                android:id="@+id/dateButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/text_Date" />
-
-            <Button
-                android:id="@+id/timeButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/text_Time" />
 
         </LinearLayout>
 

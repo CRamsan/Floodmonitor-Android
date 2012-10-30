@@ -62,7 +62,7 @@ public final class R {
         public static final int cancelButton=0x7f090016;
         public static final int commentText=0x7f090011;
         public static final int commentView=0x7f090010;
-        public static final int dateButton=0x7f090006;
+        public static final int datePicker1=0x7f090006;
         public static final int drag=0x7f090019;
         public static final int editText1=0x7f090004;
         public static final int emailText=0x7f090009;
@@ -99,7 +99,7 @@ public final class R {
         public static final int textViewLongitude=0x7f09002e;
         public static final int textViewPageNumber=0x7f090025;
         public static final int textViewTitle=0x7f090029;
-        public static final int timeButton=0x7f090007;
+        public static final int timePicker1=0x7f090007;
     }
     public static final class layout {
         public static final int about=0x7f030000;
