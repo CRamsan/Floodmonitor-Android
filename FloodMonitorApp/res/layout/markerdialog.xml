@@ -21,7 +21,8 @@
             android:id="@+id/imageViewPictureUpload"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:contentDescription="@string/desc_MarkerDialogImage" />
+            android:contentDescription="@string/desc_MarkerDialogImage"
+            android:scaleType="centerCrop" />
 
         <LinearLayout
             android:layout_width="wrap_content"

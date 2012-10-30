@@ -948,6 +948,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 							boundary.getId(), selectedEvent.getEventId());
 					allMarkers.addAll(markers);
 				}
+				Collections.sort(allMarkers);
 			}
 			taskCompleted = true;
 			Log.i("MapViewActivity", "DownloadMarkersTask job finished");
