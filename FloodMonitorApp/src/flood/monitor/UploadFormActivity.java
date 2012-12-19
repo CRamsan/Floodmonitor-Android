@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -38,34 +39,83 @@ import com.google.android.maps.GeoPoint;
 import flood.monitor.modules.Connector;
 import flood.monitor.modules.kmlparser.Marker;
 
+/**
+ * @author Cesar
+ *
+ */
 public class UploadFormActivity extends Activity {
 
 	// ===========================================================
 	// Constants
 	// ===========================================================
+	/**
+	 * 
+	 */
 	private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
+	/**
+	 * 
+	 */
 	private static final int CAPTURE_GALLERY_IMAGE_REQUEST_CODE = 200;
 
+	/**
+	 * 
+	 */
 	private static final int SOURCE_SELECTION_DIALOG = 10;
+	/**
+	 * 
+	 */
 	private static final int UPLOADING_DIALOG = 20;
 
+	/**
+	 * 
+	 */
 	private static final int MEDIA_TYPE_IMAGE = 1;
 
+	/**
+	 * 
+	 */
 	private final static int UPLOAD_RUNNING = 0;
+	/**
+	 * 
+	 */
 	private final static int UPLOAD_COMPLETE = 1;
 
 	// ===========================================================
 	// Fields
 	// ===========================================================
+	/**
+	 * 
+	 */
 	private UploadFormActivity activity = this;
+	/**
+	 * 
+	 */
 	private Context context = this;
 
+	/**
+	 * 
+	 */
 	private String file;
+	/**
+	 * 
+	 */
 	private Uri fileUri;
 
+	/**
+	 * 
+	 */
 	private double latitude;
+	/**
+	 * 
+	 */
 	private double longitude;
+	/**
+	 * 
+	 */
 	private int severity;
+	/**
+	 * 
+	 */
 	private String comment;
 
 	// ===========================================================
@@ -79,6 +129,10 @@ public class UploadFormActivity extends Activity {
 	// ===========================================================
 	// Methods from Activity
 	// ===========================================================
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onCreate(android.os.Bundle)
+	 */
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -123,18 +177,27 @@ public class UploadFormActivity extends Activity {
 		setResult(RESULT_CANCELED);
 	}
 
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onStart()
+	 */
 	@Override
 	protected void onStart() {
 		super.onStart();
 		// The activity is about to become visible.
 	}
 
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onResume()
+	 */
 	@Override
 	protected void onResume() {
 		super.onResume();
 		// The activity has become visible (it is now "resumed").
 	}
 
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onPause()
+	 */
 	@Override
 	protected void onPause() {
 		super.onPause();
@@ -142,24 +205,36 @@ public class UploadFormActivity extends Activity {
 		// "paused").
 	}
 
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onStop()
+	 */
 	@Override
 	protected void onStop() {
 		super.onStop();
 		// The activity is no longer visible (it is now "stopped")
 	}
 
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onRestart()
+	 */
 	@Override
 	protected void onRestart() {
 		super.onRestart();
 		// The activity is about to be destroyed.
 	}
 
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onDestroy()
+	 */
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
 		// The activity is been brought back to the front.
 	}
 
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onSaveInstanceState(android.os.Bundle)
+	 */
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
 		// Save UI state changes to the savedInstanceState.
@@ -169,6 +244,9 @@ public class UploadFormActivity extends Activity {
 		super.onSaveInstanceState(savedInstanceState);
 	}
 
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onRestoreInstanceState(android.os.Bundle)
+	 */
 	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
@@ -179,6 +257,9 @@ public class UploadFormActivity extends Activity {
 		file = savedInstanceState.getString("FilePathVar");
 	}
 
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onActivityResult(int, int, android.content.Intent)
+	 */
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
@@ -226,6 +307,9 @@ public class UploadFormActivity extends Activity {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onCreateDialog(int)
+	 */
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
@@ -283,6 +367,9 @@ public class UploadFormActivity extends Activity {
 		}
 	}
 
+	/**
+	 * 
+	 */
 	public void uploadMarkerDialog() {
 		new UploadMarkerTask().execute();
 	}
@@ -295,11 +382,19 @@ public class UploadFormActivity extends Activity {
 	// Methods
 	// ===========================================================
 	/** Create a file Uri for saving an image or video */
+	/**
+	 * @param type
+	 * @return
+	 */
 	private static Uri getOutputMediaFileUri(int type) {
 		return Uri.fromFile(getOutputMediaFile(type));
 	}
 
 	/** Create a File for saving an image or video */
+	/**
+	 * @param type
+	 * @return
+	 */
 	private static File getOutputMediaFile(int type) {
 		// To be safe, you should check that the SDCard is mounted
 		// using Environment.getExternalStorageState() before doing this.
@@ -333,6 +428,10 @@ public class UploadFormActivity extends Activity {
 		return mediaFile;
 	}
 
+	/**
+	 * @param contentUri
+	 * @return
+	 */
 	public String getRealPathFromURI(Uri contentUri) {
 		// can post image
 		String[] proj = { MediaStore.Images.Media.DATA };
@@ -347,6 +446,10 @@ public class UploadFormActivity extends Activity {
 		return cursor.getString(column_index);
 	}
 
+	/**
+	 * @param context
+	 * @param file
+	 */
 	public void UploadPicture(Context context, String file) {
 		HttpURLConnection connection = null;
 		DataOutputStream outputStream = null;
@@ -423,6 +526,10 @@ public class UploadFormActivity extends Activity {
 	// ===========================================================
 	// Inner and Anonymous Classes
 	// ===========================================================
+	/**
+	 * @author Cesar
+	 *
+	 */
 	private class UploadMarkerTask extends AsyncTask<Void, Void, Void> {
 		protected boolean taskCompleted = false;
 

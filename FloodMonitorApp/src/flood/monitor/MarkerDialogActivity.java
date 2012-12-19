@@ -31,6 +31,10 @@ import com.google.android.maps.GeoPoint;
 import flood.monitor.modules.Connector;
 import flood.monitor.modules.kmlparser.Marker;
 
+/**
+ * @author Cesar
+ *
+ */
 public class MarkerDialogActivity extends Activity {
 
 	// ===========================================================
@@ -40,15 +44,33 @@ public class MarkerDialogActivity extends Activity {
 	// ===========================================================
 	// Fields
 	// ===========================================================
+	/**
+	 * 
+	 */
 	private int mode;
+	/**
+	 * 
+	 */
 	private boolean upload;
+	/**
+	 * 
+	 */
 	private String localImage;
+	/**
+	 * 
+	 */
 	private Marker marker;
+	/**
+	 * 
+	 */
 	private MarkerDialogActivity activity;
 
 	// ===========================================================
 	// Methods from Activity
 	// ===========================================================
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onCreate(android.os.Bundle)
+	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -177,18 +199,27 @@ public class MarkerDialogActivity extends Activity {
 		setResult(RESULT_CANCELED);
 	}
 
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onStart()
+	 */
 	@Override
 	protected void onStart() {
 		super.onStart();
 		// The activity is about to become visible.
 	}
 
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onResume()
+	 */
 	@Override
 	protected void onResume() {
 		super.onResume();
 		// The activity has become visible (it is now "resumed").
 	}
 
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onPause()
+	 */
 	@Override
 	protected void onPause() {
 		super.onPause();
@@ -196,24 +227,36 @@ public class MarkerDialogActivity extends Activity {
 		// "paused").
 	}
 
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onStop()
+	 */
 	@Override
 	protected void onStop() {
 		super.onStop();
 		// The activity is no longer visible (it is now "stopped")
 	}
 
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onRestart()
+	 */
 	@Override
 	protected void onRestart() {
 		super.onRestart();
 		// The activity is about to be destroyed.
 	}
 
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onDestroy()
+	 */
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
 		// The activity is been brought back to the front.
 	}
 
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onSaveInstanceState(android.os.Bundle)
+	 */
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
 		// Save UI state changes to the savedInstanceState.
@@ -222,6 +265,9 @@ public class MarkerDialogActivity extends Activity {
 		super.onSaveInstanceState(savedInstanceState);
 	}
 
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onRestoreInstanceState(android.os.Bundle)
+	 */
 	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
@@ -229,6 +275,10 @@ public class MarkerDialogActivity extends Activity {
 		// This bundle has also been passed to onCreate.
 	}
 
+	/**
+	 * @author Cesar
+	 *
+	 */
 	private class GetAddressTask extends AsyncTask<Void, Void, Void> {
 		protected boolean taskCompleted = false;
 		private String address;
@@ -297,6 +347,10 @@ public class MarkerDialogActivity extends Activity {
 		}
 	}
 
+	/**
+	 * @author Cesar
+	 *
+	 */
 	private class DownloadImageTask extends AsyncTask<Void, Void, Void> {
 		protected boolean taskCompleted = false;
 		protected boolean imageLoaded = false;

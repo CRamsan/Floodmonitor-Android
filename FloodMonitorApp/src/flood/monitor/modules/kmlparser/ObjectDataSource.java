@@ -10,11 +10,24 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.google.android.maps.GeoPoint;
 
+/**
+ * @author Cesar
+ *
+ */
 public class ObjectDataSource {
 
 	// Database fields
+	/**
+	 * 
+	 */
 	private SQLiteDatabase database;
+	/**
+	 * 
+	 */
 	private SQLiteManager dbHelper;
+	/**
+	 * 
+	 */
 	private String[] allColumnsMarkers = { 
 			SQLiteManager.MARKERS_COLUMN_ID,
 			SQLiteManager.MARKERS_COLUMN_LATITUDE,
@@ -26,9 +39,15 @@ public class ObjectDataSource {
 			SQLiteManager.MARKERS_COLUMN_EVENTID, 
 			SQLiteManager.MARKERS_COLUMN_BOUNDARYID};
 
+	/**
+	 * 
+	 */
 	private String[] allColumnsRegions = { SQLiteManager.REGIONS_COLUMN_ID,
 			SQLiteManager.REGIONS_COLUMN_NAME };
 
+	/**
+	 * 
+	 */
 	private String[] allColumnsBoundaries = {
 			SQLiteManager.BOUNDARIES_COLUMN_ID,
 			SQLiteManager.BOUNDARIES_COLUMN_REGIONID,
@@ -38,6 +57,9 @@ public class ObjectDataSource {
 			SQLiteManager.BOUNDARIES_COLUMN_SOUTH,
 			SQLiteManager.BOUNDARIES_COLUMN_WEST };
 
+	/**
+	 * 
+	 */
 	private String[] allColumnsEvents = { SQLiteManager.EVENTS_COLUMN_ID,
 			SQLiteManager.EVENTS_COLUMN_NAME,
 			SQLiteManager.EVENTS_COLUMN_ACTIVE,
@@ -45,43 +67,31 @@ public class ObjectDataSource {
 			SQLiteManager.EVENTS_COLUMN_ENDDATE,
 			SQLiteManager.EVENTS_COLUMN_REGIONID};
 
+	/**
+	 * @param context
+	 */
 	public ObjectDataSource(Context context) {
 		dbHelper = new SQLiteManager(context);
 	}
 
+	/**
+	 * @throws SQLException
+	 */
 	public void open() throws SQLException {
 		database = dbHelper.getWritableDatabase();
 	}
 
+	/**
+	 * 
+	 */
 	public void close() {
 		dbHelper.close();
 	}
 
-	/*
-	 * public Marker createMarker(int id, GeoPoint point, String
-	 * observationTime, String uploadTime, String userComment, String image, int
-	 * severity, int regionId, int eventId) { ContentValues values = new
-	 * ContentValues(); values.put(SQLiteManager.MARKERS_COLUMN_ID, id);
-	 * values.put(SQLiteManager.MARKERS_COLUMN_LATITUDE, point.getLatitudeE6());
-	 * values.put(SQLiteManager.MARKERS_COLUMN_LONGITUDE,
-	 * point.getLongitudeE6());
-	 * values.put(SQLiteManager.MARKERS_COLUMN_OBSERVATION_TIME,
-	 * observationTime); values.put(SQLiteManager.MARKERS_COLUMN_UPLOAD_TIME,
-	 * uploadTime); values.put(SQLiteManager.MARKERS_COLUMN_SEVERITY, severity);
-	 * values.put(SQLiteManager.MARKERS_COLUMN_COMMENT, userComment);
-	 * values.put(SQLiteManager.MARKERS_COLUMN_IMAGEURL, image);
-	 * values.put(SQLiteManager.MARKERS_COLUMN_EVENTID, eventId);
-	 * values.put(SQLiteManager.MARKERS_COLUMN_REGIONID, regionId);
-	 * 
-	 * long insertId =
-	 * dcursor.getString(1)atabase.insert(SQLiteManager.TABLE_MARKERS_NAME,
-	 * null, values); Cursor cursor =
-	 * database.query(SQLiteManager.TABLE_MARKERS_NAME, allColumnsMarkers,
-	 * SQLiteManager.UNIQUE_COLUMN_ID + " = " + insertId, null, null, null,
-	 * null); cursor.moveToFirst(); Marker newmarker = cursorToMarker(cursor);
-	 * cursor.close(); return newmarker; }
+	/**
+	 * @param marker
+	 * @return
 	 */
-
 	public boolean insertMarker(Marker marker) {
 		ContentValues values = new ContentValues();
 		values.put(SQLiteManager.MARKERS_COLUMN_ID, marker.getId());
@@ -103,6 +113,9 @@ public class ObjectDataSource {
 		return (insertId != -1);
 	}
 
+	/**
+	 * @param marker
+	 */
 	public void deleteMarker(Marker marker) {
 		int id = marker.getId();
 		int regionId = marker.getBoundaryId();
@@ -115,6 +128,11 @@ public class ObjectDataSource {
 						+ regionId, null);
 	}
 
+	/**
+	 * @param boundaryId
+	 * @param eventId
+	 * @return
+	 */
 	public ArrayList<Marker> getAllMarkers(int boundaryId, int eventId) {
 		ArrayList<Marker> markers = new ArrayList<Marker>();
 
@@ -135,6 +153,10 @@ public class ObjectDataSource {
 		return markers;
 	}
 
+	/**
+	 * @param cursor
+	 * @return
+	 */
 	private Marker cursorToMarker(Cursor cursor) {
 		int severity = cursor.getInt(6);
 		Marker marker = new Marker(
@@ -150,6 +172,10 @@ public class ObjectDataSource {
 		return marker;
 	}
 
+	/**
+	 * @param event
+	 * @return
+	 */
 	public boolean insertEvent(Event event) {
 		ContentValues values = new ContentValues();
 		values.put(SQLiteManager.EVENTS_COLUMN_ID, event.getEventId());
@@ -164,6 +190,9 @@ public class ObjectDataSource {
 		return (insertId != -1);
 	}
 
+	/**
+	 * @param event
+	 */
 	public void deleteEvent(Event event) {
 		int id = event.getEventId();
 		int regionId = event.getRegionId();
@@ -173,6 +202,10 @@ public class ObjectDataSource {
 						+ regionId, null);
 	}
 
+	/**
+	 * @param regionId
+	 * @return
+	 */
 	public ArrayList<Event> getAllEvents(int regionId) {
 		ArrayList<Event> events = new ArrayList<Event>(0);
 
@@ -191,11 +224,19 @@ public class ObjectDataSource {
 		return events;
 	}
 
+	/**
+	 * @param cursor
+	 * @return
+	 */
 	private Event cursorToEvent(Cursor cursor) {
 		Event event = new Event(cursor.getInt(0), cursor.getString(1), true, cursor.getString(3), cursor.getString(4), cursor.getInt(5));
 		return event;
 	}
 
+	/**
+	 * @param region
+	 * @return
+	 */
 	public boolean insertRegion(Region region) {
 		ContentValues values = new ContentValues();
 		values.put(SQLiteManager.REGIONS_COLUMN_ID, region.getRegionId());
@@ -210,6 +251,9 @@ public class ObjectDataSource {
 		return (insertId != -1);
 	}
 
+	/**
+	 * @param region
+	 */
 	public void deleteRegion(Region region) {
 		int id = region.getRegionId();
 		database.delete(SQLiteManager.TABLE_REGIONS_NAME,
@@ -219,6 +263,9 @@ public class ObjectDataSource {
 		}
 	}
 
+	/**
+	 * @return
+	 */
 	public ArrayList<Region> getAllRegions() {
 		ArrayList<Region> regions = new ArrayList<Region>(0);
 
@@ -236,12 +283,20 @@ public class ObjectDataSource {
 		return regions;
 	}
 
+	/**
+	 * @param cursor
+	 * @return
+	 */
 	private Region cursorToRegion(Cursor cursor) {
 		Region region = new Region(cursor.getInt(0), cursor.getString(1), null);
 		region.setBoundaries(this.getAllBoundaries(region.getRegionId()));
 		return region;
 	}
 
+	/**
+	 * @param boundary
+	 * @return
+	 */
 	public boolean insertBoundary(Boundary boundary) {
 		ContentValues values = new ContentValues();
 		values.put(SQLiteManager.BOUNDARIES_COLUMN_ID, boundary.getId());
@@ -258,6 +313,9 @@ public class ObjectDataSource {
 		return (insertId != -1);
 	}
 
+	/**
+	 * @param boundary
+	 */
 	public void deleteBoundary(Boundary boundary) {
 		int id = boundary.getId();
 		int regionid = boundary.getRegionId();
@@ -267,6 +325,10 @@ public class ObjectDataSource {
 						+ regionid, null);
 	}
 
+	/**
+	 * @param regionId
+	 * @return
+	 */
 	public ArrayList<Boundary> getAllBoundaries(int regionId) {
 		ArrayList<Boundary> boundaries = new ArrayList<Boundary>(0);
 
@@ -285,6 +347,10 @@ public class ObjectDataSource {
 		return boundaries;
 	}
 
+	/**
+	 * @param cursor
+	 * @return
+	 */
 	private Boundary cursorToBoundary(Cursor cursor) {
 		int south = cursor.getInt(5);
 		int north = cursor.getInt(4);
@@ -295,6 +361,10 @@ public class ObjectDataSource {
 		return boundary;
 	}
 
+	/**
+	 * @param cachedRegions
+	 * @param newRegions
+	 */
 	public void applyRegionDifferences(ArrayList<Region> cachedRegions,
 			ArrayList<Region> newRegions) {
 		for (Region oldRegion : cachedRegions) {
@@ -316,6 +386,10 @@ public class ObjectDataSource {
 		}
 	}
 
+	/**
+	 * @param cachedEvents
+	 * @param newEvents
+	 */
 	public void applyEventDifferences(ArrayList<Event> cachedEvents,
 			ArrayList<Event> newEvents) {
 		for (Event oldEvent : cachedEvents) {
@@ -337,6 +411,10 @@ public class ObjectDataSource {
 		}
 	}
 
+	/**
+	 * @param cachedMarkers
+	 * @param newMarkers
+	 */
 	public void applyMarkerDifferences(ArrayList<Marker> cachedMarkers,
 			ArrayList<Marker> newMarkers) {
 		for (Marker oldMarker : cachedMarkers) {
@@ -358,6 +436,10 @@ public class ObjectDataSource {
 		}
 	}
 
+	/**
+	 * @param cachedBoundaries
+	 * @param newBoundaries
+	 */
 	public void applyBoundaryDifferences(ArrayList<Boundary> cachedBoundaries,
 			ArrayList<Boundary> newBoundaries) {
 		for (Boundary oldBoundary : cachedBoundaries) {

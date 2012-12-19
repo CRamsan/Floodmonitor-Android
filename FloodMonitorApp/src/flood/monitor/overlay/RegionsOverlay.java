@@ -25,6 +25,10 @@ import flood.monitor.modules.kmlparser.Boundary;
 import flood.monitor.modules.kmlparser.Event;
 import flood.monitor.modules.kmlparser.Region;
 
+/**
+ * @author Cesar
+ *
+ */
 public class RegionsOverlay extends ItemizedOverlay<OverlayItem> implements
 		IOverlay {
 
@@ -35,18 +39,46 @@ public class RegionsOverlay extends ItemizedOverlay<OverlayItem> implements
 	// ===========================================================
 	// Fields
 	// ===========================================================
+	/**
+	 * 
+	 */
 	private ArrayList<OverlayItem> markers;
+	/**
+	 * 
+	 */
 	private ArrayList<Region> regions;
+	/**
+	 * 
+	 */
 	private MapViewActivity activity;
+	/**
+	 * 
+	 */
 	private AlertDialog alertDialog;
+	/**
+	 * 
+	 */
 	private int height = 0;
+	/**
+	 * 
+	 */
 	private int width = 0;
+	/**
+	 * 
+	 */
 	private int x;
+	/**
+	 * 
+	 */
 	private int y;
 
 	// ===========================================================
 	// Constructors
 	// ===========================================================
+	/**
+	 * @param defaultMarker
+	 * @param regions
+	 */
 	public RegionsOverlay(Drawable defaultMarker, ArrayList<Region> regions) {
 		super(boundCenterBottom(defaultMarker));
 		this.markers = new ArrayList<OverlayItem>(0);
@@ -56,10 +88,16 @@ public class RegionsOverlay extends ItemizedOverlay<OverlayItem> implements
 	// ===========================================================
 	// Getter & Setter
 	// ===========================================================
+	/**
+	 * @return
+	 */
 	public ArrayList<Region> getRegions() {
 		return regions;
 	}
 
+	/**
+	 * @param regions
+	 */
 	public void setRegions(ArrayList<Region> regions) {
 		this.regions = regions;
 		for (Region region : regions) {
@@ -70,6 +108,10 @@ public class RegionsOverlay extends ItemizedOverlay<OverlayItem> implements
 		populate();
 	}
 
+	/**
+	 * @param regionId
+	 * @return
+	 */
 	public Region getRegionById(int regionId) {
 		for (Region region : regions) {
 			if (region.getRegionId() == regionId)
@@ -78,11 +120,17 @@ public class RegionsOverlay extends ItemizedOverlay<OverlayItem> implements
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.google.android.maps.ItemizedOverlay#createItem(int)
+	 */
 	@Override
 	protected OverlayItem createItem(int i) {
 		return markers.get(i);
 	}
 
+	/* (non-Javadoc)
+	 * @see com.google.android.maps.ItemizedOverlay#size()
+	 */
 	@Override
 	public int size() {
 		return markers.size();
@@ -91,6 +139,9 @@ public class RegionsOverlay extends ItemizedOverlay<OverlayItem> implements
 	// ===========================================================
 	// Methods from Parent
 	// ===========================================================
+	/* (non-Javadoc)
+	 * @see com.google.android.maps.ItemizedOverlay#draw(android.graphics.Canvas, com.google.android.maps.MapView, boolean)
+	 */
 	@Override
 	public void draw(Canvas canvas, MapView mapv, boolean shadow) {
 		super.draw(canvas, mapv, shadow);
@@ -140,6 +191,9 @@ public class RegionsOverlay extends ItemizedOverlay<OverlayItem> implements
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see com.google.android.maps.ItemizedOverlay#onTouchEvent(android.view.MotionEvent, com.google.android.maps.MapView)
+	 */
 	@Override
 	public boolean onTouchEvent(MotionEvent event, MapView mapView) {
 		final int action = event.getAction();
@@ -165,6 +219,9 @@ public class RegionsOverlay extends ItemizedOverlay<OverlayItem> implements
 	// ===========================================================
 	// Methods from Interfaces
 	// ===========================================================
+	/* (non-Javadoc)
+	 * @see flood.monitor.overlay.IOverlay#showMarkerDialog(int)
+	 */
 	@Override
 	public void showMarkerDialog(final int id) {
 		AlertDialog.Builder builder;
@@ -196,6 +253,9 @@ public class RegionsOverlay extends ItemizedOverlay<OverlayItem> implements
 
 	}
 
+	/* (non-Javadoc)
+	 * @see flood.monitor.overlay.IOverlay#updateActivity(flood.monitor.MapViewActivity)
+	 */
 	@Override
 	public void updateActivity(MapViewActivity newActivity) {
 		this.activity = newActivity;
@@ -210,6 +270,10 @@ public class RegionsOverlay extends ItemizedOverlay<OverlayItem> implements
 	// Methods
 	// ===========================================================
 
+	/**
+	 * @param p
+	 * @return
+	 */
 	private int checkHit(GeoPoint p) {
 		for (int i = 0; i < regions.size(); i++) {
 			Region region = regions.get(i);
@@ -226,10 +290,17 @@ public class RegionsOverlay extends ItemizedOverlay<OverlayItem> implements
 		return -1;
 	}
 
+	/**
+	 * @param regionId
+	 * @param events
+	 */
 	public void setEvents(int regionId, ArrayList<Event> events) {
 		getRegionById(regionId).setEvents(events);
 	}
 
+	/**
+	 * 
+	 */
 	public void cancelDialog() {
 		if (alertDialog != null) {
 			this.alertDialog.cancel();

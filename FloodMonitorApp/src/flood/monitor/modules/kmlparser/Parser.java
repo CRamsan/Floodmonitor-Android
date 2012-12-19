@@ -16,8 +16,16 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import com.google.android.maps.GeoPoint;
 
+/**
+ * @author Cesar
+ *
+ */
 public class Parser {
 
+	/**
+	 * @param filename
+	 * @return
+	 */
 	public static ArrayList<Region> ParseRegions(String filename) {
 		RegionHandler handler = new RegionHandler();
 		InputStream stream;
@@ -34,6 +42,10 @@ public class Parser {
 		return handler.getResult();
 	}
 
+	/**
+	 * @param stream
+	 * @return
+	 */
 	public static ArrayList<Region> ParseRegions(InputStream stream) {
 		RegionHandler handler = new RegionHandler();
 		try {
@@ -48,6 +60,10 @@ public class Parser {
 		return handler.getResult();
 	}
 
+	/**
+	 * @param filename
+	 * @return
+	 */
 	public static ArrayList<Event> ParseEvents(String filename) {
 
 		EventHandler handler = new EventHandler();
@@ -66,6 +82,10 @@ public class Parser {
 		return handler.getResult();
 	}
 
+	/**
+	 * @param stream
+	 * @return
+	 */
 	public static ArrayList<Event> ParseEvents(InputStream stream) {
 
 		EventHandler handler = new EventHandler();
@@ -82,6 +102,10 @@ public class Parser {
 		return handler.getResult();
 	}
 
+	/**
+	 * @param filename
+	 * @return
+	 */
 	public static int ParseFileVersion(String filename) {
 		PropertyHandler handler = new PropertyHandler();
 
@@ -99,6 +123,10 @@ public class Parser {
 		return handler.getIntResult();
 	}
 
+	/**
+	 * @param stream
+	 * @return
+	 */
 	public static int ParseFileVersion(InputStream stream) {
 		PropertyHandler handler = new PropertyHandler();
 
@@ -114,6 +142,10 @@ public class Parser {
 		return handler.getIntResult();
 	}
 
+	/**
+	 * @param filename
+	 * @return
+	 */
 	public static String ParseFileNames(String filename) {
 		PropertyHandler handler = new PropertyHandler();
 
@@ -132,6 +164,10 @@ public class Parser {
 		return handler.getStringResult();
 	}
 
+	/**
+	 * @param stream
+	 * @return
+	 */
 	public static String ParseFileNames(InputStream stream) {
 		PropertyHandler handler = new PropertyHandler();
 
@@ -148,6 +184,10 @@ public class Parser {
 		return handler.getStringResult();
 	}
 
+	/**
+	 * @param filename
+	 * @return
+	 */
 	public static ArrayList<Marker> ParseMarkers(String filename) {
 
 		MarkerHandler handler = new MarkerHandler();
@@ -167,6 +207,10 @@ public class Parser {
 		return handler.getResult();
 	}
 
+	/**
+	 * @param stream
+	 * @return
+	 */
 	public static ArrayList<Marker> ParseMarkers(InputStream stream) {
 
 		MarkerHandler handler = new MarkerHandler();
@@ -184,6 +228,10 @@ public class Parser {
 		return handler.getResult();
 	}
 
+	/**
+	 * @author Cesar
+	 *
+	 */
 	private static class RegionHandler extends DefaultHandler {
 
 		private static final String BOUNDARIES = "boundaries";
@@ -299,6 +347,10 @@ public class Parser {
 		}
 	}
 
+	/**
+	 * @author Cesar
+	 *
+	 */
 	private static class EventHandler extends DefaultHandler {
 
 		private static final String EVENTS = "events";
@@ -398,6 +450,10 @@ public class Parser {
 		}
 	}
 
+	/**
+	 * @author Cesar
+	 *
+	 */
 	private static class PropertyHandler extends DefaultHandler {
 
 		private int version;
@@ -453,6 +509,10 @@ public class Parser {
 		}
 	}
 
+	/**
+	 * @author Cesar
+	 *
+	 */
 	private static class MarkerHandler extends DefaultHandler {
 
 		private ArrayList<Marker> mOverlay;

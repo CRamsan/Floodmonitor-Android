@@ -12,25 +12,50 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import flood.monitor.MapViewActivity;
 
+/**
+ * @author Cesar
+ *
+ */
 public class Locator {
 	// ===========================================================
 	// Constants
 	// ===========================================================
+	/**
+	 * 
+	 */
 	private static final int ONE_MINUTE = 1000 * 60;
 
 	// ===========================================================
 	// Fields
 	// ===========================================================
+	/**
+	 * 
+	 */
 	private Activity activity;
 
+	/**
+	 * 
+	 */
 	private Location bestLocation;
+	/**
+	 * 
+	 */
 	private LocationManager locationManager;
+	/**
+	 * 
+	 */
 	private LocationListener locationListener;
+	/**
+	 * 
+	 */
 	private boolean isLitening = false;
 
 	// ===========================================================
 	// Constructors
 	// ===========================================================
+	/**
+	 * @param activity
+	 */
 	public Locator(MapViewActivity activity) {
 		this.activity = activity;
 		// Acquire a reference to the system Location Manager
@@ -43,6 +68,9 @@ public class Locator {
 	// ===========================================================
 	// Getter & Setter
 	// ===========================================================
+	/**
+	 * @return
+	 */
 	public Location getBestLocation() {
 		return bestLocation;
 	}
@@ -58,6 +86,9 @@ public class Locator {
 	// ===========================================================
 	// Methods
 	// ===========================================================
+	/**
+	 * @param newActivity
+	 */
 	public void updateActivity(Activity newActivity) {
 		this.activity = newActivity;
 		locationManager = (LocationManager) newActivity
@@ -65,6 +96,9 @@ public class Locator {
 
 	}
 
+	/**
+	 * 
+	 */
 	public void updateLocationFromLastKnownLocation() {
 		Location currentLocation = locationManager
 				.getLastKnownLocation(LocationManager.GPS_PROVIDER);
@@ -77,6 +111,9 @@ public class Locator {
 		}
 	}
 
+	/**
+	 * @param context
+	 */
 	public void startListening(Context context) {
 		if (!isLitening) {
 			SharedPreferences sharedPrefs = PreferenceManager
@@ -91,6 +128,9 @@ public class Locator {
 		}
 	}
 
+	/**
+	 * @param context
+	 */
 	public void stopListening(Context context) {
 		if (isLitening) {
 			locationManager.removeUpdates(locationListener);
@@ -98,6 +138,9 @@ public class Locator {
 		}
 	}
 
+	/**
+	 * @param context
+	 */
 	public void updateListening(Context context) {
 		if (isLitening) {
 			stopListening(context);
@@ -105,12 +148,20 @@ public class Locator {
 		startListening(context);
 	}
 
+	/**
+	 * @param newLocation
+	 */
 	private void updateLocation(Location newLocation) {
 		if (isBetterLocation(newLocation, bestLocation)) {
 			this.bestLocation = newLocation;
 		}
 	}
 
+	/**
+	 * @param location
+	 * @param currentBestLocation
+	 * @return
+	 */
 	private boolean isBetterLocation(Location location,
 			Location currentBestLocation) {
 		if (currentBestLocation == null) {
@@ -159,6 +210,11 @@ public class Locator {
 		return false;
 	}
 
+	/**
+	 * @param provider1
+	 * @param provider2
+	 * @return
+	 */
 	private boolean isSameProvider(String provider1, String provider2) {
 		if (provider1 == null) {
 			return provider2 == null;
@@ -169,6 +225,10 @@ public class Locator {
 	// ===========================================================
 	// Inner and Anonymous Classes
 	// ===========================================================
+	/**
+	 * @author Cesar
+	 *
+	 */
 	private class MobileLocationListener implements LocationListener {
 		@Override
 		public void onStatusChanged(String provider, int status, Bundle extras) {

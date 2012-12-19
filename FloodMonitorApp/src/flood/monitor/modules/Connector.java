@@ -25,14 +25,33 @@ import flood.monitor.modules.kmlparser.Marker;
 import flood.monitor.modules.kmlparser.Parser;
 import flood.monitor.modules.kmlparser.Region;
 
+/**
+ * @author Cesar
+ *
+ */
 public class Connector {
 
+	/**
+	 * 
+	 */
 	public static final String XML_COMMUNICATOR = "http://flood.cs.ndsu.nodak.edu/~ander773/flood/server/index.php";
+	/**
+	 * 
+	 */
 	public static final String DOWNLOAD_DIR = ".cache";
+	/**
+	 * 
+	 */
 	public static final String PUBLIC_DIR = "FloodMonitor";
 
+	/**
+	 * 
+	 */
 	public static final int PIECE_SIZE = 30000;
 
+	/**
+	 * @return
+	 */
 	public static ArrayList<Region> downloadGeoRegions() {
 		OutputStreamWriter request = null;
 		String parameters = "data=<phone><command>GetRegions</command></phone>";
@@ -66,6 +85,10 @@ public class Connector {
 		return regions;
 	}
 
+	/**
+	 * @param regionId
+	 * @return
+	 */
 	public static ArrayList<Event> downloadEvents(int regionId) {
 
 		OutputStreamWriter request = null;
@@ -101,6 +124,12 @@ public class Connector {
 		return events;
 	}
 
+	/**
+	 * @param boundarytId
+	 * @param eventId
+	 * @param regionId
+	 * @return
+	 */
 	public static ArrayList<Marker> downloadMarkers(int boundarytId,
 			int eventId, int regionId) {
 		OutputStreamWriter request = null;
@@ -149,6 +178,62 @@ public class Connector {
 		return markers;
 	}
 
+	/**
+	 * @param boundarytId
+	 * @param eventId
+	 * @param regionId
+	 * @param fileID
+	 * @return
+	 */
+	public static ArrayList<Marker> downloadMarkers(int boundarytId,
+			int eventId, int regionId, int fileID) {
+		OutputStreamWriter request = null;
+		String parameters = "data=<phone><command>GetMarkerFile</command><params><KmlFileID>"
+				+ fileID + "</KmlFileID></params></phone>";
+		ArrayList<Marker> markers = new ArrayList<Marker>(0);
+		try {
+			URL url = new URL(XML_COMMUNICATOR);
+
+			/* Open a connection to that URL. */
+			HttpURLConnection ucon = (HttpURLConnection) url.openConnection();
+			ucon.setDoOutput(true);
+			ucon.setRequestProperty("Content-Type",
+					"application/x-www-form-urlencoded");
+			ucon.setRequestMethod("POST");
+
+			request = new OutputStreamWriter(ucon.getOutputStream());
+			request.write(parameters);
+			request.flush();
+			request.close();
+
+			/*
+			 * Define InputStreams to read from the URLConnection.
+			 */
+			InputStream is = ucon.getInputStream();
+
+			String kmlURL = Parser.ParseFileNames(is);
+
+			url = new URL(kmlURL);
+
+			/* Open a connection to that URL. */
+			ucon = (HttpURLConnection) url.openConnection();
+			is = ucon.getInputStream();
+			markers = Parser.ParseMarkers(is);
+			for (Marker marker : markers) {
+				marker.setEventId(eventId);
+				marker.setBoundaryId(boundarytId);
+				marker.setRegionId(regionId);
+			}
+		} catch (IOException e) {
+			Log.d("Connector", "Error: " + e);
+		}
+		return markers;
+	}
+
+	/**
+	 * @param marker
+	 * @param image
+	 */
 	public static void SubmitMarker(Marker marker, File image) {
 		OutputStreamWriter request = null;
 		double lat = (marker.getLatitude());
@@ -234,6 +319,10 @@ public class Connector {
 		}
 	}
 
+	/**
+	 * @param marker
+	 * @return
+	 */
 	public static File downloadPicture(Marker marker) {
 		File mediaStorageDir = new File(
 				Environment.getExternalStorageDirectory(), PUBLIC_DIR
@@ -279,10 +368,16 @@ public class Connector {
 		return file;
 	}
 
+	/**
+	 * @return
+	 */
 	public static File getPublicDir() {
 		return new File(Environment.getExternalStorageDirectory(), PUBLIC_DIR);
 	}
 
+	/**
+	 * @return
+	 */
 	public static File getCacheDir() {
 		return new File(Environment.getExternalStorageDirectory(), PUBLIC_DIR
 				+ File.separator + DOWNLOAD_DIR);

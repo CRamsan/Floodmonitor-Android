@@ -17,6 +17,10 @@ import flood.monitor.MarkerDialogActivity;
 import flood.monitor.R;
 import flood.monitor.modules.kmlparser.Marker;
 
+/**
+ * @author Cesar
+ *
+ */
 public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements
 		IOverlay {
 
@@ -27,18 +31,42 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements
 	// ===========================================================
 	// Fields
 	// ===========================================================
+	/**
+	 * 
+	 */
 	private ArrayList<Marker> markers = new ArrayList<Marker>();
+	/**
+	 * 
+	 */
 	private ArrayList<Marker> markersinPage = new ArrayList<Marker>();
+	/**
+	 * 
+	 */
 	private MapViewActivity activity;
+	/**
+	 * 
+	 */
 	private int page;
+	/**
+	 * 
+	 */
 	private int maxPage;
+	/**
+	 * 
+	 */
 	private int markersPerPage;
+	/**
+	 * 
+	 */
 	private boolean pageing;
 
 	// ===========================================================
 	// Constructors
 	// ===========================================================
 
+	/**
+	 * @param defaultMarker
+	 */
 	public MarkersOverlay(Drawable defaultMarker) {
 		super(boundCenterBottom(defaultMarker));
 		this.markers = new ArrayList<Marker>(0);
@@ -50,10 +78,16 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements
 	// Getter & Setter
 	// ===========================================================
 
+	/**
+	 * @return
+	 */
 	public ArrayList<Marker> getmarkers() {
 		return markers;
 	}
 
+	/**
+	 * @param overlay
+	 */
 	public void setOverlay(ArrayList<Marker> overlay) {
 		this.markers = new ArrayList<Marker>(0);
 		for (Marker marker : overlay) {
@@ -62,6 +96,9 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements
 		populate();
 	}
 
+	/**
+	 * @param perPage
+	 */
 	public void enablePageing(int perPage) {
 		this.setPageing(true);
 		setMarkersPerPage(perPage);
@@ -80,12 +117,18 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements
 		populate();
 	}
 
+	/**
+	 * 
+	 */
 	public void disablePageing() {
 		this.setPageing(false);
 
 		populate();
 	}
 
+	/**
+	 * 
+	 */
 	public void nextPage() {
 		int perPage = markersPerPage;
 		if (page + 1 >= maxPage) {
@@ -104,6 +147,9 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements
 		Log.i("Sample", Integer.toString(markersinPage.size()));
 	}
 
+	/**
+	 * 
+	 */
 	public void previousPage() {
 		int perPage = markersPerPage;
 		if (page - 1 < 0) {
@@ -122,6 +168,9 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements
 	// ===========================================================
 	// Methods from Parent
 	// ===========================================================
+	/* (non-Javadoc)
+	 * @see com.google.android.maps.ItemizedOverlay#createItem(int)
+	 */
 	@Override
 	protected OverlayItem createItem(int i) {
 		if (pageing) {
@@ -131,6 +180,9 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see com.google.android.maps.ItemizedOverlay#size()
+	 */
 	@Override
 	public int size() {
 		if (pageing) {
@@ -140,12 +192,18 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see com.google.android.maps.ItemizedOverlay#onTap(int)
+	 */
 	@Override
 	protected boolean onTap(int index) {
 		showMarkerDialog(index);
 		return true;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.google.android.maps.ItemizedOverlay#onTouchEvent(android.view.MotionEvent, com.google.android.maps.MapView)
+	 */
 	@Override
 	public boolean onTouchEvent(MotionEvent event, MapView mapView) {
 		return super.onTouchEvent(event, mapView);
@@ -154,11 +212,17 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements
 	// ===========================================================
 	// Methods from Interfaces
 	// ===========================================================
+	/* (non-Javadoc)
+	 * @see flood.monitor.overlay.IOverlay#updateActivity(flood.monitor.MapViewActivity)
+	 */
 	@Override
 	public void updateActivity(MapViewActivity newActivity) {
 		this.activity = newActivity;
 	}
 
+	/* (non-Javadoc)
+	 * @see flood.monitor.overlay.IOverlay#showMarkerDialog(int)
+	 */
 	@Override
 	public void showMarkerDialog(int id) {
 		Marker dialogMarker = (Marker) createItem(id);
@@ -183,6 +247,9 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements
 	// Methods
 	// ===========================================================
 
+	/**
+	 * @param overlayItem
+	 */
 	public void addOverlayMarker(Marker overlayItem) {
 		Drawable icon = null;
 		switch (overlayItem.getSeverity()) {
@@ -213,6 +280,9 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements
 		markers.add(overlayItem);
 	}
 
+	/**
+	 * @param overlay
+	 */
 	public void addOverlay(ArrayList<Marker> overlay) {
 		for (int i = 0; i < overlay.size(); i++) {
 			this.addOverlayMarker(overlay.get(i));
@@ -220,34 +290,59 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements
 		populate();
 	}
 
+	/**
+	 * @return
+	 */
 	public boolean isPageing() {
 		return pageing;
 	}
 
+	/**
+	 * @param pageing
+	 */
 	public void setPageing(boolean pageing) {
 		this.pageing = pageing;
 	}
 
+	/**
+	 * @return
+	 */
 	public int getMarkersPerPage() {
 		return markersPerPage;
 	}
 
+	/**
+	 * @param markersPerPage
+	 */
 	public void setMarkersPerPage(int markersPerPage) {
 		this.markersPerPage = markersPerPage;
 	}
 
+	/**
+	 * @return
+	 */
 	public int getPage() {
 		return page;
 	}
 
+	/**
+	 * @param page
+	 */
 	public void setPage(int page) {
 		this.page = page;
 	}
 
+	/**
+	 * @return
+	 */
 	public int getMaxPage() {
 		return maxPage;
 	}
 
+	/**
+	 * @param markers
+	 * @param markersPerPage
+	 */
 	public void setMaxPage(int markers, int markersPerPage) {
 		this.maxPage = markers / markersPerPage;
 		if (markers % markersPerPage > 0) {

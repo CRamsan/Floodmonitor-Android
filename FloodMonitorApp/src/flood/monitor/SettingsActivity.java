@@ -8,6 +8,10 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import flood.monitor.modules.Connector;
 
+/**
+ * @author Cesar
+ *
+ */
 public class SettingsActivity extends PreferenceActivity {
 
 	// ===========================================================
@@ -29,6 +33,9 @@ public class SettingsActivity extends PreferenceActivity {
 	// ===========================================================
 	// Methods from Activity
 	// ===========================================================
+	/* (non-Javadoc)
+	 * @see android.preference.PreferenceActivity#onCreate(android.os.Bundle)
+	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -48,18 +55,27 @@ public class SettingsActivity extends PreferenceActivity {
 		         });
 	}
 
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onStart()
+	 */
 	@Override
 	protected void onStart() {
 		super.onStart();
 		// The activity is about to become visible.
 	}
 
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onResume()
+	 */
 	@Override
 	protected void onResume() {
 		super.onResume();
 		// The activity has become visible (it is now "resumed").
 	}
 
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onPause()
+	 */
 	@Override
 	protected void onPause() {
 		super.onPause();
@@ -67,18 +83,27 @@ public class SettingsActivity extends PreferenceActivity {
 		// "paused").
 	}
 
+	/* (non-Javadoc)
+	 * @see android.preference.PreferenceActivity#onStop()
+	 */
 	@Override
 	protected void onStop() {
 		super.onStop();
 		// The activity is no longer visible (it is now "stopped")
 	}
 
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onRestart()
+	 */
 	@Override
 	protected void onRestart() {
 		super.onRestart();
 		// The activity is about to be destroyed.
 	}
 
+	/* (non-Javadoc)
+	 * @see android.preference.PreferenceActivity#onDestroy()
+	 */
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
@@ -92,6 +117,10 @@ public class SettingsActivity extends PreferenceActivity {
 	// ===========================================================
 	// Methods
 	// ===========================================================
+	/**
+	 * @param file
+	 * @return
+	 */
 	private boolean removeDirectory(File file) {
 		if (file.isDirectory()) {
 			for (File child : file.listFiles()) {

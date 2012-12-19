@@ -128,8 +128,9 @@ public final class R {
         public static final int desc_buttonZoomIn=0x7f070042;
         public static final int desc_buttonZoomOut=0x7f070043;
         public static final int desc_drag=0x7f070039;
-        public static final int hello_world=0x7f070045;
-        public static final int menu_settings=0x7f070046;
+        public static final int desc_imageViewLogo=0x7f070045;
+        public static final int hello_world=0x7f070046;
+        public static final int menu_settings=0x7f070047;
         public static final int pref_CLearCache_summary=0x7f07002e;
         public static final int pref_CLearCache_title=0x7f07002d;
         public static final int pref_CacheSizeDialog_message=0x7f070032;
@@ -186,8 +187,8 @@ public final class R {
         public static final int text_Title=0x7f070022;
         public static final int text_Upload=0x7f070004;
         public static final int text_YourComment=0x7f070019;
-        public static final int text_activity_wellcome_screen=0x7f070048;
-        public static final int title_activity_wellcome_screen=0x7f070047;
+        public static final int text_activity_wellcome_screen=0x7f070049;
+        public static final int title_activity_wellcome_screen=0x7f070048;
     }
     public static final class style {
         public static final int ThemeSelector=0x7f050000;

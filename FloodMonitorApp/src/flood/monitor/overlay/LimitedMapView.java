@@ -8,25 +8,48 @@ import com.google.android.maps.MapView;
 
 import flood.monitor.MapViewActivity;
 
+/**
+ * @author Cesar
+ *
+ */
 public class LimitedMapView extends MapView {
 	// ========================================================================
 	// MEMBERS
 	// ========================================================================
+	/**
+	 * 
+	 */
 	public static final int REGION_MAX_ZOOM = 12;
+	/**
+	 * 
+	 */
 	private int mapLevel;
 
 	// ========================================================================
 	// CONSTRUCTORS
 	// ========================================================================
 
+	/**
+	 * @param context
+	 * @param apiKey
+	 */
 	public LimitedMapView(Context context, String apiKey) {
 		super(context, apiKey);
 	}
 
+	/**
+	 * @param context
+	 * @param attrs
+	 */
 	public LimitedMapView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 	}
 
+	/**
+	 * @param context
+	 * @param attrs
+	 * @param defStyle
+	 */
 	public LimitedMapView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 	}
@@ -35,10 +58,16 @@ public class LimitedMapView extends MapView {
 	// GETTERS / SETTERS
 	// ========================================================================
 
+	/**
+	 * @param mapLevel
+	 */
 	public void setMapLevel(int mapLevel) {
 		this.mapLevel = mapLevel;
 	}
 
+	/**
+	 * @return
+	 */
 	public int getMapLevel() {
 		return this.mapLevel;
 	}
@@ -46,6 +75,9 @@ public class LimitedMapView extends MapView {
 	// ========================================================================
 	// EVENT HANDLERS
 	// ========================================================================
+	/* (non-Javadoc)
+	 * @see com.google.android.maps.MapView#onTouchEvent(android.view.MotionEvent)
+	 */
 	@Override
 	public boolean onTouchEvent(MotionEvent ev) {
 		final int action = ev.getAction();

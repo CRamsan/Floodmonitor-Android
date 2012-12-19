@@ -67,6 +67,7 @@
     <string name="desc_buttonZoomIn">Zoom in</string>
     <string name="desc_buttonZoomOut">Zoom out</string>
     <string name="desc_buttonCancelMarker">Cancel this marker</string>
+    <string name="desc_imageViewLogo">NDSU Logo, North Dakota State University</string>
     <string name="hello_world">Hello world!</string>
     <string name="menu_settings">Settings</string>
     <string name="title_activity_wellcome_screen">WellcomeScreenActivity</string>
