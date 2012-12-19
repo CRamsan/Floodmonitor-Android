@@ -13,48 +13,27 @@ import android.util.Log;
 import flood.monitor.MapViewActivity;
 
 /**
+ * This class encapsulates the GPS location and tracking. In order to get
+ * notifications from this class, an activity needs to be referenced by the
+ * activity variable.
+ * 
  * @author Cesar
- *
+ * 
  */
 public class Locator {
-	// ===========================================================
-	// Constants
-	// ===========================================================
-	/**
-	 * 
-	 */
+
 	private static final int ONE_MINUTE = 1000 * 60;
 
-	// ===========================================================
-	// Fields
-	// ===========================================================
-	/**
-	 * 
-	 */
 	private Activity activity;
 
-	/**
-	 * 
-	 */
 	private Location bestLocation;
-	/**
-	 * 
-	 */
 	private LocationManager locationManager;
-	/**
-	 * 
-	 */
 	private LocationListener locationListener;
-	/**
-	 * 
-	 */
 	private boolean isLitening = false;
 
-	// ===========================================================
-	// Constructors
-	// ===========================================================
 	/**
 	 * @param activity
+	 *            will receive the GPS events.
 	 */
 	public Locator(MapViewActivity activity) {
 		this.activity = activity;
@@ -65,29 +44,16 @@ public class Locator {
 
 	}
 
-	// ===========================================================
-	// Getter & Setter
-	// ===========================================================
 	/**
-	 * @return
+	 * @return best current location.
 	 */
 	public Location getBestLocation() {
 		return bestLocation;
 	}
 
-	// ===========================================================
-	// Methods from Parent
-	// ===========================================================
-
-	// ===========================================================
-	// Methods from Interfaces
-	// ===========================================================
-
-	// ===========================================================
-	// Methods
-	// ===========================================================
 	/**
 	 * @param newActivity
+	 *            will receive the GPS events.
 	 */
 	public void updateActivity(Activity newActivity) {
 		this.activity = newActivity;
@@ -97,7 +63,7 @@ public class Locator {
 	}
 
 	/**
-	 * 
+	 * check if there location stored in cache.
 	 */
 	public void updateLocationFromLastKnownLocation() {
 		Location currentLocation = locationManager
@@ -112,13 +78,14 @@ public class Locator {
 	}
 
 	/**
-	 * @param context
+	 * Start listening for a GPS lock.
 	 */
-	public void startListening(Context context) {
+	public void startListening() {
 		if (!isLitening) {
 			SharedPreferences sharedPrefs = PreferenceManager
 					.getDefaultSharedPreferences(activity);
-			int updateInterval = Integer.parseInt(sharedPrefs.getString("updates_interval", "0"));
+			int updateInterval = Integer.parseInt(sharedPrefs.getString(
+					"updates_interval", "0"));
 			if (updateInterval != 0) {
 				locationManager.requestLocationUpdates(
 						LocationManager.GPS_PROVIDER, updateInterval, 10f,
@@ -129,9 +96,9 @@ public class Locator {
 	}
 
 	/**
-	 * @param context
+	 * Stop listening for a GPS lock.
 	 */
-	public void stopListening(Context context) {
+	public void stopListening() {
 		if (isLitening) {
 			locationManager.removeUpdates(locationListener);
 			isLitening = false;
@@ -139,17 +106,21 @@ public class Locator {
 	}
 
 	/**
-	 * @param context
+	 * Restart the listening process.
 	 */
-	public void updateListening(Context context) {
+	public void updateListening() {
 		if (isLitening) {
-			stopListening(context);
+			stopListening();
 		}
-		startListening(context);
+		startListening();
 	}
 
 	/**
+	 * Handle new location, this location will be checked to make sure is more
+	 * suitable than the current best location.
+	 * 
 	 * @param newLocation
+	 *            to be tested as possible best current location.
 	 */
 	private void updateLocation(Location newLocation) {
 		if (isBetterLocation(newLocation, bestLocation)) {
@@ -158,9 +129,14 @@ public class Locator {
 	}
 
 	/**
+	 * Method used to compare he current best location and new location. The
+	 * best location will be decided based on lock precision and longevity .
+	 * 
 	 * @param location
+	 *            new location to test.
 	 * @param currentBestLocation
-	 * @return
+	 *            best currently stored location.
+	 * @return true if new location is better then the old one, false otherwise.
 	 */
 	private boolean isBetterLocation(Location location,
 			Location currentBestLocation) {
@@ -211,9 +187,13 @@ public class Locator {
 	}
 
 	/**
+	 * Check if two location providers(represented as strings), are equal.
+	 * 
 	 * @param provider1
+	 *            first provider to test.
 	 * @param provider2
-	 * @return
+	 *            second provider to test.
+	 * @return true if both providers are equal, false otherwise.
 	 */
 	private boolean isSameProvider(String provider1, String provider2) {
 		if (provider1 == null) {
@@ -222,14 +202,21 @@ public class Locator {
 		return provider1.equals(provider2);
 	}
 
-	// ===========================================================
-	// Inner and Anonymous Classes
-	// ===========================================================
 	/**
+	 * Class that will report the GPS events to the activity registered to the
+	 * Locator object.
+	 * 
 	 * @author Cesar
-	 *
+	 * 
 	 */
 	private class MobileLocationListener implements LocationListener {
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * android.location.LocationListener#onStatusChanged(java.lang.String,
+		 * int, android.os.Bundle)
+		 */
 		@Override
 		public void onStatusChanged(String provider, int status, Bundle extras) {
 
@@ -250,6 +237,13 @@ public class Locator {
 			}
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * android.location.LocationListener#onLocationChanged(android.location
+		 * .Location)
+		 */
 		@Override
 		public void onLocationChanged(Location location) {
 			updateLocation(location);
@@ -261,11 +255,24 @@ public class Locator {
 
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * android.location.LocationListener#onProviderEnabled(java.lang.String)
+		 */
 		@Override
 		public void onProviderEnabled(String provider) {
 			Log.v("Locator", "Provider Enabled " + provider);
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * android.location.LocationListener#onProviderDisabled(java.lang.String
+		 * )
+		 */
 		@Override
 		public void onProviderDisabled(String provider) {
 			Log.v("Locator", "Provider Disabled " + provider);

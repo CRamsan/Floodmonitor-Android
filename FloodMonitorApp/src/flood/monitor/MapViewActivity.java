@@ -308,7 +308,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		}
 		if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(
 				"pref_GPSEnabled", false)) {
-			locator.startListening(this);
+			locator.startListening();
 		}
 
 		limitedMapView.setSatellite(PreferenceManager
@@ -348,7 +348,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	protected void onStop() {
 		super.onStop();
 		// The activity is no longer visible (it is now "stopped")
-		locator.stopListening(this);
+		locator.stopListening();
 		switch (getMapLevel()) {
 		case MapViewActivity.MAP_LEVEL_REGION:
 			break;
@@ -756,7 +756,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 				.getDefaultSharedPreferences(this);
 		boolean useGPS = sharedPrefs.getBoolean("pref_GPSEnabled", false);
 		if (useGPS) {
-			locator.updateListening(this);
+			locator.updateListening();
 		}
 		switch (getMapLevel()) {
 		case MapViewActivity.MAP_LEVEL_REGION:

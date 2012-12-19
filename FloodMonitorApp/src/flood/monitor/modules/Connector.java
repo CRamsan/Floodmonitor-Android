@@ -26,31 +26,23 @@ import flood.monitor.modules.kmlparser.Parser;
 import flood.monitor.modules.kmlparser.Region;
 
 /**
+ * Class that encapsulates all network and file interations.
+ * 
  * @author Cesar
- *
+ * 
  */
 public class Connector {
 
-	/**
-	 * 
-	 */
 	public static final String XML_COMMUNICATOR = "http://flood.cs.ndsu.nodak.edu/~ander773/flood/server/index.php";
-	/**
-	 * 
-	 */
 	public static final String DOWNLOAD_DIR = ".cache";
-	/**
-	 * 
-	 */
 	public static final String PUBLIC_DIR = "FloodMonitor";
 
-	/**
-	 * 
-	 */
 	public static final int PIECE_SIZE = 30000;
 
 	/**
-	 * @return
+	 * Query the XML_COMMUNICATOR for the current list of regions.
+	 * 
+	 * @return a list containing all the regions.
 	 */
 	public static ArrayList<Region> downloadGeoRegions() {
 		OutputStreamWriter request = null;
@@ -86,8 +78,12 @@ public class Connector {
 	}
 
 	/**
+	 * Query the XML_COMMUNICATOR for the current list of events in the
+	 * specified region.
+	 * 
 	 * @param regionId
-	 * @return
+	 *            of the region to search events for.
+	 * @return a list containing all the events in the given region.
 	 */
 	public static ArrayList<Event> downloadEvents(int regionId) {
 
@@ -125,10 +121,16 @@ public class Connector {
 	}
 
 	/**
+	 * Query the XML_COMMUNICATOR for the current list Markers in the specified
+	 * event.
+	 * 
 	 * @param boundarytId
+	 *            of the boundary where the markers are located.
 	 * @param eventId
+	 *            of the event where the markers are located.
 	 * @param regionId
-	 * @return
+	 *            of the region where the markers are located.
+	 * @return a list containing the new set of Markers.
 	 */
 	public static ArrayList<Marker> downloadMarkers(int boundarytId,
 			int eventId, int regionId) {
@@ -179,11 +181,18 @@ public class Connector {
 	}
 
 	/**
+	 * Query the XML_COMMUNICATOR for the current list Markers in the specified
+	 * event.
+	 * 
 	 * @param boundarytId
+	 *            of the boundary where the markers are located.
 	 * @param eventId
+	 *            of the event where the markers are located.
 	 * @param regionId
+	 *            of the region where the markers are located.
 	 * @param fileID
-	 * @return
+	 *            of the cache information.
+	 * @return a list containing the new set of Markers.
 	 */
 	public static ArrayList<Marker> downloadMarkers(int boundarytId,
 			int eventId, int regionId, int fileID) {
@@ -231,8 +240,12 @@ public class Connector {
 	}
 
 	/**
+	 * Upload a marker to the server.
+	 * 
 	 * @param marker
+	 *            as an object containing all the required info.
 	 * @param image
+	 *            optional file that can also be uploaded.
 	 */
 	public static void SubmitMarker(Marker marker, File image) {
 		OutputStreamWriter request = null;
@@ -320,8 +333,11 @@ public class Connector {
 	}
 
 	/**
+	 * Download the picture associated with the given marker.
+	 * 
 	 * @param marker
-	 * @return
+	 *            which image will be downloaded.
+	 * @return the file downloaded.
 	 */
 	public static File downloadPicture(Marker marker) {
 		File mediaStorageDir = new File(
@@ -369,14 +385,20 @@ public class Connector {
 	}
 
 	/**
-	 * @return
+	 * The folder where we will be storing our information. This folder is
+	 * stored on the sd card.
+	 * 
+	 * @return folder used to store data.
 	 */
 	public static File getPublicDir() {
 		return new File(Environment.getExternalStorageDirectory(), PUBLIC_DIR);
 	}
 
 	/**
-	 * @return
+	 * A folder inside our public directory where we can place temporary files
+	 * and other files that should be invisible to the user.
+	 * 
+	 * @return folder used to hide data.
 	 */
 	public static File getCacheDir() {
 		return new File(Environment.getExternalStorageDirectory(), PUBLIC_DIR
