@@ -2,7 +2,6 @@ package flood.monitor.overlay;
 
 import java.util.ArrayList;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -32,49 +31,15 @@ import flood.monitor.modules.kmlparser.Region;
 public class RegionsOverlay extends ItemizedOverlay<OverlayItem> implements
 		IOverlay {
 
-	// ===========================================================
-	// Constants
-	// ===========================================================
-
-	// ===========================================================
-	// Fields
-	// ===========================================================
-	/**
-	 * 
-	 */
 	private ArrayList<OverlayItem> markers;
-	/**
-	 * 
-	 */
 	private ArrayList<Region> regions;
-	/**
-	 * 
-	 */
 	private MapViewActivity activity;
-	/**
-	 * 
-	 */
 	private AlertDialog alertDialog;
-	/**
-	 * 
-	 */
 	private int height = 0;
-	/**
-	 * 
-	 */
 	private int width = 0;
-	/**
-	 * 
-	 */
 	private int x;
-	/**
-	 * 
-	 */
 	private int y;
 
-	// ===========================================================
-	// Constructors
-	// ===========================================================
 	/**
 	 * @param defaultMarker
 	 * @param regions
@@ -85,9 +50,6 @@ public class RegionsOverlay extends ItemizedOverlay<OverlayItem> implements
 		this.setRegions(regions);
 	}
 
-	// ===========================================================
-	// Getter & Setter
-	// ===========================================================
 	/**
 	 * @return
 	 */
@@ -136,9 +98,6 @@ public class RegionsOverlay extends ItemizedOverlay<OverlayItem> implements
 		return markers.size();
 	}
 
-	// ===========================================================
-	// Methods from Parent
-	// ===========================================================
 	/* (non-Javadoc)
 	 * @see com.google.android.maps.ItemizedOverlay#draw(android.graphics.Canvas, com.google.android.maps.MapView, boolean)
 	 */
@@ -216,9 +175,6 @@ public class RegionsOverlay extends ItemizedOverlay<OverlayItem> implements
 
 	}
 
-	// ===========================================================
-	// Methods from Interfaces
-	// ===========================================================
 	/* (non-Javadoc)
 	 * @see flood.monitor.overlay.IOverlay#showMarkerDialog(int)
 	 */
@@ -265,10 +221,6 @@ public class RegionsOverlay extends ItemizedOverlay<OverlayItem> implements
 		height = displaymetrics.heightPixels;
 		width = displaymetrics.widthPixels;
 	}
-
-	// ===========================================================
-	// Methods
-	// ===========================================================
 
 	/**
 	 * @param p

@@ -2,7 +2,6 @@ package flood.monitor.overlay;
 
 import java.util.ArrayList;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
@@ -24,45 +23,13 @@ import flood.monitor.modules.kmlparser.Marker;
 public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements
 		IOverlay {
 
-	// ===========================================================
-	// Constants
-	// ===========================================================
-
-	// ===========================================================
-	// Fields
-	// ===========================================================
-	/**
-	 * 
-	 */
 	private ArrayList<Marker> markers = new ArrayList<Marker>();
-	/**
-	 * 
-	 */
 	private ArrayList<Marker> markersinPage = new ArrayList<Marker>();
-	/**
-	 * 
-	 */
 	private MapViewActivity activity;
-	/**
-	 * 
-	 */
 	private int page;
-	/**
-	 * 
-	 */
 	private int maxPage;
-	/**
-	 * 
-	 */
 	private int markersPerPage;
-	/**
-	 * 
-	 */
 	private boolean pageing;
-
-	// ===========================================================
-	// Constructors
-	// ===========================================================
 
 	/**
 	 * @param defaultMarker
@@ -73,10 +40,6 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements
 		this.pageing = false;
 		this.setPage(0);
 	}
-
-	// ===========================================================
-	// Getter & Setter
-	// ===========================================================
 
 	/**
 	 * @return
@@ -165,9 +128,6 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements
 		Log.i("Sample", Integer.toString(markersinPage.size()));
 	}
 
-	// ===========================================================
-	// Methods from Parent
-	// ===========================================================
 	/* (non-Javadoc)
 	 * @see com.google.android.maps.ItemizedOverlay#createItem(int)
 	 */
@@ -209,9 +169,6 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements
 		return super.onTouchEvent(event, mapView);
 	}
 
-	// ===========================================================
-	// Methods from Interfaces
-	// ===========================================================
 	/* (non-Javadoc)
 	 * @see flood.monitor.overlay.IOverlay#updateActivity(flood.monitor.MapViewActivity)
 	 */
