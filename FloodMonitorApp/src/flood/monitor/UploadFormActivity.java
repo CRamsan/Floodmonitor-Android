@@ -41,95 +41,35 @@ import flood.monitor.modules.kmlparser.Marker;
 
 /**
  * @author Cesar
- *
+ * 
  */
 public class UploadFormActivity extends Activity {
 
-	// ===========================================================
-	// Constants
-	// ===========================================================
-	/**
-	 * 
-	 */
 	private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
-	/**
-	 * 
-	 */
 	private static final int CAPTURE_GALLERY_IMAGE_REQUEST_CODE = 200;
 
-	/**
-	 * 
-	 */
 	private static final int SOURCE_SELECTION_DIALOG = 10;
-	/**
-	 * 
-	 */
 	private static final int UPLOADING_DIALOG = 20;
 
-	/**
-	 * 
-	 */
 	private static final int MEDIA_TYPE_IMAGE = 1;
 
-	/**
-	 * 
-	 */
 	private final static int UPLOAD_RUNNING = 0;
-	/**
-	 * 
-	 */
 	private final static int UPLOAD_COMPLETE = 1;
 
-	// ===========================================================
-	// Fields
-	// ===========================================================
-	/**
-	 * 
-	 */
 	private UploadFormActivity activity = this;
-	/**
-	 * 
-	 */
 	private Context context = this;
 
-	/**
-	 * 
-	 */
 	private String file;
-	/**
-	 * 
-	 */
 	private Uri fileUri;
 
-	/**
-	 * 
-	 */
 	private double latitude;
-	/**
-	 * 
-	 */
 	private double longitude;
-	/**
-	 * 
-	 */
 	private int severity;
-	/**
-	 * 
-	 */
 	private String comment;
 
-	// ===========================================================
-	// Constructors
-	// ===========================================================
-
-	// ===========================================================
-	// Getter & Setter
-	// ===========================================================
-
-	// ===========================================================
-	// Methods from Activity
-	// ===========================================================
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.app.Activity#onCreate(android.os.Bundle)
 	 */
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
@@ -177,7 +117,9 @@ public class UploadFormActivity extends Activity {
 		setResult(RESULT_CANCELED);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.app.Activity#onStart()
 	 */
 	@Override
@@ -186,7 +128,9 @@ public class UploadFormActivity extends Activity {
 		// The activity is about to become visible.
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.app.Activity#onResume()
 	 */
 	@Override
@@ -195,7 +139,9 @@ public class UploadFormActivity extends Activity {
 		// The activity has become visible (it is now "resumed").
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.app.Activity#onPause()
 	 */
 	@Override
@@ -205,7 +151,9 @@ public class UploadFormActivity extends Activity {
 		// "paused").
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.app.Activity#onStop()
 	 */
 	@Override
@@ -214,7 +162,9 @@ public class UploadFormActivity extends Activity {
 		// The activity is no longer visible (it is now "stopped")
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.app.Activity#onRestart()
 	 */
 	@Override
@@ -223,7 +173,9 @@ public class UploadFormActivity extends Activity {
 		// The activity is about to be destroyed.
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.app.Activity#onDestroy()
 	 */
 	@Override
@@ -232,7 +184,9 @@ public class UploadFormActivity extends Activity {
 		// The activity is been brought back to the front.
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.app.Activity#onSaveInstanceState(android.os.Bundle)
 	 */
 	@Override
@@ -244,7 +198,9 @@ public class UploadFormActivity extends Activity {
 		super.onSaveInstanceState(savedInstanceState);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.app.Activity#onRestoreInstanceState(android.os.Bundle)
 	 */
 	@Override
@@ -257,8 +213,11 @@ public class UploadFormActivity extends Activity {
 		file = savedInstanceState.getString("FilePathVar");
 	}
 
-	/* (non-Javadoc)
-	 * @see android.app.Activity#onActivityResult(int, int, android.content.Intent)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see android.app.Activity#onActivityResult(int, int,
+	 * android.content.Intent)
 	 */
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -307,7 +266,9 @@ public class UploadFormActivity extends Activity {
 		}
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.app.Activity#onCreateDialog(int)
 	 */
 	@Override
@@ -368,32 +329,29 @@ public class UploadFormActivity extends Activity {
 	}
 
 	/**
-	 * 
+	 * Start the async task to upload a marker with all the information.
 	 */
 	public void uploadMarkerDialog() {
 		new UploadMarkerTask().execute();
 	}
 
-	// ===========================================================
-	// Methods from Interfaces
-	// ===========================================================
-
-	// ===========================================================
-	// Methods
-	// ===========================================================
-	/** Create a file Uri for saving an image or video */
 	/**
+	 * Create a file Uri for saving an image or video
+	 * 
 	 * @param type
-	 * @return
+	 *            of media to save
+	 * @return a Uri to the file where media will be saved.
 	 */
 	private static Uri getOutputMediaFileUri(int type) {
 		return Uri.fromFile(getOutputMediaFile(type));
 	}
 
-	/** Create a File for saving an image or video */
 	/**
+	 * Create a File for saving an image or video
+	 * 
 	 * @param type
-	 * @return
+	 *            of media
+	 * @return the file created.
 	 */
 	private static File getOutputMediaFile(int type) {
 		// To be safe, you should check that the SDCard is mounted
@@ -429,8 +387,12 @@ public class UploadFormActivity extends Activity {
 	}
 
 	/**
+	 * Retrieve a string representing the file path of a media file identified
+	 * by their Uri.
+	 * 
 	 * @param contentUri
-	 * @return
+	 *            of media file to search.
+	 * @return path as a String.
 	 */
 	public String getRealPathFromURI(Uri contentUri) {
 		// can post image
@@ -447,97 +409,25 @@ public class UploadFormActivity extends Activity {
 	}
 
 	/**
-	 * @param context
-	 * @param file
-	 */
-	public void UploadPicture(Context context, String file) {
-		HttpURLConnection connection = null;
-		DataOutputStream outputStream = null;
-
-		String pathToOurFile = file;
-		String urlServer = "http://buzz.acm.ndsu.nodak.edu/hosted/cramirez/floodmonitor/plog-mobupload.php";
-		String lineEnd = "\r\n";
-		String twoHyphens = "--";
-		String boundary = "*****";
-
-		int bytesRead, bytesAvailable, bufferSize;
-		byte[] buffer;
-		int maxBufferSize = 1 * 1024 * 1024;
-		try {
-			FileInputStream fileInputStream = new FileInputStream(new File(
-					pathToOurFile));
-
-			URL url = new URL(urlServer);
-			connection = (HttpURLConnection) url.openConnection();
-
-			// Allow Inputs & Outputs
-			connection.setDoInput(true);
-			connection.setDoOutput(true);
-			connection.setUseCaches(false);
-
-			// Enable POST method
-			connection.setRequestMethod("POST");
-
-			connection.setRequestProperty("Connection", "Keep-Alive");
-			connection.setRequestProperty("Content-Type",
-					"multipart/form-data;boundary=" + boundary);
-
-			outputStream = new DataOutputStream(connection.getOutputStream());
-			outputStream.writeBytes(twoHyphens + boundary + lineEnd);
-			outputStream
-					.writeBytes("Content-Disposition: form-data; name=\"uploadedfile\";filename=\""
-							+ pathToOurFile + "\"" + lineEnd);
-			outputStream.writeBytes(lineEnd);
-
-			bytesAvailable = fileInputStream.available();
-			bufferSize = Math.min(bytesAvailable, maxBufferSize);
-			buffer = new byte[bufferSize];
-
-			// Read file
-			bytesRead = fileInputStream.read(buffer, 0, bufferSize);
-
-			while (bytesRead > 0) {
-				outputStream.write(buffer, 0, bufferSize);
-				bytesAvailable = fileInputStream.available();
-				bufferSize = Math.min(bytesAvailable, maxBufferSize);
-				bytesRead = fileInputStream.read(buffer, 0, bufferSize);
-			}
-
-			outputStream.writeBytes(lineEnd);
-			outputStream.writeBytes(twoHyphens + boundary + twoHyphens
-					+ lineEnd);
-
-			// Responses from the server (code and message)
-			// int serverResponseCode = connection.getResponseCode();
-			// String serverResponseMessage = connection.getResponseMessage();
-
-			fileInputStream.close();
-			outputStream.flush();
-			outputStream.close();
-		} catch (Exception ex) {
-			// THIS SHOULD BE LOGGED
-			// Toast.makeText(context, "Error Message: " + ex.getMessage(),
-			// 5000).show();
-		} finally {
-
-		}
-	}
-
-	// ===========================================================
-	// Inner and Anonymous Classes
-	// ===========================================================
-	/**
+	 * Async task to upload the marker.
+	 * 
 	 * @author Cesar
-	 *
+	 * 
 	 */
 	private class UploadMarkerTask extends AsyncTask<Void, Void, Void> {
 		protected boolean taskCompleted = false;
 
+		/* (non-Javadoc)
+		 * @see android.os.AsyncTask#onPreExecute()
+		 */
 		@Override
 		protected void onPreExecute() {
 			showDialog(UPLOADING_DIALOG);
 		}
 
+		/* (non-Javadoc)
+		 * @see android.os.AsyncTask#doInBackground(Params[])
+		 */
 		@Override
 		protected Void doInBackground(Void... params) {
 			ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -566,6 +456,9 @@ public class UploadFormActivity extends Activity {
 			return null;
 		}
 
+		/* (non-Javadoc)
+		 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
+		 */
 		@Override
 		protected void onPostExecute(Void none) {
 			if (taskCompleted) {

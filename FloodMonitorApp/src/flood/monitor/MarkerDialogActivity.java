@@ -32,43 +32,22 @@ import flood.monitor.modules.Connector;
 import flood.monitor.modules.kmlparser.Marker;
 
 /**
+ * This activity will display the information available for a given marker.
+ * 
  * @author Cesar
- *
+ * 
  */
 public class MarkerDialogActivity extends Activity {
 
-	// ===========================================================
-	// Constants
-	// ===========================================================
-
-	// ===========================================================
-	// Fields
-	// ===========================================================
-	/**
-	 * 
-	 */
 	private int mode;
-	/**
-	 * 
-	 */
 	private boolean upload;
-	/**
-	 * 
-	 */
 	private String localImage;
-	/**
-	 * 
-	 */
 	private Marker marker;
-	/**
-	 * 
-	 */
 	private MarkerDialogActivity activity;
 
-	// ===========================================================
-	// Methods from Activity
-	// ===========================================================
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.app.Activity#onCreate(android.os.Bundle)
 	 */
 	@Override
@@ -199,7 +178,9 @@ public class MarkerDialogActivity extends Activity {
 		setResult(RESULT_CANCELED);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.app.Activity#onStart()
 	 */
 	@Override
@@ -208,7 +189,9 @@ public class MarkerDialogActivity extends Activity {
 		// The activity is about to become visible.
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.app.Activity#onResume()
 	 */
 	@Override
@@ -217,7 +200,9 @@ public class MarkerDialogActivity extends Activity {
 		// The activity has become visible (it is now "resumed").
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.app.Activity#onPause()
 	 */
 	@Override
@@ -227,7 +212,9 @@ public class MarkerDialogActivity extends Activity {
 		// "paused").
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.app.Activity#onStop()
 	 */
 	@Override
@@ -236,7 +223,9 @@ public class MarkerDialogActivity extends Activity {
 		// The activity is no longer visible (it is now "stopped")
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.app.Activity#onRestart()
 	 */
 	@Override
@@ -245,7 +234,9 @@ public class MarkerDialogActivity extends Activity {
 		// The activity is about to be destroyed.
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.app.Activity#onDestroy()
 	 */
 	@Override
@@ -254,7 +245,9 @@ public class MarkerDialogActivity extends Activity {
 		// The activity is been brought back to the front.
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.app.Activity#onSaveInstanceState(android.os.Bundle)
 	 */
 	@Override
@@ -265,7 +258,9 @@ public class MarkerDialogActivity extends Activity {
 		super.onSaveInstanceState(savedInstanceState);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.app.Activity#onRestoreInstanceState(android.os.Bundle)
 	 */
 	@Override
@@ -276,19 +271,33 @@ public class MarkerDialogActivity extends Activity {
 	}
 
 	/**
+	 * Addresses are not stored locally and should be retrieved everytime a
+	 * marker is opened. This async task will use the Geocoder to get the
+	 * address closes to the lat and long of the marker.
+	 * 
 	 * @author Cesar
-	 *
+	 * 
 	 */
 	private class GetAddressTask extends AsyncTask<Void, Void, Void> {
 		protected boolean taskCompleted = false;
 		private String address;
 
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see android.os.AsyncTask#onPreExecute()
+		 */
 		@Override
 		protected void onPreExecute() {
 			((ProgressBar) findViewById(R.id.progressBarAddress))
 					.setVisibility(View.VISIBLE);
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see android.os.AsyncTask#doInBackground(Params[])
+		 */
 		@Override
 		protected Void doInBackground(Void... params) {
 			ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -348,18 +357,34 @@ public class MarkerDialogActivity extends Activity {
 	}
 
 	/**
+	 * Some markers have images attached to them. This async task will retrieve
+	 * the image from either a local storage or a network location. The full
+	 * resolution image is retrieved but sometimes this image is too big to
+	 * display in the screen, in this case, the bitmap will be processed to
+	 * reduce it's size.
+	 * 
 	 * @author Cesar
-	 *
+	 * 
 	 */
 	private class DownloadImageTask extends AsyncTask<Void, Void, Void> {
 		protected boolean taskCompleted = false;
 		protected boolean imageLoaded = false;
 		private String message;
 
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see android.os.AsyncTask#onPreExecute()
+		 */
 		@Override
 		protected void onPreExecute() {
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see android.os.AsyncTask#doInBackground(Params[])
+		 */
 		@Override
 		protected Void doInBackground(Void... params) {
 			ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -406,6 +431,11 @@ public class MarkerDialogActivity extends Activity {
 			return null;
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
+		 */
 		@Override
 		protected void onPostExecute(Void none) {
 			if (taskCompleted) {
@@ -444,6 +474,16 @@ public class MarkerDialogActivity extends Activity {
 					.setVisibility(View.GONE);
 		}
 
+		/**
+		 * Will open an image in a storage location and it will process it to
+		 * fit the specified width.
+		 * 
+		 * @param filePath
+		 *            location of the bitmap.
+		 * @param reqWidth
+		 *            width in pixels to resize the image to.
+		 * @return a bitmap scaled to required specification.
+		 */
 		public Bitmap decodeSampledBitmapFromFile(String filePath, int reqWidth) {
 
 			// First decode with inJustDecodeBounds=true to check dimensions
@@ -463,6 +503,13 @@ public class MarkerDialogActivity extends Activity {
 			return BitmapFactory.decodeFile(filePath, options);
 		}
 
+		/**
+		 * @param realWidth
+		 * @param realHeight
+		 * @param reqWidth
+		 * @param reqHeight
+		 * @return
+		 */
 		public int calculateInSampleSize(int realWidth, int realHeight,
 				int reqWidth, int reqHeight) {
 			// Raw height and width of image

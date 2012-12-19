@@ -1047,9 +1047,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	 * @author Cesar
 	 * 
 	 */
-	private class DownloadRegionsTask extends AsyncTask<Void, Void, Void> {
-		protected boolean taskCompleted = false;
-		protected MapViewActivity activity = null;
+	private class DownloadRegionsTask extends MapViewTask<Void, Void, Void> {
 
 		/**
 		 * Constructor that defines a reference between this async task and the
@@ -1059,7 +1057,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		 *            that will recieve the interaction from this task.
 		 */
 		public DownloadRegionsTask(MapViewActivity activity) {
-			setActivity(activity);
+			super(activity);
 		}
 
 		/*
@@ -1136,43 +1134,55 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			}
 		}
 
-		/**
-		 * Updates the activity reference to the current activity.
+		/*
+		 * (non-Javadoc)
 		 * 
-		 * @param activity
-		 *            that will interact with this async task
+		 * @see
+		 * flood.monitor.MapViewActivity.MapViewTask#setActivity(flood.monitor
+		 * .MapViewActivity)
 		 */
+		@Override
 		public void setActivity(MapViewActivity activity) {
-			this.activity = activity;
+			super.setActivity(activity);
 			Log.i("DownloadRegionsTask",
 					"Activity set to " + activity.getTaskId());
 		}
 
-		/**
-		 * Removes the reference to the current activity. Use this method if an
-		 * activity is been destroyed but you will later update the reference to
-		 * another activity.
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see flood.monitor.MapViewActivity.MapViewTask#removeActivity()
 		 */
+		@Override
 		public void removeActivity() {
-			this.activity = null;
+			super.removeActivity();
 			Log.i("DownloadRegionsTask", "Activity set to null");
 		}
 	}
 
 	/**
+	 * Async task that will download the events list for a given region. This
+	 * events will be displayed as a list.
+	 * 
 	 * @author Cesar
 	 * 
 	 */
 	private class DownloadAndShowEventsTask extends
-			AsyncTask<Integer, Void, Void> {
-		protected boolean taskCompleted = false;
+			MapViewTask<Integer, Void, Void> {
 		int regionId;
-		protected MapViewActivity activity = null;
 
+		/**
+		 * @param activity
+		 */
 		public DownloadAndShowEventsTask(MapViewActivity activity) {
-			setActivity(activity);
+			super(activity);
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see android.os.AsyncTask#onPreExecute()
+		 */
 		@Override
 		protected void onPreExecute() {
 			showDialog(EVENT_DOWNLOAD_DIALOG);
@@ -1181,6 +1191,11 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			Log.i("MapViewActivity", "DownloadAndShowEventsTask started");
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see android.os.AsyncTask#doInBackground(Params[])
+		 */
 		@Override
 		protected Void doInBackground(Integer... params) {
 			ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -1207,6 +1222,11 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			return null;
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
+		 */
 		@Override
 		protected void onPostExecute(Void none) {
 			if (taskCompleted) {
@@ -1223,12 +1243,26 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			runningTask = null;
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * flood.monitor.MapViewActivity.MapViewTask#setActivity(flood.monitor
+		 * .MapViewActivity)
+		 */
+		@Override
 		public void setActivity(MapViewActivity newActivity) {
 			this.activity = newActivity;
 			Log.i("DownloadRegionsTask",
 					"Activity set to " + activity.getTaskId());
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see flood.monitor.MapViewActivity.MapViewTask#removeActivity()
+		 */
+		@Override
 		public void removeActivity() {
 			this.activity = null;
 			Log.i("DownloadRegionsTask", "Activity set to null");
@@ -1237,21 +1271,26 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	}
 
 	/**
+	 * Async task that will retrieve the markers for a given event.
+	 * 
 	 * @author Cesar
 	 * 
 	 */
-	private class DownloadMarkersTask extends AsyncTask<Region, Void, Void> {
+	private class DownloadMarkersTask extends MapViewTask<Region, Void, Void> {
 
-		protected boolean taskCompleted = false;
 		private Region selectedRegion;
 		private Event selectedEvent;
-		private MapViewActivity activity;
 		private ArrayList<Marker> allMarkers;
 
 		public DownloadMarkersTask(MapViewActivity activity) {
-			setActivity(activity);
+			super(activity);
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see android.os.AsyncTask#onPreExecute()
+		 */
 		@Override
 		protected void onPreExecute() {
 			showDialog(MARKER_DOWNLOAD_DIALOG);
@@ -1260,6 +1299,11 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			Log.i("MapViewActivity", "DownloadMarkersTask started");
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see android.os.AsyncTask#doInBackground(Params[])
+		 */
 		@Override
 		protected Void doInBackground(Region... params) {
 			ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -1300,6 +1344,11 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			return null;
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
+		 */
 		@Override
 		protected void onPostExecute(Void none) {
 			if (taskCompleted) {
@@ -1329,12 +1378,26 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			runningTask = null;
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * flood.monitor.MapViewActivity.MapViewTask#setActivity(flood.monitor
+		 * .MapViewActivity)
+		 */
+		@Override
 		public void setActivity(MapViewActivity activity) {
 			this.activity = activity;
 			Log.i("DownloadRegionsTask",
 					"Activity set to " + activity.getTaskId());
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see flood.monitor.MapViewActivity.MapViewTask#removeActivity()
+		 */
+		@Override
 		public void removeActivity() {
 			this.activity = null;
 			Log.i("DownloadRegionsTask", "Activity set to null");
@@ -1342,6 +1405,58 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	}
 
 	/**
+	 * This async task extends the functionality of a normal async task by
+	 * allowing it to switch the activity that it is reporting. This is used
+	 * mainly when the activity needs to recreate itself(Screen rotation for
+	 * example).
+	 * 
+	 * @author Cesar
+	 * 
+	 * @param <T>
+	 *            the type of the parameters sent to the task upon execution.
+	 * @param <Y>
+	 *            the type of the progress units published during the background
+	 * @param <U>
+	 *            the type of the result of the background computation.
+	 */
+	private abstract class MapViewTask<T, Y, U> extends AsyncTask<T, Y, U> {
+		protected boolean taskCompleted = false;
+		protected MapViewActivity activity = null;
+
+		/**
+		 * Constructor that defines a reference between this async task and the
+		 * current activity.
+		 * 
+		 * @param activity
+		 *            that will recieve the interaction from this task.
+		 */
+		public MapViewTask(MapViewActivity activity) {
+			setActivity(activity);
+		}
+
+		/**
+		 * Updates the activity reference to the current activity.
+		 * 
+		 * @param activity
+		 *            that will interact with this async task
+		 */
+		public void setActivity(MapViewActivity activity) {
+			this.activity = activity;
+		}
+
+		/**
+		 * Removes the reference to the current activity. Use this method if an
+		 * activity is been destroyed but you will later update the reference to
+		 * another activity.
+		 */
+		public void removeActivity() {
+			this.activity = null;
+		}
+	}
+
+	/**
+	 * Small class that handles some actions based on the system configuration.
+	 * 
 	 * @author Cesar
 	 * 
 	 */
@@ -1351,13 +1466,13 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		public static void updateOptionsMenu(Activity activity) {
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 				activity.invalidateOptionsMenu();
-			} else {
-
 			}
 		}
 	}
 
 	/**
+	 * Overlay that will draw the current location into the map.
+	 * 
 	 * @author Cesar
 	 * 
 	 */
@@ -1375,12 +1490,27 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		private int xDragTouchOffset = 0;
 		private int yDragTouchOffset = 0;
 
+		/**
+		 * Markers require a drawable so they can be displayed on the screen.
+		 * Markers can also have their own drawable, but a default resource is
+		 * required.
+		 * 
+		 * @param defaultMarker
+		 *            drawable that is going to be used as a default for the
+		 *            markers.
+		 */
 		public LocationOverlay(Drawable defaultMarker) {
 			super(defaultMarker);
 			mOverlays = new ArrayList<OverlayItem>(0);
 			populate();
 		}
 
+		/**
+		 * The location marker will be moved to the new specified location.
+		 * 
+		 * @param location
+		 *            new location found.
+		 */
 		public void updateBestLocation(Location location) {
 			mOverlays.remove(currentLocationMarker);
 			currentLocationMarker = new OverlayItem(new GeoPoint(
@@ -1395,6 +1525,13 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			populate();
 		}
 
+		/**
+		 * The new location marker will be moved to the new specified location.
+		 * If the new location marker is not present, create it.
+		 * 
+		 * @param address
+		 *            new location found.
+		 */
 		public void updateSearchResult(Address address) {
 			if (isMarking) {
 				mOverlays.remove(draggerMarker);
@@ -1416,6 +1553,12 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			}
 		}
 
+		/**
+		 * Create the 'new location marker' at the specified location.
+		 * 
+		 * @param geoPoint
+		 *            location where the marker will be added.
+		 */
 		public void initiateDragMarker(GeoPoint geoPoint) {
 			uploadDrawable = getApplicationContext().getResources()
 					.getDrawable(R.drawable.marker_white);
@@ -1429,6 +1572,11 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			populate();
 		}
 
+		/**
+		 * Retrieve the location of the 'new location' marker.
+		 * 
+		 * @return location of the 'new location' marker.
+		 */
 		public Location getMarkerLocation() {
 			Location temp = new Location("Picture Marker");
 			temp.setLatitude(draggerMarker.getPoint().getLatitudeE6() / 1000000f);
@@ -1436,28 +1584,53 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			return temp;
 		}
 
+		/**
+		 * Removes the 'new location' marker and update the overlay.
+		 */
 		public void stopDragMarker() {
 			isMarking = false;
 			mOverlays.remove(draggerMarker);
 			populate();
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see com.google.android.maps.ItemizedOverlay#createItem(int)
+		 */
 		@Override
 		protected OverlayItem createItem(int i) {
 			return mOverlays.get(i);
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see com.google.android.maps.ItemizedOverlay#size()
+		 */
 		@Override
 		public int size() {
 			return mOverlays.size();
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see com.google.android.maps.ItemizedOverlay#onTap(int)
+		 */
 		@Override
 		protected boolean onTap(int index) {
 			showMarkerDialog(index);
 			return true;
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * com.google.android.maps.ItemizedOverlay#onTouchEvent(android.view
+		 * .MotionEvent, com.google.android.maps.MapView)
+		 */
 		@Override
 		public boolean onTouchEvent(MotionEvent event, MapView mapView) {
 			if (isMarking) {
@@ -1522,6 +1695,15 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			}
 		}
 
+		/**
+		 * Move the 'new location' marker to a location on the screen. THis
+		 * method is useful when moving the marker through a touch event.
+		 * 
+		 * @param x
+		 *            location on the screen.
+		 * @param y
+		 *            location on the screen.
+		 */
 		private void setDragImagePosition(int x, int y) {
 			RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) dragImage
 					.getLayoutParams();
@@ -1531,6 +1713,11 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			dragImage.setLayoutParams(lp);
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see flood.monitor.overlay.IOverlay#showMarkerDialog(int)
+		 */
 		@Override
 		public void showMarkerDialog(int id) {
 
@@ -1549,6 +1736,12 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			startActivityForResult(intent, DIALOG_INTENT);
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see flood.monitor.overlay.IOverlay#updateActivity(flood.monitor.
+		 * MapViewActivity)
+		 */
 		@Override
 		public void updateActivity(MapViewActivity newActivity) {
 			dragImage = (ImageView) newActivity.findViewById(R.id.drag);
@@ -1556,6 +1749,9 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			yDragImageOffset = dragImage.getDrawable().getIntrinsicHeight();
 		}
 
+		/**
+		 * Display a new dialog with information of the given marker.
+		 */
 		public void showInfoDialog() {
 			int index = mOverlays.indexOf(draggerMarker);
 			showMarkerDialog(index);
@@ -1570,7 +1766,11 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 
 		private List<Address> addressList;
 
-		/** Called when the activity is first created. */
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see android.app.Activity#onCreate(android.os.Bundle)
+		 */
 		@Override
 		public void onCreate(Bundle savedInstanceState) {
 			super.onCreate(savedInstanceState);
@@ -1584,6 +1784,14 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			}
 		}
 
+		/**
+		 * A search will occur based on the input provided by the user as a
+		 * string.
+		 * 
+		 * @param query
+		 *            user input that should be in a format accepted by the
+		 *            Geocoder.
+		 */
 		public void search(String query) {
 			try {
 				List<Address> addressList = geocoder.getFromLocationName(query,
@@ -1612,6 +1820,11 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see android.app.Activity#onResume()
+		 */
 		@Override
 		public void onResume() {
 			super.onResume();
@@ -1622,6 +1835,13 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			}
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * android.app.ListActivity#onListItemClick(android.widget.ListView,
+		 * android.view.View, int, long)
+		 */
 		@Override
 		protected void onListItemClick(ListView l, View v, int position, long id) {
 			Address address = addressList.get(position);

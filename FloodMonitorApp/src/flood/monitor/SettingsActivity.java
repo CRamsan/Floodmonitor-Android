@@ -10,30 +10,13 @@ import flood.monitor.modules.Connector;
 
 /**
  * @author Cesar
- *
+ * 
  */
 public class SettingsActivity extends PreferenceActivity {
 
-	// ===========================================================
-	// Constants
-	// ===========================================================
-
-	// ===========================================================
-	// Fields
-	// ===========================================================
-
-	// ===========================================================
-	// Constructors
-	// ===========================================================
-
-	// ===========================================================
-	// Getter & Setter
-	// ===========================================================
-
-	// ===========================================================
-	// Methods from Activity
-	// ===========================================================
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.preference.PreferenceActivity#onCreate(android.os.Bundle)
 	 */
 	@Override
@@ -43,19 +26,21 @@ public class SettingsActivity extends PreferenceActivity {
 		// Display the fragment as the main content.
 		addPreferencesFromResource(R.xml.preferences);
 		Preference clearCache = (Preference) findPreference("pref_ClearCache");
-		clearCache.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-		             public boolean onPreferenceClick(Preference preference) {
-		            	 File cache = Connector.getCacheDir();
-		            	 if(cache.exists())
-		            	 {
-		            		 removeDirectory(cache);
-		            	 }
-		                 return true;
-		             }
-		         });
+		clearCache
+				.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+					public boolean onPreferenceClick(Preference preference) {
+						File cache = Connector.getCacheDir();
+						if (cache.exists()) {
+							removeDirectory(cache);
+						}
+						return true;
+					}
+				});
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.app.Activity#onStart()
 	 */
 	@Override
@@ -64,7 +49,9 @@ public class SettingsActivity extends PreferenceActivity {
 		// The activity is about to become visible.
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.app.Activity#onResume()
 	 */
 	@Override
@@ -73,7 +60,9 @@ public class SettingsActivity extends PreferenceActivity {
 		// The activity has become visible (it is now "resumed").
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.app.Activity#onPause()
 	 */
 	@Override
@@ -83,7 +72,9 @@ public class SettingsActivity extends PreferenceActivity {
 		// "paused").
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.preference.PreferenceActivity#onStop()
 	 */
 	@Override
@@ -92,7 +83,9 @@ public class SettingsActivity extends PreferenceActivity {
 		// The activity is no longer visible (it is now "stopped")
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.app.Activity#onRestart()
 	 */
 	@Override
@@ -101,7 +94,9 @@ public class SettingsActivity extends PreferenceActivity {
 		// The activity is about to be destroyed.
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.preference.PreferenceActivity#onDestroy()
 	 */
 	@Override
@@ -110,31 +105,24 @@ public class SettingsActivity extends PreferenceActivity {
 		// The activity is been brought back to the front.
 	}
 
-	// ===========================================================
-	// Methods for/from SuperClass/Interfaces
-	// ===========================================================
-
-	// ===========================================================
-	// Methods
-	// ===========================================================
 	/**
+	 * Delete the given file or directory.
+	 * 
 	 * @param file
-	 * @return
+	 *            to get remove.
+	 * @return true if the operation was sucessful, false otherwise.
 	 */
 	private boolean removeDirectory(File file) {
 		if (file.isDirectory()) {
 			for (File child : file.listFiles()) {
-				if(!removeDirectory(child)){
+				if (!removeDirectory(child)) {
 					return false;
 				}
 			}
 			return file.delete();
-		}else{
+		} else {
 			return file.delete();
 		}
 	}
-	// ===========================================================
-	// Inner and Anonymous Classes
-	// ===========================================================
 
 }
