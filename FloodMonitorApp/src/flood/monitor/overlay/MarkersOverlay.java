@@ -17,8 +17,12 @@ import flood.monitor.R;
 import flood.monitor.modules.kmlparser.Marker;
 
 /**
+ * Overlay that will display the markers on the map. Each marker have
+ * information regarding the state of that location based on severity. The
+ * number of markers can be really high so they can be also showed in pages.
+ * 
  * @author Cesar
- *
+ * 
  */
 public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements
 		IOverlay {
@@ -32,7 +36,10 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements
 	private boolean pageing;
 
 	/**
+	 * This constructor require the default drawable used for all markers.
+	 * 
 	 * @param defaultMarker
+	 *            Drawable resource used.
 	 */
 	public MarkersOverlay(Drawable defaultMarker) {
 		super(boundCenterBottom(defaultMarker));
@@ -42,14 +49,19 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements
 	}
 
 	/**
-	 * @return
+	 * Returns the complete list of markers that this overlay contains.
+	 * 
+	 * @return an arraylist with all the markers.
 	 */
 	public ArrayList<Marker> getmarkers() {
 		return markers;
 	}
 
 	/**
+	 * Set the given overlay as the new set of markers.
+	 * 
 	 * @param overlay
+	 *            arraylist containing all the markers.
 	 */
 	public void setOverlay(ArrayList<Marker> overlay) {
 		this.markers = new ArrayList<Marker>(0);
@@ -60,19 +72,27 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements
 	}
 
 	/**
+	 * Enable visualizing the markers in sets containing a given number of
+	 * markers.
+	 * 
 	 * @param perPage
+	 *            number of markers per page. If the parameter is bigger than
+	 *            the number of markers or less than 1, then all markers will be
+	 *            displayed.
 	 */
 	public void enablePageing(int perPage) {
 		this.setPageing(true);
 		setMarkersPerPage(perPage);
 		if (perPage > markers.size()) {
 			perPage = markers.size();
+		} else if (perPage < 1) {
+			perPage = markers.size();
 		}
 
 		setMaxPage(markers.size(), perPage);
-		/*if (page >= maxPage) {
-			page = maxPage - 1;
-		}*/
+		/*
+		 * if (page >= maxPage) { page = maxPage - 1; }
+		 */
 		this.setPage(0);
 		this.markersinPage.clear();
 		this.markersinPage.addAll(markers.subList(0, perPage));
@@ -81,16 +101,15 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements
 	}
 
 	/**
-	 * 
+	 * Will disable the paging mode and update the markers in the map.
 	 */
 	public void disablePageing() {
 		this.setPageing(false);
-
 		populate();
 	}
 
 	/**
-	 * 
+	 * If available, the next page in the set of pages will be displayed.
 	 */
 	public void nextPage() {
 		int perPage = markersPerPage;
@@ -111,7 +130,7 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements
 	}
 
 	/**
-	 * 
+	 * If available, the previous page in the set of pages will be displayed.
 	 */
 	public void previousPage() {
 		int perPage = markersPerPage;
@@ -128,7 +147,9 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements
 		Log.i("Sample", Integer.toString(markersinPage.size()));
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.google.android.maps.ItemizedOverlay#createItem(int)
 	 */
 	@Override
@@ -140,7 +161,9 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements
 		}
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.google.android.maps.ItemizedOverlay#size()
 	 */
 	@Override
@@ -152,7 +175,9 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements
 		}
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.google.android.maps.ItemizedOverlay#onTap(int)
 	 */
 	@Override
@@ -161,23 +186,33 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements
 		return true;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.google.android.maps.ItemizedOverlay#onTouchEvent(android.view.MotionEvent, com.google.android.maps.MapView)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.google.android.maps.ItemizedOverlay#onTouchEvent(android.view.MotionEvent
+	 * , com.google.android.maps.MapView)
 	 */
 	@Override
 	public boolean onTouchEvent(MotionEvent event, MapView mapView) {
 		return super.onTouchEvent(event, mapView);
 	}
 
-	/* (non-Javadoc)
-	 * @see flood.monitor.overlay.IOverlay#updateActivity(flood.monitor.MapViewActivity)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * flood.monitor.overlay.IOverlay#updateActivity(flood.monitor.MapViewActivity
+	 * )
 	 */
 	@Override
 	public void updateActivity(MapViewActivity newActivity) {
 		this.activity = newActivity;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see flood.monitor.overlay.IOverlay#showMarkerDialog(int)
 	 */
 	@Override
@@ -200,12 +235,11 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements
 		activity.startActivityForResult(intent, MapViewActivity.DIALOG_INTENT);
 	}
 
-	// ===========================================================
-	// Methods
-	// ===========================================================
-
 	/**
+	 * Add a marker to the list of markers.
+	 * 
 	 * @param overlayItem
+	 *            marker to be added.
 	 */
 	public void addOverlayMarker(Marker overlayItem) {
 		Drawable icon = null;
@@ -238,7 +272,10 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements
 	}
 
 	/**
+	 * Add a set of markers to the list of markers.
+	 * 
 	 * @param overlay
+	 *            list of marker to add.
 	 */
 	public void addOverlay(ArrayList<Marker> overlay) {
 		for (int i = 0; i < overlay.size(); i++) {

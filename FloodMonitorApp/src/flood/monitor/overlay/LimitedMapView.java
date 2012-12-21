@@ -20,6 +20,12 @@ public class LimitedMapView extends MapView {
 	public static final int REGION_MAX_ZOOM = 12;
 	private int mapLevel;
 
+	/**
+	 * @param arg0
+	 *            Context that contains this mapview.
+	 * @param arg1
+	 *            Arguments. Not sure about the use of this.
+	 */
 	public LimitedMapView(Context arg0, String arg1) {
 		super(arg0, arg1);
 	}

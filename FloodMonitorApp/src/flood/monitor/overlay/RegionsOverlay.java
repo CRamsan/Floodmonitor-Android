@@ -25,8 +25,11 @@ import flood.monitor.modules.kmlparser.Event;
 import flood.monitor.modules.kmlparser.Region;
 
 /**
+ * Overlay that will display the regions on the map. Each region will be
+ * represented as a semi-transparent rectangle and a marker in the center.
+ * 
  * @author Cesar
- *
+ * 
  */
 public class RegionsOverlay extends ItemizedOverlay<OverlayItem> implements
 		IOverlay {
@@ -42,7 +45,9 @@ public class RegionsOverlay extends ItemizedOverlay<OverlayItem> implements
 
 	/**
 	 * @param defaultMarker
+	 *            Drawable resource used.
 	 * @param regions
+	 *            Set of regions to display.
 	 */
 	public RegionsOverlay(Drawable defaultMarker, ArrayList<Region> regions) {
 		super(boundCenterBottom(defaultMarker));
@@ -51,14 +56,20 @@ public class RegionsOverlay extends ItemizedOverlay<OverlayItem> implements
 	}
 
 	/**
-	 * @return
+	 * Return the set of regions currently loaded.
+	 * 
+	 * @return an array list with all the regions.
 	 */
 	public ArrayList<Region> getRegions() {
 		return regions;
 	}
 
 	/**
+	 * Set a list of regions as the current list of regions.
+	 * 
 	 * @param regions
+	 *            an array list containing all the regions that are going to be
+	 *            set.
 	 */
 	public void setRegions(ArrayList<Region> regions) {
 		this.regions = regions;
@@ -71,8 +82,11 @@ public class RegionsOverlay extends ItemizedOverlay<OverlayItem> implements
 	}
 
 	/**
+	 * Get a region by their region id.
+	 * 
 	 * @param regionId
-	 * @return
+	 *            unique identifier of a region.
+	 * @return the region corresponding to the id.
 	 */
 	public Region getRegionById(int regionId) {
 		for (Region region : regions) {
@@ -82,7 +96,9 @@ public class RegionsOverlay extends ItemizedOverlay<OverlayItem> implements
 		return null;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.google.android.maps.ItemizedOverlay#createItem(int)
 	 */
 	@Override
@@ -90,7 +106,9 @@ public class RegionsOverlay extends ItemizedOverlay<OverlayItem> implements
 		return markers.get(i);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.google.android.maps.ItemizedOverlay#size()
 	 */
 	@Override
@@ -98,8 +116,12 @@ public class RegionsOverlay extends ItemizedOverlay<OverlayItem> implements
 		return markers.size();
 	}
 
-	/* (non-Javadoc)
-	 * @see com.google.android.maps.ItemizedOverlay#draw(android.graphics.Canvas, com.google.android.maps.MapView, boolean)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.google.android.maps.ItemizedOverlay#draw(android.graphics.Canvas,
+	 * com.google.android.maps.MapView, boolean)
 	 */
 	@Override
 	public void draw(Canvas canvas, MapView mapv, boolean shadow) {
@@ -150,8 +172,12 @@ public class RegionsOverlay extends ItemizedOverlay<OverlayItem> implements
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see com.google.android.maps.ItemizedOverlay#onTouchEvent(android.view.MotionEvent, com.google.android.maps.MapView)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.google.android.maps.ItemizedOverlay#onTouchEvent(android.view.MotionEvent
+	 * , com.google.android.maps.MapView)
 	 */
 	@Override
 	public boolean onTouchEvent(MotionEvent event, MapView mapView) {
@@ -175,7 +201,9 @@ public class RegionsOverlay extends ItemizedOverlay<OverlayItem> implements
 
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see flood.monitor.overlay.IOverlay#showMarkerDialog(int)
 	 */
 	@Override
@@ -209,8 +237,12 @@ public class RegionsOverlay extends ItemizedOverlay<OverlayItem> implements
 
 	}
 
-	/* (non-Javadoc)
-	 * @see flood.monitor.overlay.IOverlay#updateActivity(flood.monitor.MapViewActivity)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * flood.monitor.overlay.IOverlay#updateActivity(flood.monitor.MapViewActivity
+	 * )
 	 */
 	@Override
 	public void updateActivity(MapViewActivity newActivity) {
@@ -223,8 +255,11 @@ public class RegionsOverlay extends ItemizedOverlay<OverlayItem> implements
 	}
 
 	/**
+	 * Check if the given point is part of any region.
+	 * 
 	 * @param p
-	 * @return
+	 *            geopoint to check.
+	 * @return the id of the region that this point belong to.
 	 */
 	private int checkHit(GeoPoint p) {
 		for (int i = 0; i < regions.size(); i++) {
@@ -243,15 +278,19 @@ public class RegionsOverlay extends ItemizedOverlay<OverlayItem> implements
 	}
 
 	/**
+	 * Set the list of events to the given region.
+	 * 
 	 * @param regionId
+	 *            identifier of the region.
 	 * @param events
+	 *            list of events that will be set to the given region.
 	 */
 	public void setEvents(int regionId, ArrayList<Event> events) {
 		getRegionById(regionId).setEvents(events);
 	}
 
 	/**
-	 * 
+	 * If the alert dialog is shown, cancel it.
 	 */
 	public void cancelDialog() {
 		if (alertDialog != null) {
