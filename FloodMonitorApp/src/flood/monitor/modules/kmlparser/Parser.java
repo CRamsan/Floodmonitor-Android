@@ -17,14 +17,18 @@ import org.xml.sax.helpers.DefaultHandler;
 import com.google.android.maps.GeoPoint;
 
 /**
+ * This class will handle xml file or streams and it will retrieve the
+ * information and convert it into usable objects.
+ * 
  * @author Cesar
- *
+ * 
  */
 public class Parser {
 
 	/**
 	 * @param filename
-	 * @return
+	 *            path to file to read.
+	 * @return a list of regions objects obtained from the content.
 	 */
 	public static ArrayList<Region> ParseRegions(String filename) {
 		RegionHandler handler = new RegionHandler();
@@ -44,7 +48,8 @@ public class Parser {
 
 	/**
 	 * @param stream
-	 * @return
+	 *            input stream from the content to read.
+	 * @return a list of regions objects obtained from the content.
 	 */
 	public static ArrayList<Region> ParseRegions(InputStream stream) {
 		RegionHandler handler = new RegionHandler();
@@ -62,7 +67,8 @@ public class Parser {
 
 	/**
 	 * @param filename
-	 * @return
+	 *            path to file to read.
+	 * @return a list of events objects obtained from the content.
 	 */
 	public static ArrayList<Event> ParseEvents(String filename) {
 
@@ -84,7 +90,8 @@ public class Parser {
 
 	/**
 	 * @param stream
-	 * @return
+	 *            input stream from the content to read.
+	 * @return a list of events objects obtained from the content.
 	 */
 	public static ArrayList<Event> ParseEvents(InputStream stream) {
 
@@ -104,7 +111,8 @@ public class Parser {
 
 	/**
 	 * @param filename
-	 * @return
+	 *            path to file to read.
+	 * @return an integer with the ID of the file.
 	 */
 	public static int ParseFileVersion(String filename) {
 		PropertyHandler handler = new PropertyHandler();
@@ -125,8 +133,10 @@ public class Parser {
 
 	/**
 	 * @param stream
-	 * @return
+	 *            input stream from the content to read.
+	 * @return an integer with the ID of the file.
 	 */
+
 	public static int ParseFileVersion(InputStream stream) {
 		PropertyHandler handler = new PropertyHandler();
 
@@ -144,7 +154,8 @@ public class Parser {
 
 	/**
 	 * @param filename
-	 * @return
+	 *            path to file to read.
+	 * @return a string with the name of the file provided in the content.
 	 */
 	public static String ParseFileNames(String filename) {
 		PropertyHandler handler = new PropertyHandler();
@@ -166,7 +177,8 @@ public class Parser {
 
 	/**
 	 * @param stream
-	 * @return
+	 *            input stream from the content to read.
+	 * @return a string with the name of the file provided in the content.
 	 */
 	public static String ParseFileNames(InputStream stream) {
 		PropertyHandler handler = new PropertyHandler();
@@ -186,7 +198,8 @@ public class Parser {
 
 	/**
 	 * @param filename
-	 * @return
+	 *            path to file to read.
+	 * @return a list of markers objects obtained from the content.
 	 */
 	public static ArrayList<Marker> ParseMarkers(String filename) {
 
@@ -209,7 +222,8 @@ public class Parser {
 
 	/**
 	 * @param stream
-	 * @return
+	 *            input stream from the content to read.
+	 * @return a list of markers objects obtained from the content.
 	 */
 	public static ArrayList<Marker> ParseMarkers(InputStream stream) {
 
@@ -230,7 +244,7 @@ public class Parser {
 
 	/**
 	 * @author Cesar
-	 *
+	 * 
 	 */
 	private static class RegionHandler extends DefaultHandler {
 
@@ -257,11 +271,21 @@ public class Parser {
 		private int north;
 		private int west;
 
+		/**
+		 * Constructor that will initialize some required inner components.
+		 */
 		public RegionHandler() {
 			super();
 			this.temp = "";
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * org.xml.sax.helpers.DefaultHandler#startElement(java.lang.String,
+		 * java.lang.String, java.lang.String, org.xml.sax.Attributes)
+		 */
 		@Override
 		public void startElement(String uri, String localName, String qName,
 				Attributes attributes) throws SAXException {
@@ -287,6 +311,12 @@ public class Parser {
 			temp = "";
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see org.xml.sax.helpers.DefaultHandler#endElement(java.lang.String,
+		 * java.lang.String, java.lang.String)
+		 */
 		@Override
 		public void endElement(String uri, String localName, String qName)
 				throws SAXException {
@@ -335,6 +365,11 @@ public class Parser {
 			temp = "";
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see org.xml.sax.helpers.DefaultHandler#characters(char[], int, int)
+		 */
 		@Override
 		public void characters(char ch[], int start, int length)
 				throws SAXException {
@@ -342,6 +377,9 @@ public class Parser {
 			temp = temp + input.replaceAll("\n", "").replaceAll("\t", "");
 		}
 
+		/**
+		 * @return an array list of the found regions.
+		 */
 		public ArrayList<Region> getResult() {
 			return regions;
 		}
@@ -349,7 +387,7 @@ public class Parser {
 
 	/**
 	 * @author Cesar
-	 *
+	 * 
 	 */
 	private static class EventHandler extends DefaultHandler {
 
@@ -374,12 +412,22 @@ public class Parser {
 		private boolean active;
 		private boolean skip;
 
+		/**
+		 * Default constrcutor.
+		 */
 		public EventHandler() {
 			super();
 			this.temp = "";
 			this.skip = false;
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * org.xml.sax.helpers.DefaultHandler#startElement(java.lang.String,
+		 * java.lang.String, java.lang.String, org.xml.sax.Attributes)
+		 */
 		@Override
 		public void startElement(String uri, String localName, String qName,
 				Attributes attributes) throws SAXException {
@@ -406,6 +454,12 @@ public class Parser {
 			temp = "";
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see org.xml.sax.helpers.DefaultHandler#endElement(java.lang.String,
+		 * java.lang.String, java.lang.String)
+		 */
 		@Override
 		public void endElement(String uri, String localName, String qName)
 				throws SAXException {
@@ -438,6 +492,11 @@ public class Parser {
 			temp = "";
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see org.xml.sax.helpers.DefaultHandler#characters(char[], int, int)
+		 */
 		@Override
 		public void characters(char ch[], int start, int length)
 				throws SAXException {
@@ -445,6 +504,9 @@ public class Parser {
 			temp = temp + input.replaceAll("\n", "").replaceAll("\t", "");
 		}
 
+		/**
+		 * @return a list with the found events.
+		 */
 		public ArrayList<Event> getResult() {
 			return events;
 		}
@@ -452,7 +514,7 @@ public class Parser {
 
 	/**
 	 * @author Cesar
-	 *
+	 * 
 	 */
 	private static class PropertyHandler extends DefaultHandler {
 
@@ -464,10 +526,20 @@ public class Parser {
 
 		private String temp = "";
 
+		/**
+		 * Defaulty constructor.
+		 */
 		public PropertyHandler() {
 			super();
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * org.xml.sax.helpers.DefaultHandler#startElement(java.lang.String,
+		 * java.lang.String, java.lang.String, org.xml.sax.Attributes)
+		 */
 		@Override
 		public void startElement(String uri, String localName, String qName,
 				Attributes attributes) throws SAXException {
@@ -481,6 +553,12 @@ public class Parser {
 			temp = "";
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see org.xml.sax.helpers.DefaultHandler#endElement(java.lang.String,
+		 * java.lang.String, java.lang.String)
+		 */
 		@Override
 		public void endElement(String uri, String localName, String qName)
 				throws SAXException {
@@ -493,6 +571,11 @@ public class Parser {
 			temp = "";
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see org.xml.sax.helpers.DefaultHandler#characters(char[], int, int)
+		 */
 		@Override
 		public void characters(char ch[], int start, int length)
 				throws SAXException {
@@ -500,10 +583,16 @@ public class Parser {
 			temp = temp + input.replaceAll("\n", "").replaceAll("\t", "");
 		}
 
+		/**
+		 * @return an integer with the version of the file.
+		 */
 		public int getIntResult() {
 			return version;
 		}
 
+		/**
+		 * @return a string with the name of the file.
+		 */
 		public String getStringResult() {
 			return file;
 		}
@@ -511,7 +600,7 @@ public class Parser {
 
 	/**
 	 * @author Cesar
-	 *
+	 * 
 	 */
 	private static class MarkerHandler extends DefaultHandler {
 
@@ -539,10 +628,20 @@ public class Parser {
 
 		private String temp = "";
 
+		/**
+		 * Default constructor.
+		 */
 		public MarkerHandler() {
 			super();
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * org.xml.sax.helpers.DefaultHandler#startElement(java.lang.String,
+		 * java.lang.String, java.lang.String, org.xml.sax.Attributes)
+		 */
 		@Override
 		public void startElement(String uri, String localName, String qName,
 				Attributes attributes) throws SAXException {
@@ -569,6 +668,12 @@ public class Parser {
 			// Log.i(Parser.class.toString(), "Start Element :" + qName);
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see org.xml.sax.helpers.DefaultHandler#endElement(java.lang.String,
+		 * java.lang.String, java.lang.String)
+		 */
 		@Override
 		public void endElement(String uri, String localName, String qName)
 				throws SAXException {
@@ -601,10 +706,15 @@ public class Parser {
 				usercomment = temp;
 			} else if (qName.equalsIgnoreCase(IMAGE)) {
 				image = temp;
-			} 
+			}
 			temp = "";
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see org.xml.sax.helpers.DefaultHandler#characters(char[], int, int)
+		 */
 		@Override
 		public void characters(char ch[], int start, int length)
 				throws SAXException {
@@ -612,6 +722,9 @@ public class Parser {
 			temp = temp + input.replaceAll("\n", "").replaceAll("\t", "");
 		}
 
+		/**
+		 * @return a list of the found markers.
+		 */
 		public ArrayList<Marker> getResult() {
 			return mOverlay;
 		}

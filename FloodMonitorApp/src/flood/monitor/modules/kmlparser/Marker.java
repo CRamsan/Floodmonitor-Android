@@ -9,41 +9,13 @@ import com.google.android.maps.OverlayItem;
  */
 public class Marker extends OverlayItem implements Comparable<Marker> {
 
-	// ===========================================================
-	// Constants
-	// ===========================================================
-
-	// ===========================================================
-	// Fields
-	// ===========================================================
-	/**
-	 * 
-	 */
 	private String image;
-	/**
-	 * 
-	 */
 	private int severity;
-	/**
-	 * 
-	 */
 	private int id;
-	/**
-	 * 
-	 */
 	private int boundaryId;
-	/**
-	 * 
-	 */
 	private int eventId;
-	/**
-	 * 
-	 */
 	private int regionId;
 
-	// ===========================================================
-	// Constructors
-	// ===========================================================
 	/**
 	 * @param id
 	 * @param point
@@ -80,10 +52,6 @@ public class Marker extends OverlayItem implements Comparable<Marker> {
 		this.eventId = evetId;
 		this.boundaryId = boundaryId;
 	}
-
-	// ===========================================================
-	// Getter & Setter
-	// ===========================================================
 
 	/**
 	 * @return

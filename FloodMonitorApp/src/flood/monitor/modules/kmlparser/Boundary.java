@@ -5,38 +5,15 @@ package flood.monitor.modules.kmlparser;
  *
  */
 public class Boundary {
-	/**
-	 * 
-	 */
+
 	private int south;
-	/**
-	 * 
-	 */
 	private int east;
-	/**
-	 * 
-	 */
 	private int north;
-	/**
-	 * 
-	 */
 	private int west;
-	/**
-	 * 
-	 */
 	private int id;
-	/**
-	 * 
-	 */
 	private int regionId;
-	/**
-	 * 
-	 */
 	private String name;
 
-	/**
-	 * 
-	 */
 	public Boundary(){
 		
 	}

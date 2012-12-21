@@ -9,33 +9,12 @@ import java.util.ArrayList;
  */
 public class Event {
 
-	/**
-	 * 
-	 */
 	private String beginDate;
-	/**
-	 * 
-	 */
 	private String endDate;
-	/**
-	 * 
-	 */
 	private String name;
-	/**
-	 * 
-	 */
 	private int eventId = -1;
-	/**
-	 * 
-	 */
 	private boolean active;
-	/**
-	 * 
-	 */
 	private int regionId = -1;
-	/**
-	 * 
-	 */
 	private ArrayList<Marker> markers;
 
 	/**

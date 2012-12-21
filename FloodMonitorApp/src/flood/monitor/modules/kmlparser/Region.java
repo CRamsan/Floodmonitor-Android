@@ -10,26 +10,11 @@ import com.google.android.maps.GeoPoint;
  */
 public class Region {
 
-	/**
-	 * 
-	 */
 	private ArrayList<Boundary> boundaries;
-	/**
-	 * 
-	 */
 	private ArrayList<Event> events;
-	/**
-	 * 
-	 */
 	private String name;
-	/**
-	 * 
-	 */
 	private int regionId;
-	
-	/**
-	 * 
-	 */
+
 	private int selectedEvent = -1;
 
 	/**

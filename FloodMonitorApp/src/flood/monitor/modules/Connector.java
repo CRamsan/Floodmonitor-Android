@@ -11,9 +11,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -251,9 +249,10 @@ public class Connector {
 		OutputStreamWriter request = null;
 		double lat = (marker.getLatitude());
 		double lon = (marker.getLongitude());
-		String timeStamp = new SimpleDateFormat("MM/dd/yyy HH:MM")
-				.format(new Date());
-		int severity = marker.getSeverity();
+		// String timeStamp = new SimpleDateFormat("MM/dd/yyy HH:MM").format(new
+		// Date());
+		// int severity = marker.getSeverity();
+		// TODO Complete submit marker form.
 		String data = "";
 		if (image != null) {
 			Bitmap bm = BitmapFactory.decodeFile(image.getAbsolutePath());
