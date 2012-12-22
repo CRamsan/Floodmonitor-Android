@@ -24,9 +24,10 @@ public class LimitedMapView extends MapView {
 	 * @param arg0
 	 *            Context that contains this mapview.
 	 * @param arg1
-	 *            Arguments. Not sure about the use of this.
+	 *            Arguments. Not sure about the use of this. Required by OS to
+	 *            create the view.
 	 */
-	public LimitedMapView(Context arg0, String arg1) {
+	public LimitedMapView(Context arg0, AttributeSet arg1) {
 		super(arg0, arg1);
 	}
 

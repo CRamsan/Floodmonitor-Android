@@ -1811,6 +1811,10 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 					}
 					items[i] = sb.toString();
 				}
+				if(addressList.size() == 1){
+					activity.getResults(addressList.get(0));
+					this.finish();
+				}
 				ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
 						android.R.layout.simple_list_item_1, items);
 				setListAdapter(adapter);
