@@ -19,6 +19,10 @@
         android:theme="@style/ThemeSelector" >
         <uses-library android:name="com.google.android.maps" />
 
+        <provider
+            android:name="MapViewActivity$AddressSuggestionProvider"
+            android:authorities="flood.monitor.AddressSuggestionProvider" />
+
         <activity android:name=".MapViewActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -20,13 +20,9 @@
             android:key="pref_ClearCache"
             android:summary="@string/pref_CLearCache_summary"
             android:title="@string/pref_CLearCache_title" />
-        <EditTextPreference
-            android:defaultValue="@string/pref_DefaultCacheSize"
-            android:dialogLayout="@layout/cachesizedialogpreference"
-            android:dialogTitle="@string/pref_CacheSizeDialog_title"
-            android:key="pref_CacheSize"
-            android:summary="@string/pref_CacheSize_summary"
-            android:title="@string/pref_CacheSize_title" />
+        <Preference
+            android:key="pref_ClearHistory"
+            android:title="@string/pref_CLearHistory_title" android:summary="@string/pref_CLearHistory_summary"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_Visuals" >
         <CheckBoxPreference

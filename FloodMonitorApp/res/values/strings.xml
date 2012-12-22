@@ -44,7 +44,9 @@
     <string name="pref_UseZoomControl_title">Enable zoom buttons</string>
     <string name="pref_DataStorage">Data &amp; Storage</string>
     <string name="pref_CLearCache_title">Clear cache</string>
-    <string name="pref_CLearCache_summary">Removes all the downloaded pictures</string>
+    <string name="pref_CLearCache_summary">Remove all the downloaded pictures</string>
+    <string name="pref_CLearHistory_title">Clear search history</string>
+    <string name="pref_CLearHistory_summary">Clear the places that I have searched</string>
     <string name="pref_CacheSize_title">Cache size</string>
     <string name="pref_CacheSize_summary">Size in MB for the cache</string>
     <string name="pref_CacheSizeDialog_title">Cache size</string>

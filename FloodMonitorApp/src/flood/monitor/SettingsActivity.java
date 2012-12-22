@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
+import android.provider.SearchRecentSuggestions;
+import flood.monitor.MapViewActivity.AddressSuggestionProvider;
 import flood.monitor.modules.Connector;
 
 /**
@@ -33,6 +35,14 @@ public class SettingsActivity extends PreferenceActivity {
 						if (cache.exists()) {
 							removeDirectory(cache);
 						}
+						return true;
+					}
+				});
+		Preference clearHistory = (Preference) findPreference("pref_ClearHistory");
+		clearHistory
+				.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+					public boolean onPreferenceClick(Preference preference) {
+						clearSearchHistory();
 						return true;
 					}
 				});
@@ -123,6 +133,13 @@ public class SettingsActivity extends PreferenceActivity {
 		} else {
 			return file.delete();
 		}
+	}
+
+	private void clearSearchHistory() {
+		SearchRecentSuggestions suggestions = new SearchRecentSuggestions(this,
+				AddressSuggestionProvider.AUTHORITY,
+				AddressSuggestionProvider.MODE);
+		suggestions.clearHistory();
 	}
 
 }

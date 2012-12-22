@@ -13,7 +13,7 @@
    height="1052.3622047"
    id="svg2"
    version="1.1"
-   inkscape:version="0.48.3.1 r9886"
+   inkscape:version="0.48.2 r9819"
    sodipodi:docname="addmarker.svg">
   <defs
      id="defs4">
@@ -32,9 +32,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.24748737"
-     inkscape:cx="-994.68422"
-     inkscape:cy="504.61823"
+     inkscape:zoom="0.49497474"
+     inkscape:cx="-71.90815"
+     inkscape:cy="360.22823"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -75,7 +75,7 @@
        d="m 438.4062,299.79852 a 86.873116,95.964493 0 1 1 -173.74623,0 86.873116,95.964493 0 1 1 173.74623,0 z"
        transform="matrix(0.76852701,0,0,0.76852701,26.434935,69.06894)" />
     <rect
-       style="fill:#ff000c;fill-opacity:1;stroke:#ff0008;stroke-width:92.505;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-linejoin:round"
+       style="fill:#008000;fill-opacity:1;stroke:#008000;stroke-width:92.50499999999999500;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-linejoin:round"
        id="rect2999"
        width="5.2433882"
        height="310.02548"
@@ -83,7 +83,7 @@
        y="525.50507"
        transform="scale(-1,1)" />
     <rect
-       style="fill:#ff000c;fill-opacity:1;stroke:#ff0008;stroke-width:92.505;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-linejoin:round"
+       style="fill:#008000;fill-opacity:1;stroke:#008000;stroke-width:92.50499999999999500;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-linejoin:round"
        id="rect2999-4"
        width="5.2433882"
        height="310.02548"

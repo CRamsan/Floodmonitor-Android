@@ -13,6 +13,7 @@ import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SearchRecentSuggestionsProvider;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Point;
@@ -26,6 +27,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.SearchRecentSuggestions;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -1780,6 +1782,10 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			Intent intent = getIntent();
 			if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
 				String query = intent.getStringExtra(SearchManager.QUERY);
+				SearchRecentSuggestions suggestions = new SearchRecentSuggestions(
+						this, AddressSuggestionProvider.AUTHORITY,
+						AddressSuggestionProvider.MODE);
+				suggestions.saveRecentQuery(query, null);
 				search(query);
 			}
 		}
@@ -1811,7 +1817,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 					}
 					items[i] = sb.toString();
 				}
-				if(addressList.size() == 1){
+				if (addressList.size() == 1) {
 					activity.getResults(addressList.get(0));
 					this.finish();
 				}
@@ -1855,4 +1861,13 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 
 	}
 
+	public static class AddressSuggestionProvider extends
+			SearchRecentSuggestionsProvider {
+		public final static String AUTHORITY = "flood.monitor.AddressSuggestionProvider";
+		public final static int MODE = DATABASE_MODE_QUERIES;
+
+		public AddressSuggestionProvider() {
+			setupSuggestions(AUTHORITY, MODE);
+		}
+	}
 }
