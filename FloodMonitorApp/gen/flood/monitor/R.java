@@ -115,6 +115,11 @@ public final class R {
     }
     public static final class string {
         public static final int app_name=0x7f070003;
+        public static final int crash_dialog_comment_prompt=0x7f07004f;
+        public static final int crash_dialog_ok_toast=0x7f070050;
+        public static final int crash_dialog_text=0x7f07004e;
+        public static final int crash_dialog_title=0x7f07004d;
+        public static final int crash_toast_text=0x7f07004c;
         public static final int desc_MarkerDialogImage=0x7f07003c;
         public static final int desc_buttonAddMarker=0x7f070040;
         public static final int desc_buttonCancelMarker=0x7f070046;

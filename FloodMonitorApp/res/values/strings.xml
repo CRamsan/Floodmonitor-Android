@@ -74,5 +74,12 @@
     <string name="menu_settings">Settings</string>
     <string name="title_activity_wellcome_screen">WellcomeScreenActivity</string>
     <string name="text_activity_wellcome_screen">The following application was developed in NDSU under the direction of Dr. Anne Denton from the Computer Science Department.\nThe project came out of a course project in NDSUs course CSci 372: Comparative Programming Languages.\n\nThe project was later reimplemented thanks to Adam Helsene, Anne Denton, Cesar Ramirez and Justin Andersen\n\nFor further questions please contact anne.denton@gmail.com.</string>
+    <string name="crash_toast_text">Preparing error report</string>
+    <string name="crash_dialog_title">Flood Monitor has crashed</string>
+    <string name="crash_dialog_text">An unexpected error occurred forcing the
+    application to stop. Please help us fix this by sending us error data,
+    all you have to do is click OK.</string>
+    <string name="crash_dialog_comment_prompt">You might add your comments about the problem below:</string>
+    <string name="crash_dialog_ok_toast">Thank you !</string>
 
 </resources>

@@ -16,8 +16,15 @@
     <application
         android:icon="@drawable/icon"
         android:label="@string/app_name"
-        android:theme="@style/ThemeSelector" >
+        android:theme="@style/ThemeSelector" android:name="MainApplication">
         <uses-library android:name="com.google.android.maps" />
+
+        <activity
+            android:name="org.acra.CrashReportDialog"
+            android:excludeFromRecents="true"
+            android:finishOnTaskLaunch="true"
+            android:launchMode="singleInstance"
+            android:theme="@android:style/Theme.Dialog" />
 
         <provider
             android:name="MapViewActivity$AddressSuggestionProvider"
