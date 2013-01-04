@@ -1,7 +1,5 @@
 package flood.monitor;
 
-import org.acra.*;
-import org.acra.annotation.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,7 +7,6 @@ import java.util.List;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.Application;
 import android.app.Dialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
@@ -134,7 +131,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	public void onCreate(Bundle savedInstanceState) {
 		// The activity is launched or restarted after been killed.
 		super.onCreate(savedInstanceState);
-		
+
 		/*
 		 * This methods are called every time the activity is created. This
 		 * includes when the activity is called by the first time or after each

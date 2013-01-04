@@ -19,5 +19,12 @@ public class MapViewActivityTest extends
 		setActivityInitialTouchMode(true);
 
 		mActivity = getActivity();
+		Thread.sleep(500);
+		mActivity.finish();
+		mActivity = getActivity();
+		Thread.sleep(500);
+		mActivity.finish();
+		mActivity = getActivity();
+		assertEquals(true, true);
 	}
 }
