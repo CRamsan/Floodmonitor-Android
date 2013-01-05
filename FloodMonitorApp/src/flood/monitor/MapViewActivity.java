@@ -282,6 +282,9 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			break;
 		case MapViewActivity.MAP_LEVEL_MARKER:
 			selectedOverlay = markersOverlay;
+			if (selectedOverlay == null) {
+				selectedOverlay = regionsOverlay;
+			}
 			if (markersPerPage != -1) {
 				markersOverlay.enablePageing(markersPerPage);
 			} else {
@@ -739,13 +742,9 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 				.getDefaultSharedPreferences(this);
 		SharedPreferences.Editor editor = settings.edit();
 		editor.putBoolean(INSTALL_STATE, true);
+		editor.putInt("updateInterval", 30000);
+		editor.putBoolean("pref_GPSEnabled", true);
 		editor.commit();
-
-		SharedPreferences updateInterval = PreferenceManager
-				.getDefaultSharedPreferences(this);
-		SharedPreferences.Editor updateIntervalEditor = updateInterval.edit();
-		updateIntervalEditor.putInt("updateInterval", 30000);
-		updateIntervalEditor.commit();
 		install = true;
 	}
 

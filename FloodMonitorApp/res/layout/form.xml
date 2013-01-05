@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content" >
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="20dp" >
 
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
@@ -33,7 +34,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal" >
-
         </LinearLayout>
 
         <TextView
@@ -130,8 +130,17 @@
                 android:id="@+id/textFileName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="25dp"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/requiredView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:text="@string/text_DenotesRequired"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -152,6 +161,7 @@
                 android:layout_alignParentTop="true"
                 android:text="@string/text_Submit" />
         </RelativeLayout>
+
     </LinearLayout>
 
 </ScrollView>

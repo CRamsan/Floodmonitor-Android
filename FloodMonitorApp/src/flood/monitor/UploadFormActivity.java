@@ -1,14 +1,9 @@
 package flood.monitor;
 
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -31,7 +26,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.google.android.maps.GeoPoint;
@@ -67,6 +64,10 @@ public class UploadFormActivity extends Activity {
 	private int severity;
 	private String comment;
 
+	private DatePicker date;
+	private TimePicker time;
+	private Spinner severitySpinner;
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -85,8 +86,8 @@ public class UploadFormActivity extends Activity {
 				showDialog(SOURCE_SELECTION_DIALOG);
 			}
 		});
-		Button buttonUploadImage = (Button) findViewById(R.id.submitButton);
-		buttonUploadImage.setOnClickListener(new Button.OnClickListener() {
+		Button buttonSubmitMarker = (Button) findViewById(R.id.submitButton);
+		buttonSubmitMarker.setOnClickListener(new Button.OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
 				uploadMarkerDialog();
@@ -106,13 +107,19 @@ public class UploadFormActivity extends Activity {
 			longitude = (location.getDouble("longitude"));
 			TextView latText = (TextView) findViewById(R.id.latitudeValueView);
 			TextView lonText = (TextView) findViewById(R.id.longitudeValueView);
-			latText.setText(Integer.toString((int) (latitude * 1000000)));
-			lonText.setText(Integer.toString((int) (longitude * 1000000)));
+			latText.setText(Double.toString(latitude));
+			lonText.setText(Double.toString(longitude));
 		}
+		severitySpinner = (Spinner) findViewById(R.id.severitySpinner);
+		severitySpinner.setSelection(0);
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			((DatePicker) findViewById(R.id.datePicker1))
 					.setCalendarViewShown(false);
 		}
+
+		date = (DatePicker) findViewById(R.id.datePicker1);
+		time = (TimePicker) findViewById(R.id.timePicker1);
+
 		file = "";
 		setResult(RESULT_CANCELED);
 	}
@@ -332,7 +339,12 @@ public class UploadFormActivity extends Activity {
 	 * Start the async task to upload a marker with all the information.
 	 */
 	public void uploadMarkerDialog() {
-		new UploadMarkerTask().execute();
+		if (severitySpinner.getSelectedItemPosition() == 0) {
+			Toast.makeText(this, "Please choose a severity", Toast.LENGTH_LONG)
+					.show();
+		} else {
+			new UploadMarkerTask().execute();
+		}
 	}
 
 	/**
@@ -417,7 +429,9 @@ public class UploadFormActivity extends Activity {
 	private class UploadMarkerTask extends AsyncTask<Void, Void, Void> {
 		protected boolean taskCompleted = false;
 
-		/* (non-Javadoc)
+		/*
+		 * (non-Javadoc)
+		 * 
 		 * @see android.os.AsyncTask#onPreExecute()
 		 */
 		@Override
@@ -425,7 +439,9 @@ public class UploadFormActivity extends Activity {
 			showDialog(UPLOADING_DIALOG);
 		}
 
-		/* (non-Javadoc)
+		/*
+		 * (non-Javadoc)
+		 * 
 		 * @see android.os.AsyncTask#doInBackground(Params[])
 		 */
 		@Override
@@ -433,10 +449,13 @@ public class UploadFormActivity extends Activity {
 			ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 			NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 			if (networkInfo != null && networkInfo.isConnected()) {
+				String observationTime = date.getMonth() + "/"
+						+ date.getDayOfMonth() + "/" + date.getYear() + " "
+						+ time.getCurrentHour() + ":" + time.getCurrentMinute();
 				Marker marker = new Marker(0,
 						new GeoPoint((int) (latitude * 1000000),
-								(int) (longitude * 1000000)),
-						"03/12/2012 19:32", comment, "", severity);
+								(int) (longitude * 1000000)), observationTime,
+						comment, "", severity);
 				File image = null;
 				if (!file.equalsIgnoreCase("")) {
 					image = new File(file);
@@ -456,7 +475,9 @@ public class UploadFormActivity extends Activity {
 			return null;
 		}
 
-		/* (non-Javadoc)
+		/*
+		 * (non-Javadoc)
+		 * 
 		 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
 		 */
 		@Override

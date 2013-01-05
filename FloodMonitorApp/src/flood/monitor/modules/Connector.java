@@ -283,11 +283,11 @@ public class Connector {
 				+ "</latitude><longitude>"
 				+ lon
 				+ "</longitude><observationTime>"
-				+ "03/14/2012 12:12"
+				+ marker.getObservationTime()
 				+ "</observationTime><phoneNumber>"
 				+ "111-123-1234"
 				+ "</phoneNumber><severity>"
-				+ 3
+				+ marker.getSeverity()
 				+ "</severity><coverType>"
 				+ 2
 				+ "</coverType><coverHeight>"
