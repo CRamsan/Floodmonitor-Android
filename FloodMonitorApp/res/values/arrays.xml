@@ -45,5 +45,12 @@
         <item name="4">4</item>
         <item name="5">5</item>
     </string-array>
+    <string-array name="covertypes">
+        <item name="null">-</item>
+        <item name="1">Snow</item>
+        <item name="2">Water-soaked snow</item>
+        <item name="3">Ice-covered snow</item>
+        <item name="4">Water</item>
+    </string-array>
 
 </resources>

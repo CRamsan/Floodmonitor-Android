@@ -9,7 +9,7 @@
         android:id="@+id/mapview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:apiKey="07r48M7l5UiV6H7b6d0zXPnji_odZTadYwvOrMA"
+        android:apiKey="07r48M7l5UiXyS19Sphlk3cJL-e9-C6BOIA0QeA"
         android:clickable="true" />
 
     <ImageView

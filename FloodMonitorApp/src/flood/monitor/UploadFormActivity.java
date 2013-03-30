@@ -61,12 +61,17 @@ public class UploadFormActivity extends Activity {
 
 	private double latitude;
 	private double longitude;
+	private int coverHeight;
+	private String coverType;
 	private int severity;
 	private String comment;
 
 	private DatePicker date;
 	private TimePicker time;
+	private TextView commentTextView;
+	private TextView coverheightTextView;
 	private Spinner severitySpinner;
+	private Spinner coverTypeSpinner;
 
 	/*
 	 * (non-Javadoc)
@@ -101,6 +106,10 @@ public class UploadFormActivity extends Activity {
 				finish();
 			}
 		});
+
+		commentTextView = (TextView) findViewById(R.id.commentView);
+		coverheightTextView = (TextView) findViewById(R.id.covertypeSpinner);
+
 		Bundle location = getIntent().getExtras();
 		if (location != null) {
 			latitude = (location.getDouble("latitude"));
@@ -112,6 +121,8 @@ public class UploadFormActivity extends Activity {
 		}
 		severitySpinner = (Spinner) findViewById(R.id.severitySpinner);
 		severitySpinner.setSelection(0);
+		coverTypeSpinner = (Spinner) findViewById(R.id.covertypeSpinner);
+		coverTypeSpinner.setSelection(0);
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			((DatePicker) findViewById(R.id.datePicker1))
 					.setCalendarViewShown(false);
@@ -449,6 +460,10 @@ public class UploadFormActivity extends Activity {
 			ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 			NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 			if (networkInfo != null && networkInfo.isConnected()) {
+				comment = commentTextView.getText().toString();
+				coverHeight = Integer.parseInt(coverheightTextView.getText()
+						.toString());
+				coverType = coverTypeSpinner.getSelectedItem().toString();
 				String observationTime = date.getMonth() + "/"
 						+ date.getDayOfMonth() + "/" + date.getYear() + " "
 						+ time.getCurrentHour() + ":" + time.getCurrentMinute();
@@ -460,7 +475,7 @@ public class UploadFormActivity extends Activity {
 				if (!file.equalsIgnoreCase("")) {
 					image = new File(file);
 				}
-				Connector.SubmitMarker(marker, image);
+				Connector.SubmitMarker(marker, image, coverType, coverHeight);
 				taskCompleted = true;
 			} else {
 				activity.runOnUiThread(new Runnable() {

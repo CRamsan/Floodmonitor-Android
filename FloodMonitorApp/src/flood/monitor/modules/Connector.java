@@ -245,14 +245,10 @@ public class Connector {
 	 * @param image
 	 *            optional file that can also be uploaded.
 	 */
-	public static void SubmitMarker(Marker marker, File image) {
+	public static void SubmitMarker(Marker marker, File image, String coverType, int coverHeight) {
 		OutputStreamWriter request = null;
 		double lat = (marker.getLatitude());
 		double lon = (marker.getLongitude());
-		// String timeStamp = new SimpleDateFormat("MM/dd/yyy HH:MM").format(new
-		// Date());
-		// int severity = marker.getSeverity();
-		// TODO Complete submit marker form.
 		String data = "";
 		if (image != null) {
 			Bitmap bm = BitmapFactory.decodeFile(image.getAbsolutePath());
@@ -289,9 +285,9 @@ public class Connector {
 				+ "</phoneNumber><severity>"
 				+ marker.getSeverity()
 				+ "</severity><coverType>"
-				+ 2
+				+ coverType
 				+ "</coverType><coverHeight>"
-				+ 2
+				+ coverHeight
 				+ "</coverHeight><uploadTime>"
 				+ "03/14/2012 12:12"
 				+ "</uploadTime><pictureData>"
