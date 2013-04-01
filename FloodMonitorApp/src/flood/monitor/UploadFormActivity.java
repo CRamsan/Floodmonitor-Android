@@ -50,8 +50,8 @@ public class UploadFormActivity extends Activity {
 
 	private static final int MEDIA_TYPE_IMAGE = 1;
 
-	private final static int UPLOAD_RUNNING = 0;
-	private final static int UPLOAD_COMPLETE = 1;
+	//private final static int UPLOAD_RUNNING = 0;
+	//private final static int UPLOAD_COMPLETE = 1;
 
 	private UploadFormActivity activity = this;
 	private Context context = this;
@@ -65,11 +65,13 @@ public class UploadFormActivity extends Activity {
 	private String coverType;
 	private int severity;
 	private String comment;
+	private String email;
 
 	private DatePicker date;
 	private TimePicker time;
 	private TextView commentTextView;
 	private TextView coverheightTextView;
+	private TextView emailTextView;
 	private Spinner severitySpinner;
 	private Spinner coverTypeSpinner;
 
@@ -86,6 +88,7 @@ public class UploadFormActivity extends Activity {
 
 		Button buttonLoadImage = (Button) findViewById(R.id.pictureButton);
 		buttonLoadImage.setOnClickListener(new Button.OnClickListener() {
+			@SuppressWarnings("deprecation")
 			@Override
 			public void onClick(View arg0) {
 				showDialog(SOURCE_SELECTION_DIALOG);
@@ -108,7 +111,7 @@ public class UploadFormActivity extends Activity {
 		});
 
 		commentTextView = (TextView) findViewById(R.id.commentView);
-		coverheightTextView = (TextView) findViewById(R.id.covertypeSpinner);
+		coverheightTextView = (TextView) findViewById(R.id.covertypeView);
 
 		Bundle location = getIntent().getExtras();
 		if (location != null) {
@@ -128,6 +131,7 @@ public class UploadFormActivity extends Activity {
 					.setCalendarViewShown(false);
 		}
 
+		emailTextView = (TextView) findViewById(R.id.emailText);
 		date = (DatePicker) findViewById(R.id.datePicker1);
 		time = (TimePicker) findViewById(R.id.timePicker1);
 
@@ -461,6 +465,7 @@ public class UploadFormActivity extends Activity {
 			NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 			if (networkInfo != null && networkInfo.isConnected()) {
 				comment = commentTextView.getText().toString();
+				email = emailTextView.getText().toString();
 				coverHeight = Integer.parseInt(coverheightTextView.getText()
 						.toString());
 				coverType = coverTypeSpinner.getSelectedItem().toString();
@@ -475,7 +480,7 @@ public class UploadFormActivity extends Activity {
 				if (!file.equalsIgnoreCase("")) {
 					image = new File(file);
 				}
-				Connector.SubmitMarker(marker, image, coverType, coverHeight);
+				Connector.SubmitMarker(marker, image, coverType, coverHeight, email);
 				taskCompleted = true;
 			} else {
 				activity.runOnUiThread(new Runnable() {

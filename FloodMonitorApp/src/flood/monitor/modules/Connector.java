@@ -244,8 +244,12 @@ public class Connector {
 	 *            as an object containing all the required info.
 	 * @param image
 	 *            optional file that can also be uploaded.
+	 * @return an integer greater than 0 representing the id of the submited
+	 *         marker. If the return value is less than 0, then an error
+	 *         ocurred. A return value of 0 represents a generic network error.
 	 */
-	public static void SubmitMarker(Marker marker, File image, String coverType, int coverHeight) {
+	public static int SubmitMarker(Marker marker, File image, String coverType,
+			int coverHeight, String email) {
 		OutputStreamWriter request = null;
 		double lat = (marker.getLatitude());
 		double lon = (marker.getLongitude());
@@ -280,17 +284,17 @@ public class Connector {
 				+ lon
 				+ "</longitude><observationTime>"
 				+ marker.getObservationTime()
-				+ "</observationTime><phoneNumber>"
-				+ "111-123-1234"
-				+ "</phoneNumber><severity>"
+				+ "</observationTime><severity>"
 				+ marker.getSeverity()
 				+ "</severity><coverType>"
 				+ coverType
 				+ "</coverType><coverHeight>"
 				+ coverHeight
 				+ "</coverHeight><uploadTime>"
-				+ "03/14/2012 12:12"
-				+ "</uploadTime><pictureData>"
+				+ marker.getObservationTime()
+				+ "</uploadTime><email>"
+				+ email
+				+ "</pictureData><pictureData>"
 				+ data
 				+ "</pictureData></params></phone>";
 		try {
@@ -324,6 +328,7 @@ public class Connector {
 
 		} catch (IOException e) {
 			Log.d("Connector", "Error: " + e);
+			return 0;
 		}
 	}
 

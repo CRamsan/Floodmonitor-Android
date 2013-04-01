@@ -458,8 +458,10 @@ public class ObjectDataSource {
 	}
 
 	/**
-	 * Compare two sets of markers, the elements that are not common between the
-	 * two will be added to the database.
+	 * @deprecated in favor of applyMarkerIncrement
+	 * 
+	 *             Compare two sets of markers, the elements that are not common
+	 *             between the two will be added to the database.
 	 * 
 	 * @param cachedMarkers
 	 *            list of markers that represent the information stored in the
@@ -469,21 +471,32 @@ public class ObjectDataSource {
 	 */
 	public void applyMarkerDifferences(ArrayList<Marker> cachedMarkers,
 			ArrayList<Marker> newMarkers) {
-		for (Marker oldMarker : cachedMarkers) {
-			for (Marker newMarker : newMarkers) {
-				if (oldMarker.equals(newMarker)) {
-					break;
-				}
-			}
-			deleteMarker(oldMarker);
-		}
-
 		for (Marker newMarker : newMarkers) {
 			for (Marker oldMarker : cachedMarkers) {
 				if (oldMarker.equals(newMarker)) {
 					break;
 				}
 			}
+			insertMarker(newMarker);
+		}
+	}
+
+	/**
+	 * Add a new set of markers to the database. It is assumed that the new set
+	 * of markers is an increment of the existing set. Some collisions may
+	 * happen if a marker is uploaded by the user and then it is received in the
+	 * new set. If this happens, it is assumed that both markers should have the
+	 * same ID(primary key) and therefore no duplicates will happen.
+	 * 
+	 * @param cachedMarkers
+	 *            list of markers that represent the information stored in the
+	 *            database.
+	 * @param newMarkers
+	 *            list of markers that contain new elements.
+	 */
+	public void applyMarkerIncrement(ArrayList<Marker> cachedMarkers,
+			ArrayList<Marker> newMarkers) {
+		for (Marker newMarker : newMarkers) {
 			insertMarker(newMarker);
 		}
 	}
