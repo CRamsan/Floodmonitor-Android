@@ -178,64 +178,6 @@ public class Connector {
 		return markers;
 	}
 
-	/**
-	 * Query the XML_COMMUNICATOR for the current list Markers in the specified
-	 * event.
-	 * 
-	 * @param boundarytId
-	 *            of the boundary where the markers are located.
-	 * @param eventId
-	 *            of the event where the markers are located.
-	 * @param regionId
-	 *            of the region where the markers are located.
-	 * @param fileID
-	 *            of the cache information.
-	 * @return a list containing the new set of Markers.
-	 */
-	public static ArrayList<Marker> downloadMarkers(int boundarytId,
-			int eventId, int regionId, int fileID) {
-		OutputStreamWriter request = null;
-		String parameters = "data=<phone><command>GetMarkerFile</command><params><KmlFileID>"
-				+ fileID + "</KmlFileID></params></phone>";
-		ArrayList<Marker> markers = new ArrayList<Marker>(0);
-		try {
-			URL url = new URL(XML_COMMUNICATOR);
-
-			/* Open a connection to that URL. */
-			HttpURLConnection ucon = (HttpURLConnection) url.openConnection();
-			ucon.setDoOutput(true);
-			ucon.setRequestProperty("Content-Type",
-					"application/x-www-form-urlencoded");
-			ucon.setRequestMethod("POST");
-
-			request = new OutputStreamWriter(ucon.getOutputStream());
-			request.write(parameters);
-			request.flush();
-			request.close();
-
-			/*
-			 * Define InputStreams to read from the URLConnection.
-			 */
-			InputStream is = ucon.getInputStream();
-
-			String kmlURL = Parser.ParseFileNames(is);
-
-			url = new URL(kmlURL);
-
-			/* Open a connection to that URL. */
-			ucon = (HttpURLConnection) url.openConnection();
-			is = ucon.getInputStream();
-			markers = Parser.ParseMarkers(is);
-			for (Marker marker : markers) {
-				marker.setEventId(eventId);
-				marker.setBoundaryId(boundarytId);
-				marker.setRegionId(regionId);
-			}
-		} catch (IOException e) {
-			Log.d("Connector", "Error: " + e);
-		}
-		return markers;
-	}
 
 	/**
 	 * Upload a marker to the server.
@@ -330,6 +272,7 @@ public class Connector {
 			Log.d("Connector", "Error: " + e);
 			return 0;
 		}
+		return 1;
 	}
 
 	/**

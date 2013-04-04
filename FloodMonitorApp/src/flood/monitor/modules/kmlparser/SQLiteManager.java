@@ -26,6 +26,9 @@ public class SQLiteManager extends SQLiteOpenHelper {
 	public static final String KML_FILE_COLUMN_BOUNDARYID = "boundaryid";
 	public static final String KML_FILE_COLUMN_REGIONID = "regionid";
 	public static final String KML_FILE_COLUMN_EVENTID = "eventid";
+	public static final String KML_FILE_COLUMN_VERSION = "version";
+	public static final String KML_FILE_COLUMN_DIFF_ID = "id";
+	public static final String KML_FILE_COLUMN_DIFF_VERSION = "diffversion";
 
 	public static final String MARKERS_COLUMN_ID = "id";
 	public static final String MARKERS_COLUMN_SEVERITY = "severity";
@@ -56,7 +59,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
 	public static final String BOUNDARIES_COLUMN_WEST = "west";
 
 	private static final String DATABASE_NAME = "floodmonitor.db";
-	private static final int DATABASE_VERSION = 27;
+	private static final int DATABASE_VERSION = 28;
 
 	private static final String CREATE_MARKER_TABLE = "create table "
 			+ TABLE_MARKERS_NAME + " ( " + UNIQUE_COLUMN_ID
@@ -72,9 +75,11 @@ public class SQLiteManager extends SQLiteOpenHelper {
 	private static final String CREATE_KML_FILE_TABLE = "create table "
 			+ TABLE_KML_FILE_NAME + " ( " + UNIQUE_COLUMN_ID
 			+ " integer primary key autoincrement, " + KML_FILE_COLUMN_ID
-			+ " int, " + KML_FILE_COLUMN_EVENTID + " int, "
+			+ " int, " + KML_FILE_COLUMN_VERSION + " int, "
 			+ KML_FILE_COLUMN_REGIONID + " int, " + KML_FILE_COLUMN_BOUNDARYID
-			+ " int);";
+			+ " int, " + KML_FILE_COLUMN_EVENTID + " int, "
+			+ KML_FILE_COLUMN_DIFF_ID + " int, " + KML_FILE_COLUMN_DIFF_VERSION
+			+ "int);";
 
 	private static final String CREATE_EVENT_TABLE = "create table "
 			+ TABLE_EVENTS_NAME + " (  " + UNIQUE_COLUMN_ID

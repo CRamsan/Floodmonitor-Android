@@ -82,7 +82,7 @@ public class ObjectDataSource {
 	 * 
 	 * @param marker
 	 *            to be stored in the database.
-	 * @return return true if the SQL query run correctly, return flase
+	 * @return return true if the SQL query run correctly, return false
 	 *         otherwise.
 	 */
 	public boolean insertMarker(Marker marker) {
@@ -531,4 +531,43 @@ public class ObjectDataSource {
 			insertBoundary(newBoundary);
 		}
 	}
+
+	public boolean insertKML(KMLFile file) {
+		ContentValues values = new ContentValues();
+		values.put(SQLiteManager.KML_FILE_COLUMN_ID, file.getFileId());
+		values.put(SQLiteManager.KML_FILE_COLUMN_REGIONID, file.getRegionId());
+		values.put(SQLiteManager.KML_FILE_COLUMN_BOUNDARYID,
+				file.getBoundaryId());
+		values.put(SQLiteManager.KML_FILE_COLUMN_EVENTID, file.getEventId());
+		values.put(SQLiteManager.KML_FILE_COLUMN_VERSION, file.getFileVersion());
+
+		long insertId = database.insert(SQLiteManager.TABLE_KML_FILE_NAME,
+				null, values);
+		return (insertId != -1);
+	}
+
+	public void deleteKML(KMLFile file) {
+		int id = file.getFileId();
+		database.delete(SQLiteManager.TABLE_KML_FILE_NAME,
+				SQLiteManager.KML_FILE_COLUMN_ID + " = " + id, null);
+	}
+
+	public KMLFile getKMLFile() {
+		KMLFile file = null;
+
+		Cursor cursor = database.query(SQLiteManager.TABLE_REGIONS_NAME,
+				allColumnsRegions, null, null, null, null, null);
+
+		cursor.moveToFirst();
+		file = cursorToKMLFile(cursor);
+		cursor.close();
+		
+		return file;
+	}
+
+	private KMLFile cursorToKMLFile(Cursor cursor) {
+		KMLFile file = new KMLFile(cursor.getInt(0), cursor.getInt(1), "");
+		return file;
+	}
+
 }
