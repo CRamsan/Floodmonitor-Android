@@ -149,8 +149,20 @@ public class Connector {
 			 */
 			InputStream is = ucon.getInputStream();
 
+			// read it with BufferedReader
+			/*BufferedReader br = new BufferedReader(new InputStreamReader(is));
+			StringBuilder sb = new StringBuilder();
+
+			String line;
+			while ((line = br.readLine()) != null) {
+				sb.append(line);
+			}
+			line = sb.toString();*/
+			
 			kmlFiles = Parser.ParseKMLFiles(is);
 
+			//br.close();
+			
 		} catch (IOException e) {
 			Log.d("Connector", "Error: " + e);
 		}
@@ -184,8 +196,19 @@ public class Connector {
 			 */
 			InputStream is = ucon.getInputStream();
 
+			// read it with BufferedReader
+			BufferedReader br = new BufferedReader(new InputStreamReader(is));
+			StringBuilder sb = new StringBuilder();
+
+			String line;
+			while ((line = br.readLine()) != null) {
+				sb.append(line);
+			}
+			line = sb.toString();
+			
 			kmlFiles = Parser.ParseKMLFiles(is);
 
+			br.close();
 		} catch (IOException e) {
 			Log.d("Connector", "Error: " + e);
 		}
@@ -222,8 +245,19 @@ public class Connector {
 			 */
 			InputStream is = ucon.getInputStream();
 
+			// read it with BufferedReader
+			BufferedReader br = new BufferedReader(new InputStreamReader(is));
+			StringBuilder sb = new StringBuilder();
+
+			String line;
+			while ((line = br.readLine()) != null) {
+				sb.append(line);
+			}
+			line = sb.toString();
+
 			kmlFiles = Parser.ParseKMLFiles(is);
 
+			br.close();
 		} catch (IOException e) {
 			Log.d("Connector", "Error: " + e);
 		}

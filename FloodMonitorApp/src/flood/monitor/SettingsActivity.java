@@ -8,10 +8,10 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.provider.ContactsContract.Data;
 import android.provider.SearchRecentSuggestions;
+import android.widget.Toast;
 import flood.monitor.MapViewActivity.AddressSuggestionProvider;
 import flood.monitor.modules.Connector;
 import flood.monitor.modules.kmlparser.ObjectDataSource;
-
 
 /**
  * @author Cesar
@@ -20,7 +20,7 @@ import flood.monitor.modules.kmlparser.ObjectDataSource;
 public class SettingsActivity extends PreferenceActivity {
 
 	private SettingsActivity activity = this;
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -43,13 +43,17 @@ public class SettingsActivity extends PreferenceActivity {
 						return true;
 					}
 				});
-		Preference clearAll = (Preference) findPreference("pref_ClearAllCache");
+		Preference clearAll = (Preference) findPreference("pref_ClearAll");
 		clearAll.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 			public boolean onPreferenceClick(Preference preference) {
 				ObjectDataSource data = new ObjectDataSource(activity);
 				data.open();
-				
-				data.close();				
+				data.reset();
+				data.close();
+				setResult(MapViewActivity.RESULT_RESTART);
+				Toast.makeText(activity,
+						"Application will need to be restarted",
+						Toast.LENGTH_LONG).show();
 				return true;
 			}
 		});

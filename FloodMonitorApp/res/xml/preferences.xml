@@ -4,6 +4,7 @@
     <PreferenceCategory android:title="@string/pref_GPSLocation" >
         <CheckBoxPreference
             android:key="pref_GPSEnabled"
+            android:defaultValue="true"
             android:title="@string/pref_GPSEnabled_title" />
 
         <ListPreference

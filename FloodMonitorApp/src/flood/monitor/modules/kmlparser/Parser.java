@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -13,6 +14,8 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
+
+import android.util.Log;
 
 import com.google.android.maps.GeoPoint;
 
@@ -135,9 +138,13 @@ public class Parser {
 			SAXParser saxParser = factory.newSAXParser();
 			saxParser.parse(stream, handler);
 		} catch (SAXException e) {
+			Log.d("Parser", e.getMessage());
 		} catch (ParserConfigurationException e) {
-		} catch (FileNotFoundException e1) {
+			Log.d("Parser", e.getMessage());
+		} catch (FileNotFoundException e) {
+			Log.d("Parser", e.getMessage());
 		} catch (IOException e) {
+			Log.d("Parser", e.getMessage());
 		}
 
 		return handler.getKMLFiles();
@@ -467,9 +474,9 @@ public class Parser {
 
 		private ArrayList<KMLFile> kmlfiles;
 
-		private static final String KMLFILES = "kmlfile";
+		private static final String KMLFILES = "kmlfiles";
 		private static final String BASE = "base";
-		private static final String DIFF = "DIFF";
+		private static final String DIFF = "diff";
 		private static final String KMLFILE = "kmlfile";
 		private static final String ID = "id";
 		private static final String FILE = "file";
@@ -482,7 +489,7 @@ public class Parser {
 		private int eventId = -1;
 		private boolean isBase = false;
 		private String fileURL;
-		
+
 		private String temp = "";
 
 		/**

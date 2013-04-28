@@ -85,6 +85,9 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	// INTENT CODES
 	public final static int UPLOAD_INTENT = 100;
 	public final static int DIALOG_INTENT = 150;
+	public final static int SETTINGS_INTENT = 170;
+	// RESULT CODES
+	public final static int RESULT_RESTART = 1;
 	// DIALOGS ID
 	public final static int FIRST_RUN_DIALOG = 500;
 	public final static int EVENT_DOWNLOAD_DIALOG = 100;
@@ -441,7 +444,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			return true;
 		case R.id.menuItemSettings:// Settings
 			intent = new Intent(MapViewActivity.this, SettingsActivity.class);
-			startActivity(intent);
+			startActivityForResult(intent, SETTINGS_INTENT);
 			return true;
 		case R.id.menuItemAbout: // ABout
 			intent = new Intent(MapViewActivity.this, AboutActivity.class);
@@ -568,6 +571,13 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 				locationOverlay.stopDragMarker();
 				updateButton();
 				limitedMapView.invalidate();
+			}
+			break;
+		case SETTINGS_INTENT:
+			if (resultCode == RESULT_RESTART) {
+				Toast.makeText(activity, "Please, start the app manually",
+						Toast.LENGTH_LONG).show();
+				finish();
 			}
 			break;
 		default:
@@ -738,6 +748,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	 * preference will be set to their default values.
 	 */
 	private void onInstall() {
+		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 		SharedPreferences settings = PreferenceManager
 				.getDefaultSharedPreferences(this);
 		SharedPreferences.Editor editor = settings.edit();
@@ -773,9 +784,12 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			}
 		} else {
 			if (useGPS) {
-				Toast.makeText(activity, "Getting new location", Toast.LENGTH_SHORT).show();
+				Toast.makeText(activity, "Getting new location",
+						Toast.LENGTH_SHORT).show();
 			} else {
-				Toast.makeText(activity, "GPS is disabled on the 'Settings' page", Toast.LENGTH_LONG).show();
+				Toast.makeText(activity,
+						"GPS is disabled on the 'Settings' page",
+						Toast.LENGTH_LONG).show();
 			}
 		}
 
@@ -1331,7 +1345,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 							boundary.getId(), selectedEvent.getEventId());
 					ArrayList<KMLFile> kmlFiles = null;
 					ArrayList<Marker> baseMarkers;
-					ArrayList<Marker> diffMarkers;
+					ArrayList<Marker> diffMarkers = null;
 
 					if (kml == null) {
 						kmlFiles = Connector.downloadKML(boundary.getId(),
@@ -1339,8 +1353,8 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 								selectedRegion.getRegionId());
 						int baseId = -1;
 						for (KMLFile file : kmlFiles) {
-							if (file.getBaseId() > baseId) {
-								baseId = file.getBaseId();
+							if (file.getFileId() > baseId) {
+								baseId = file.getFileId();
 							}
 						}
 						kml = new KMLFile(baseId, 0, "", true,
@@ -1352,18 +1366,31 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 						kmlFiles = Connector.downloadKML(kml.getBaseId(),
 								boundary.getId(), selectedEvent.getEventId(),
 								selectedRegion.getRegionId());
+						diffMarkers = Connector.downloadMarkers(kmlFiles);
+						allMarkers.addAll(baseMarkers);
+						allMarkers.addAll(diffMarkers);
 					} else {
 						kmlFiles = Connector.downloadKML(kml.getBaseId(),
 								boundary.getId(), selectedEvent.getEventId(),
 								selectedRegion.getRegionId());
 						baseMarkers = Connector.downloadMarkers(kmlFiles);
+						allMarkers.addAll(baseMarkers);
 					}
 
-					data.updateKML(KMLFile.getBaseKML(kmlFiles),
-							KMLFile.getLatestDiffKML(kmlFiles));
-
-					allMarkers.addAll(baseMarkers);
-
+					try {
+						data.updateKML(KMLFile.getBaseKML(kmlFiles),
+								KMLFile.getLatestDiffKML(kmlFiles));
+						taskCompleted = true;
+					} catch (IndexOutOfBoundsException e) {
+						activity.runOnUiThread(new Runnable() {
+							public void run() {
+								Toast.makeText(activity,
+										"Error while getting data from server",
+										Toast.LENGTH_LONG).show();
+							}
+						});
+						taskCompleted = false;
+					}
 				}
 				Collections.sort(allMarkers);
 
@@ -1381,8 +1408,8 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 					allMarkers.addAll(markers);
 				}
 				Collections.sort(allMarkers);
+				taskCompleted = true;
 			}
-			taskCompleted = true;
 			Log.i("MapViewActivity", "DownloadMarkersTask job finished");
 			return null;
 		}

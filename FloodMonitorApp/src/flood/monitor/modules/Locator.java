@@ -86,7 +86,7 @@ public class Locator {
 			SharedPreferences sharedPrefs = PreferenceManager
 					.getDefaultSharedPreferences(activity);
 			int updateInterval = Integer.parseInt(sharedPrefs.getString(
-					"updates_interval", "0"));
+					"updates_interval", "30000"));
 			if (updateInterval != 0) {
 				locationManager.requestLocationUpdates(
 						LocationManager.GPS_PROVIDER, updateInterval, 10f,

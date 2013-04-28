@@ -2,6 +2,8 @@ package flood.monitor.modules.kmlparser;
 
 import java.util.ArrayList;
 
+import android.content.res.Resources.Theme;
+
 /**
  * @author Cesar
  * 
@@ -43,6 +45,9 @@ public class KMLFile {
 		this.fileId = fileId;
 		this.fileVersion = fileVersion;
 		this.isBase = isBase;
+		if(isBase){
+			this.baseId = fileId;
+		}
 		this.regionId = regionId;
 		this.boundaryId = boudaryId;
 		this.eventId = eventId;
@@ -177,7 +182,12 @@ public class KMLFile {
 				}
 			}
 		}
-		return kmlfiles.get(index);
+		try {
+			return kmlfiles.get(index);			
+		}
+		catch(IndexOutOfBoundsException e){
+			throw e;
+		}
 	}
 	
 	public static KMLFile getLatestDiffKML(ArrayList<KMLFile> kmlfiles) {
