@@ -30,6 +30,7 @@ public class Locator {
 	private LocationManager locationManager;
 	private LocationListener locationListener;
 	private boolean isLitening = false;
+	private boolean isLocking = false;
 
 	/**
 	 * @param activity
@@ -202,6 +203,22 @@ public class Locator {
 		return provider1.equals(provider2);
 	}
 
+	public void activateLocking(){
+		setLocking(true);
+	}
+	
+	public void deactivateLocking(){
+		setLocking(false);
+	}
+	
+	public boolean isLocking() {
+		return isLocking;
+	}
+
+	public void setLocking(boolean isLocking) {
+		this.isLocking = isLocking;
+	}
+
 	/**
 	 * Class that will report the GPS events to the activity registered to the
 	 * Locator object.
@@ -252,6 +269,7 @@ public class Locator {
 					((MapViewActivity) activity).updateBestLocation();
 				}
 			});
+			deactivateLocking();
 
 		}
 

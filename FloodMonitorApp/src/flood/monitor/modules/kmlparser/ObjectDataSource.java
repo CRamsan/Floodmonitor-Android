@@ -43,6 +43,14 @@ public class ObjectDataSource {
 			SQLiteManager.BOUNDARIES_COLUMN_SOUTH,
 			SQLiteManager.BOUNDARIES_COLUMN_WEST };
 
+	private String[] allColumnsKMLFiles = { SQLiteManager.KML_FILE_COLUMN_ID,
+			SQLiteManager.KML_FILE_COLUMN_BOUNDARYID,
+			SQLiteManager.KML_FILE_COLUMN_REGIONID,
+			SQLiteManager.KML_FILE_COLUMN_EVENTID,
+			SQLiteManager.KML_FILE_COLUMN_VERSION,
+			SQLiteManager.KML_FILE_COLUMN_DIFF_ID,
+			SQLiteManager.KML_FILE_COLUMN_DIFF_VERSION };
+
 	private String[] allColumnsEvents = { SQLiteManager.EVENTS_COLUMN_ID,
 			SQLiteManager.EVENTS_COLUMN_NAME,
 			SQLiteManager.EVENTS_COLUMN_ACTIVE,
@@ -77,6 +85,13 @@ public class ObjectDataSource {
 		dbHelper.close();
 	}
 
+	/**
+	 * Drops all the tables and creates them again.
+	 */
+	public void reset() {
+		dbHelper.onUpgrade(database, dbHelper.DATABASE_VERSION, dbHelper.DATABASE_VERSION);
+	}
+	
 	/**
 	 * Add a marker to the local database.
 	 * 
@@ -552,21 +567,58 @@ public class ObjectDataSource {
 				SQLiteManager.KML_FILE_COLUMN_ID + " = " + id, null);
 	}
 
-	public KMLFile getKMLFile() {
+	public boolean updateKML(KMLFile baseFile, KMLFile diffFile) {
+
+		ContentValues args = new ContentValues();
+		if (baseFile != null) {
+			args.put(SQLiteManager.KML_FILE_COLUMN_ID, baseFile.getBaseId());
+		}
+		if (diffFile != null) {
+			args.put(SQLiteManager.KML_FILE_COLUMN_DIFF_ID,
+					diffFile.getDiffId());
+			args.put(SQLiteManager.KML_FILE_COLUMN_DIFF_VERSION,
+					diffFile.getFileVersion());
+		}
+		long insertId = database.update(SQLiteManager.TABLE_KML_FILE_NAME,
+				args,
+				SQLiteManager.KML_FILE_COLUMN_ID + "=" + baseFile.getFileId(),
+				null);
+
+		return (insertId != -1);
+	}
+
+	public KMLFile getKMLFile(int regionId, int boudaryId, int eventId) {
 		KMLFile file = null;
 
-		Cursor cursor = database.query(SQLiteManager.TABLE_REGIONS_NAME,
-				allColumnsRegions, null, null, null, null, null);
+		Cursor cursor = database.query(SQLiteManager.TABLE_KML_FILE_NAME,
+				allColumnsKMLFiles, SQLiteManager.KML_FILE_COLUMN_REGIONID
+						+ " = " + regionId + " AND "
+						+ SQLiteManager.KML_FILE_COLUMN_BOUNDARYID + " = "
+						+ boudaryId + " AND "
+						+ SQLiteManager.KML_FILE_COLUMN_EVENTID + " = "
+						+ eventId, null, null, null, null);
 
 		cursor.moveToFirst();
-		file = cursorToKMLFile(cursor);
+		while (!cursor.isAfterLast()) {
+			file = cursorToKMLFile(cursor);
+			cursor.moveToNext();
+		}
+		// Make sure to close the cursor
 		cursor.close();
-		
+
 		return file;
 	}
 
 	private KMLFile cursorToKMLFile(Cursor cursor) {
-		KMLFile file = new KMLFile(cursor.getInt(0), cursor.getInt(1), "");
+		int fileId = cursor.getInt(0);
+		int fileVersion = cursor.getInt(1);
+		int regionId = cursor.getInt(3);
+		int boundaryId = cursor.getInt(4);
+		int eventId = cursor.getInt(5);
+		int diffId = cursor.getInt(6);
+
+		KMLFile file = new KMLFile(fileId, fileVersion, "", false, regionId,
+				boundaryId, eventId, diffId);
 		return file;
 	}
 

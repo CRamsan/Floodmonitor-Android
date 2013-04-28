@@ -19,6 +19,7 @@ import android.os.Environment;
 import android.util.Base64;
 import android.util.Log;
 import flood.monitor.modules.kmlparser.Event;
+import flood.monitor.modules.kmlparser.KMLFile;
 import flood.monitor.modules.kmlparser.Marker;
 import flood.monitor.modules.kmlparser.Parser;
 import flood.monitor.modules.kmlparser.Region;
@@ -118,27 +119,16 @@ public class Connector {
 		return events;
 	}
 
-	/**
-	 * Query the XML_COMMUNICATOR for the current list Markers in the specified
-	 * event.
-	 * 
-	 * @param boundarytId
-	 *            of the boundary where the markers are located.
-	 * @param eventId
-	 *            of the event where the markers are located.
-	 * @param regionId
-	 *            of the region where the markers are located.
-	 * @return a list containing the new set of Markers.
-	 */
-	public static ArrayList<Marker> downloadMarkers(int boundarytId,
-			int eventId, int regionId) {
+	public static ArrayList<KMLFile> downloadKML(int boundarytId, int eventId,
+			int regionId) {
 		OutputStreamWriter request = null;
 		String parameters = "data=<phone><command>GetMarkerFile</command><params><boundaryid>"
 				+ boundarytId
 				+ "</boundaryid><eventid>"
 				+ eventId
 				+ "</eventid></params></phone>";
-		ArrayList<Marker> markers = new ArrayList<Marker>(0);
+
+		ArrayList<KMLFile> kmlFiles = null;
 		try {
 			URL url = new URL(XML_COMMUNICATOR);
 
@@ -159,25 +149,122 @@ public class Connector {
 			 */
 			InputStream is = ucon.getInputStream();
 
-			String kmlURL = Parser.ParseFileNames(is);
+			kmlFiles = Parser.ParseKMLFiles(is);
 
-			url = new URL(kmlURL);
+		} catch (IOException e) {
+			Log.d("Connector", "Error: " + e);
+		}
+		return kmlFiles;
+	}
+
+	public static ArrayList<KMLFile> downloadKML(int baseId, int boundarytId,
+			int eventId, int regionId) {
+		OutputStreamWriter request = null;
+		String parameters = "data=<phone><command>GetMarkerFile</command><params><baseid>"
+				+ baseId + "</baseid></params></phone>";
+
+		ArrayList<KMLFile> kmlFiles = null;
+		try {
+			URL url = new URL(XML_COMMUNICATOR);
 
 			/* Open a connection to that URL. */
-			ucon = (HttpURLConnection) url.openConnection();
-			is = ucon.getInputStream();
-			markers = Parser.ParseMarkers(is);
-			for (Marker marker : markers) {
-				marker.setEventId(eventId);
-				marker.setBoundaryId(boundarytId);
-				marker.setRegionId(regionId);
+			HttpURLConnection ucon = (HttpURLConnection) url.openConnection();
+			ucon.setDoOutput(true);
+			ucon.setRequestProperty("Content-Type",
+					"application/x-www-form-urlencoded");
+			ucon.setRequestMethod("POST");
+
+			request = new OutputStreamWriter(ucon.getOutputStream());
+			request.write(parameters);
+			request.flush();
+			request.close();
+
+			/*
+			 * Define InputStreams to read from the URLConnection.
+			 */
+			InputStream is = ucon.getInputStream();
+
+			kmlFiles = Parser.ParseKMLFiles(is);
+
+		} catch (IOException e) {
+			Log.d("Connector", "Error: " + e);
+		}
+		return kmlFiles;
+	}
+
+	public static ArrayList<KMLFile> downloadKML(int diffId, int baseId,
+			int boundarytId, int eventId, int regionId) {
+		OutputStreamWriter request = null;
+		String parameters = "data=<phone><command>GetMarkerFile</command><params><baseid>"
+				+ baseId
+				+ "</baseid><diffid>"
+				+ diffId
+				+ "</diffid></params></phone>";
+
+		ArrayList<KMLFile> kmlFiles = null;
+		try {
+			URL url = new URL(XML_COMMUNICATOR);
+
+			/* Open a connection to that URL. */
+			HttpURLConnection ucon = (HttpURLConnection) url.openConnection();
+			ucon.setDoOutput(true);
+			ucon.setRequestProperty("Content-Type",
+					"application/x-www-form-urlencoded");
+			ucon.setRequestMethod("POST");
+
+			request = new OutputStreamWriter(ucon.getOutputStream());
+			request.write(parameters);
+			request.flush();
+			request.close();
+
+			/*
+			 * Define InputStreams to read from the URLConnection.
+			 */
+			InputStream is = ucon.getInputStream();
+
+			kmlFiles = Parser.ParseKMLFiles(is);
+
+		} catch (IOException e) {
+			Log.d("Connector", "Error: " + e);
+		}
+		return kmlFiles;
+	}
+
+	public static ArrayList<Marker> downloadMarkers(ArrayList<KMLFile> kmlFiles) {
+		OutputStreamWriter request = null;
+		InputStream is = null;
+		ArrayList<Marker> markers = new ArrayList<Marker>(0);
+		try {
+			URL url = new URL(XML_COMMUNICATOR);
+
+			/* Open a connection to that URL. */
+			HttpURLConnection ucon = (HttpURLConnection) url.openConnection();
+			ucon.setDoOutput(true);
+			ucon.setRequestProperty("Content-Type",
+					"application/x-www-form-urlencoded");
+			ucon.setRequestMethod("POST");
+			for (KMLFile file : kmlFiles) {
+				String kmlURL = file.getFileURL();
+
+				url = new URL(kmlURL);
+
+				/* Open a connection to that URL. */
+				ucon = (HttpURLConnection) url.openConnection();
+				is = ucon.getInputStream();
+				markers = Parser.ParseMarkers(is);
+				for (Marker marker : markers) {
+					marker.setEventId(file.getEventId());
+					marker.setBoundaryId(file.getBoundaryId());
+					marker.setRegionId(file.getRegionId());
+				}
+
 			}
+
 		} catch (IOException e) {
 			Log.d("Connector", "Error: " + e);
 		}
 		return markers;
 	}
-
 
 	/**
 	 * Upload a marker to the server.
@@ -236,9 +323,8 @@ public class Connector {
 				+ marker.getObservationTime()
 				+ "</uploadTime><email>"
 				+ email
-				+ "</pictureData><pictureData>"
-				+ data
-				+ "</pictureData></params></phone>";
+				+ "</email><pictureData>"
+				+ data + "</pictureData></params></phone>";
 		try {
 			URL url = new URL(XML_COMMUNICATOR);
 

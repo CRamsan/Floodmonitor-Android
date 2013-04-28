@@ -50,8 +50,8 @@ public class UploadFormActivity extends Activity {
 
 	private static final int MEDIA_TYPE_IMAGE = 1;
 
-	//private final static int UPLOAD_RUNNING = 0;
-	//private final static int UPLOAD_COMPLETE = 1;
+	// private final static int UPLOAD_RUNNING = 0;
+	// private final static int UPLOAD_COMPLETE = 1;
 
 	private UploadFormActivity activity = this;
 	private Context context = this;
@@ -111,7 +111,7 @@ public class UploadFormActivity extends Activity {
 		});
 
 		commentTextView = (TextView) findViewById(R.id.commentView);
-		coverheightTextView = (TextView) findViewById(R.id.covertypeView);
+		coverheightTextView = (TextView) findViewById(R.id.coverheightText);
 
 		Bundle location = getIntent().getExtras();
 		if (location != null) {
@@ -466,8 +466,12 @@ public class UploadFormActivity extends Activity {
 			if (networkInfo != null && networkInfo.isConnected()) {
 				comment = commentTextView.getText().toString();
 				email = emailTextView.getText().toString();
-				coverHeight = Integer.parseInt(coverheightTextView.getText()
-						.toString());
+				try {
+					coverHeight = Integer.parseInt(coverheightTextView
+							.getText().toString());
+				} catch (Exception e) {
+					coverHeight = 0;
+				}
 				coverType = coverTypeSpinner.getSelectedItem().toString();
 				String observationTime = date.getMonth() + "/"
 						+ date.getDayOfMonth() + "/" + date.getYear() + " "
@@ -480,7 +484,8 @@ public class UploadFormActivity extends Activity {
 				if (!file.equalsIgnoreCase("")) {
 					image = new File(file);
 				}
-				Connector.SubmitMarker(marker, image, coverType, coverHeight, email);
+				Connector.SubmitMarker(marker, image, coverType, coverHeight,
+						email);
 				taskCompleted = true;
 			} else {
 				activity.runOnUiThread(new Runnable() {

@@ -21,8 +21,13 @@
             android:summary="@string/pref_CLearCache_summary"
             android:title="@string/pref_CLearCache_title" />
         <Preference
+            android:key="pref_ClearAll"
+            android:summary="@string/pref_CLearAll_summary"
+            android:title="@string/pref_CLearAll_title" />
+        <Preference
             android:key="pref_ClearHistory"
-            android:title="@string/pref_CLearHistory_title" android:summary="@string/pref_CLearHistory_summary"/>
+            android:summary="@string/pref_CLearHistory_summary"
+            android:title="@string/pref_CLearHistory_title" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_Visuals" >
         <CheckBoxPreference

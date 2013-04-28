@@ -6,9 +6,12 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
+import android.provider.ContactsContract.Data;
 import android.provider.SearchRecentSuggestions;
 import flood.monitor.MapViewActivity.AddressSuggestionProvider;
 import flood.monitor.modules.Connector;
+import flood.monitor.modules.kmlparser.ObjectDataSource;
+
 
 /**
  * @author Cesar
@@ -16,6 +19,8 @@ import flood.monitor.modules.Connector;
  */
 public class SettingsActivity extends PreferenceActivity {
 
+	private SettingsActivity activity = this;
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -38,6 +43,16 @@ public class SettingsActivity extends PreferenceActivity {
 						return true;
 					}
 				});
+		Preference clearAll = (Preference) findPreference("pref_ClearAllCache");
+		clearAll.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+			public boolean onPreferenceClick(Preference preference) {
+				ObjectDataSource data = new ObjectDataSource(activity);
+				data.open();
+				
+				data.close();				
+				return true;
+			}
+		});
 		Preference clearHistory = (Preference) findPreference("pref_ClearHistory");
 		clearHistory
 				.setOnPreferenceClickListener(new OnPreferenceClickListener() {

@@ -55,6 +55,7 @@ import flood.monitor.modules.Connector;
 import flood.monitor.modules.Locator;
 import flood.monitor.modules.kmlparser.Boundary;
 import flood.monitor.modules.kmlparser.Event;
+import flood.monitor.modules.kmlparser.KMLFile;
 import flood.monitor.modules.kmlparser.Marker;
 import flood.monitor.modules.kmlparser.ObjectDataSource;
 import flood.monitor.modules.kmlparser.Region;
@@ -521,7 +522,6 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	protected void onPrepareDialog(int id, Dialog dialog) {
 		switch (id) {
 		case EVENT_DOWNLOAD_DIALOG: {
-
 		}
 		case REGION_DOWNLOAD_DIALOG: {
 		}
@@ -754,18 +754,31 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	private void lockGPS() {
 		SharedPreferences sharedPrefs = PreferenceManager
 				.getDefaultSharedPreferences(this);
-		boolean useGPS = sharedPrefs.getBoolean("pref_GPSEnabled", false);
-		if (useGPS) {
-			locator.updateListening();
+		boolean useGPS = sharedPrefs.getBoolean("pref_GPSEnabled", true);
+
+		Location location = locator.getBestLocation();
+		if (location != null) {
+			if (useGPS) {
+				locator.updateListening();
+				locator.activateLocking();
+			}
+
+			switch (getMapLevel()) {
+			case MapViewActivity.MAP_LEVEL_REGION:
+				focus(location, 10);
+				break;
+			case MapViewActivity.MAP_LEVEL_MARKER:
+				focus(location, 15);
+				break;
+			}
+		} else {
+			if (useGPS) {
+				Toast.makeText(activity, "Getting new location", Toast.LENGTH_SHORT).show();
+			} else {
+				Toast.makeText(activity, "GPS is disabled on the 'Settings' page", Toast.LENGTH_LONG).show();
+			}
 		}
-		switch (getMapLevel()) {
-		case MapViewActivity.MAP_LEVEL_REGION:
-			focus(locator.getBestLocation(), 10);
-			break;
-		case MapViewActivity.MAP_LEVEL_MARKER:
-			focus(locator.getBestLocation(), 15);
-			break;
-		}
+
 	}
 
 	/**
@@ -1086,7 +1099,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 				ArrayList<Region> regions = Connector.downloadGeoRegions();
 				data.applyRegionDifferences(data.getAllRegions(), regions);
 				Drawable defaultDrawable = getApplicationContext()
-						.getResources().getDrawable(R.drawable.marker_green);
+						.getResources().getDrawable(R.drawable.marker_dan);
 				regionsOverlay = new RegionsOverlay(defaultDrawable, regions);
 				selectedOverlay = regionsOverlay;
 				// overlayLoaded = true;
@@ -1101,7 +1114,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 				});
 				ArrayList<Region> regions = data.getAllRegions();
 				Drawable defaultDrawable = activity.getResources().getDrawable(
-						R.drawable.marker_green);
+						R.drawable.marker_dan);
 				regionsOverlay = new RegionsOverlay(defaultDrawable, regions);
 				regionsOverlay.updateActivity(activity);
 				selectedOverlay = regionsOverlay;
@@ -1314,13 +1327,43 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			allMarkers = new ArrayList<Marker>(0);
 			if (networkInfo != null && networkInfo.isConnected()) {
 				for (Boundary boundary : selectedRegion.getBoundaries()) {
-					ArrayList<Marker> markers = Connector.downloadMarkers(
-							boundary.getId(), selectedEvent.getEventId(),
-							selectedRegion.getRegionId());
-					data.applyMarkerDifferences(
-							data.getAllMarkers(boundary.getId(),
-									selectedEvent.getEventId()), markers);
-					allMarkers.addAll(markers);
+					KMLFile kml = data.getKMLFile(selectedRegion.getRegionId(),
+							boundary.getId(), selectedEvent.getEventId());
+					ArrayList<KMLFile> kmlFiles = null;
+					ArrayList<Marker> baseMarkers;
+					ArrayList<Marker> diffMarkers;
+
+					if (kml == null) {
+						kmlFiles = Connector.downloadKML(boundary.getId(),
+								selectedEvent.getEventId(),
+								selectedRegion.getRegionId());
+						int baseId = -1;
+						for (KMLFile file : kmlFiles) {
+							if (file.getBaseId() > baseId) {
+								baseId = file.getBaseId();
+							}
+						}
+						kml = new KMLFile(baseId, 0, "", true,
+								selectedRegion.getRegionId(), boundary.getId(),
+								selectedEvent.getEventId(), 0);
+						data.insertKML(kml);
+						baseMarkers = Connector.downloadMarkers(kmlFiles);
+
+						kmlFiles = Connector.downloadKML(kml.getBaseId(),
+								boundary.getId(), selectedEvent.getEventId(),
+								selectedRegion.getRegionId());
+					} else {
+						kmlFiles = Connector.downloadKML(kml.getBaseId(),
+								boundary.getId(), selectedEvent.getEventId(),
+								selectedRegion.getRegionId());
+						baseMarkers = Connector.downloadMarkers(kmlFiles);
+					}
+
+					data.updateKML(KMLFile.getBaseKML(kmlFiles),
+							KMLFile.getLatestDiffKML(kmlFiles));
+
+					allMarkers.addAll(baseMarkers);
+
 				}
 				Collections.sort(allMarkers);
 
@@ -1353,7 +1396,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		protected void onPostExecute(Void none) {
 			if (taskCompleted) {
 				Drawable defaultDrawable = activity.getResources().getDrawable(
-						R.drawable.marker_green);
+						R.drawable.marker_dan);
 				markersOverlay = new MarkersOverlay(defaultDrawable);
 				markersOverlay.updateActivity(activity);
 				markersOverlay.setOverlay(allMarkers);

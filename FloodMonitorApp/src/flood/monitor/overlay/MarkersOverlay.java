@@ -245,24 +245,24 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements
 		Drawable icon = null;
 		switch (overlayItem.getSeverity()) {
 		case 1:
-			icon = activity.getResources().getDrawable(R.drawable.marker_blue);
+			icon = activity.getResources().getDrawable(R.drawable.marker_nof);
 			break;
 		case 2:
-			icon = activity.getResources().getDrawable(R.drawable.marker_green);
+			icon = activity.getResources().getDrawable(R.drawable.marker_lit);
 			break;
 		case 3:
 			icon = activity.getResources()
-					.getDrawable(R.drawable.marker_yellow);
+					.getDrawable(R.drawable.marker_not);
 			break;
 		case 4:
 			icon = activity.getResources()
-					.getDrawable(R.drawable.marker_orange);
+					.getDrawable(R.drawable.marker_sig);
 			break;
 		case 5:
-			icon = activity.getResources().getDrawable(R.drawable.marker_red);
+			icon = activity.getResources().getDrawable(R.drawable.marker_dan);
 			break;
 		default:
-			icon = activity.getResources().getDrawable(R.drawable.marker_blue);
+			icon = activity.getResources().getDrawable(R.drawable.marker_dan);
 			break;
 		}
 		icon.setBounds(-icon.getIntrinsicWidth() / 2,

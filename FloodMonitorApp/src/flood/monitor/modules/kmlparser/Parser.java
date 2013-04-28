@@ -109,55 +109,7 @@ public class Parser {
 		return handler.getResult();
 	}
 
-	/**
-	 * @param filename
-	 *            path to file to read.
-	 * @return an integer with the ID of the file.
-	 */
-	public static int ParseFileVersion(String filename) {
-		PropertyHandler handler = new PropertyHandler();
-
-		InputStream stream;
-		try {
-			stream = new FileInputStream(filename);
-			SAXParserFactory factory = SAXParserFactory.newInstance();
-			SAXParser saxParser = factory.newSAXParser();
-			saxParser.parse(stream, handler);
-		} catch (SAXException e) {
-		} catch (ParserConfigurationException e) {
-		} catch (FileNotFoundException e1) {
-		} catch (IOException e) {
-		}
-		return handler.getIntResult();
-	}
-
-	/**
-	 * @param stream
-	 *            input stream from the content to read.
-	 * @return an integer with the ID of the file.
-	 */
-
-	public static int ParseFileVersion(InputStream stream) {
-		PropertyHandler handler = new PropertyHandler();
-
-		try {
-			SAXParserFactory factory = SAXParserFactory.newInstance();
-			SAXParser saxParser = factory.newSAXParser();
-			saxParser.parse(stream, handler);
-		} catch (SAXException e) {
-		} catch (ParserConfigurationException e) {
-		} catch (FileNotFoundException e1) {
-		} catch (IOException e) {
-		}
-		return handler.getIntResult();
-	}
-
-	/**
-	 * @param filename
-	 *            path to file to read.
-	 * @return a string with the name of the file provided in the content.
-	 */
-	public static String ParseFileNames(String filename) {
+	public static ArrayList<KMLFile> ParseKMLFiles(String filename) {
 		PropertyHandler handler = new PropertyHandler();
 
 		InputStream stream;
@@ -172,15 +124,10 @@ public class Parser {
 		} catch (IOException e) {
 		}
 
-		return handler.getStringResult();
+		return handler.getKMLFiles();
 	}
 
-	/**
-	 * @param stream
-	 *            input stream from the content to read.
-	 * @return a string with the name of the file provided in the content.
-	 */
-	public static String ParseFileNames(InputStream stream) {
+	public static ArrayList<KMLFile> ParseKMLFiles(InputStream stream) {
 		PropertyHandler handler = new PropertyHandler();
 
 		try {
@@ -193,7 +140,7 @@ public class Parser {
 		} catch (IOException e) {
 		}
 
-		return handler.getStringResult();
+		return handler.getKMLFiles();
 	}
 
 	/**
@@ -518,12 +465,24 @@ public class Parser {
 	 */
 	private static class PropertyHandler extends DefaultHandler {
 
-		private int version;
-		private String file;
+		private ArrayList<KMLFile> kmlfiles;
 
+		private static final String KMLFILES = "kmlfile";
+		private static final String BASE = "base";
+		private static final String DIFF = "DIFF";
+		private static final String KMLFILE = "kmlfile";
+		private static final String ID = "id";
+		private static final String FILE = "file";
 		private static final String VERSION = "version";
-		private static final String KMLFILE = "file";
 
+		private int fileId = -1;
+		private int fileVersion = -1;
+		private int regionId = -1;
+		private int boundaryId = -1;
+		private int eventId = -1;
+		private boolean isBase = false;
+		private String fileURL;
+		
 		private String temp = "";
 
 		/**
@@ -531,6 +490,11 @@ public class Parser {
 		 */
 		public PropertyHandler() {
 			super();
+			this.kmlfiles = new ArrayList<KMLFile>(0);
+		}
+
+		public ArrayList<KMLFile> getKMLFiles() {
+			return kmlfiles;
 		}
 
 		/*
@@ -544,10 +508,20 @@ public class Parser {
 		public void startElement(String uri, String localName, String qName,
 				Attributes attributes) throws SAXException {
 
-			if (qName.equalsIgnoreCase(VERSION)) {
-				version = 0;
+			if (qName.equalsIgnoreCase(KMLFILES)) {
+
+			} else if (qName.equalsIgnoreCase(BASE)) {
+
+			} else if (qName.equalsIgnoreCase(DIFF)) {
+
 			} else if (qName.equalsIgnoreCase(KMLFILE)) {
-				file = "";
+
+			} else if (qName.equalsIgnoreCase(ID)) {
+
+			} else if (qName.equalsIgnoreCase(FILE)) {
+
+			} else if (qName.equalsIgnoreCase(VERSION)) {
+
 			}
 
 			temp = "";
@@ -563,10 +537,20 @@ public class Parser {
 		public void endElement(String uri, String localName, String qName)
 				throws SAXException {
 
-			if (qName.equalsIgnoreCase(VERSION)) {
-				version = Integer.parseInt(temp);
+			if (qName.equalsIgnoreCase(KMLFILES)) {
+
+			} else if (qName.equalsIgnoreCase(BASE)) {
+				isBase = true;
+			} else if (qName.equalsIgnoreCase(DIFF)) {
+				isBase = false;
 			} else if (qName.equalsIgnoreCase(KMLFILE)) {
-				file = temp;
+				kmlfiles.add(new KMLFile(fileId, fileVersion, fileURL, isBase));
+			} else if (qName.equalsIgnoreCase(ID)) {
+				fileId = Integer.parseInt(temp);
+			} else if (qName.equalsIgnoreCase(FILE)) {
+				fileURL = temp;
+			} else if (qName.equalsIgnoreCase(VERSION)) {
+				fileVersion = Integer.parseInt(temp);
 			}
 			temp = "";
 		}
@@ -581,20 +565,6 @@ public class Parser {
 				throws SAXException {
 			String input = new String(ch, start, length);
 			temp = temp + input.replaceAll("\n", "").replaceAll("\t", "");
-		}
-
-		/**
-		 * @return an integer with the version of the file.
-		 */
-		public int getIntResult() {
-			return version;
-		}
-
-		/**
-		 * @return a string with the name of the file.
-		 */
-		public String getStringResult() {
-			return file;
 		}
 	}
 

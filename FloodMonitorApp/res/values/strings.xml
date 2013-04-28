@@ -48,6 +48,8 @@
     <string name="pref_DataStorage">Data &amp; Storage</string>
     <string name="pref_CLearCache_title">Clear cache</string>
     <string name="pref_CLearCache_summary">Remove all the downloaded pictures</string>
+    <string name="pref_CLearAll_title">Clear All</string>
+    <string name="pref_CLearAll_summary">Removes all downloaded pictures as well as markers on the database</string>
     <string name="pref_CLearHistory_title">Clear search history</string>
     <string name="pref_CLearHistory_summary">Clear the places that I have searched</string>
     <string name="pref_CacheSize_title">Cache size</string>

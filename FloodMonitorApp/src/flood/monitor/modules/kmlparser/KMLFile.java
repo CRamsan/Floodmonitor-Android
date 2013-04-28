@@ -11,10 +11,11 @@ public class KMLFile {
 	private int fileId = -1;
 	private int fileVersion = -1;
 	private int regionId = -1;
-	private int boundaryId = -1;	
+	private int boundaryId = -1;
 	private int eventId = -1;
+	private boolean isBase = false;
+	private int baseId = -1;
 	private int diffId = -1;
-	private int diffVersion = -1;
 	private String fileURL;
 
 	/**
@@ -22,10 +23,11 @@ public class KMLFile {
 	 * @param fileVersion
 	 * @param fileURL
 	 */
-	public KMLFile(int fileId, int fileVersion, String fileURL) {
+	public KMLFile(int fileId, int fileVersion, String fileURL, boolean isBase) {
 		this.fileId = fileId;
 		this.fileVersion = fileVersion;
 		this.fileURL = fileURL;
+		this.isBase = isBase;
 	}
 
 	/**
@@ -36,15 +38,18 @@ public class KMLFile {
 	 * @param boudaryId
 	 * @param eventId
 	 */
-	public KMLFile(int fileId, int fileVersion, String fileURL, int regionId, int boudaryId, int eventId) {
+	public KMLFile(int fileId, int fileVersion, String fileURL, boolean isBase,
+			int regionId, int boudaryId, int eventId, int diffId) {
 		this.fileId = fileId;
 		this.fileVersion = fileVersion;
+		this.isBase = isBase;
 		this.regionId = regionId;
 		this.boundaryId = boudaryId;
 		this.eventId = eventId;
 		this.fileURL = fileURL;
+		this.diffId = diffId;
 	}
-	
+
 	/**
 	 * @return
 	 */
@@ -99,8 +104,8 @@ public class KMLFile {
 	 */
 	public void setEventId(int eventId) {
 		this.eventId = eventId;
-	}	
-	
+	}
+
 	/**
 	 * @return
 	 */
@@ -132,28 +137,62 @@ public class KMLFile {
 	/**
 	 * @return
 	 */
+	public boolean isBase() {
+		return isBase;
+	}
+
+	/**
+	 * @param isBase
+	 */
+	public void setBase(boolean isBase) {
+		this.isBase = isBase;
+	}
+
+	public int getBaseId() {
+		return baseId;
+	}
+
+	public void setBaseId(int baseId) {
+		this.baseId = baseId;
+	}
+
 	public int getDiffId() {
 		return diffId;
 	}
 
-	/**
-	 * @param diffId
-	 */
 	public void setDiffId(int diffId) {
 		this.diffId = diffId;
 	}
 
-	/**
-	 * @return
-	 */
-	public int getDiffVersion() {
-		return diffVersion;
+	public static KMLFile getBaseKML(ArrayList<KMLFile> kmlfiles) {
+		int index = -1;
+		int baseId = -1;
+		KMLFile file = null;
+		for (int i = 0; i < kmlfiles.size(); i++){
+			file = kmlfiles.get(i);
+			if (file.isBase()) {
+				if (file.getBaseId() > baseId) {
+					baseId = file.getBaseId();
+					index = i;
+				}
+			}
+		}
+		return kmlfiles.get(index);
 	}
-
-	/**
-	 * @param diffVersion
-	 */
-	public void setDiffVersion(int diffVersion) {
-		this.diffVersion = diffVersion;
+	
+	public static KMLFile getLatestDiffKML(ArrayList<KMLFile> kmlfiles) {
+		int index = -1;
+		int versionId = -1;
+		KMLFile file = null;
+		for (int i = 0; i < kmlfiles.size(); i++){
+			file = kmlfiles.get(i);
+			if (!file.isBase()) {
+				if (file.getFileVersion() > versionId) {
+					versionId = file.getFileVersion();
+					index = i;
+				}
+			}
+		}
+		return kmlfiles.get(index);
 	}
 }
