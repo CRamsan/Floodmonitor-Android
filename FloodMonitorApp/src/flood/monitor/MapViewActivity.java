@@ -1343,6 +1343,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 				for (Boundary boundary : selectedRegion.getBoundaries()) {
 					KMLFile kml = data.getKMLFile(selectedRegion.getRegionId(),
 							boundary.getId(), selectedEvent.getEventId());
+					KMLFile diff = null;
 					ArrayList<KMLFile> kmlFiles = null;
 					ArrayList<Marker> baseMarkers;
 					ArrayList<Marker> diffMarkers = null;
@@ -1363,37 +1364,53 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 						data.insertKML(kml);
 						baseMarkers = Connector.downloadMarkers(kmlFiles);
 
-						kmlFiles = Connector.downloadKML(kml.getBaseId(),
+						kmlFiles.addAll(Connector.downloadKML(kml.getBaseId(),
 								boundary.getId(), selectedEvent.getEventId(),
-								selectedRegion.getRegionId());
+								selectedRegion.getRegionId()));
 						diffMarkers = Connector.downloadMarkers(kmlFiles);
 						allMarkers.addAll(baseMarkers);
 						allMarkers.addAll(diffMarkers);
+
+						for (Marker marker : allMarkers) {
+							marker.setBoundaryId(boundary.getId());
+							marker.setEventId(selectedEvent.getEventId());
+							marker.setRegionId(selectedRegion.getRegionId());
+							data.insertMarker(marker);
+						}
+						try {
+							diff = KMLFile.getLatestDiffKML(kmlFiles);
+						} catch (IndexOutOfBoundsException e) {
+							diff = null;
+						}
 					} else {
 						kmlFiles = Connector.downloadKML(kml.getBaseId(),
 								boundary.getId(), selectedEvent.getEventId(),
 								selectedRegion.getRegionId());
+						if (kmlFiles.size() > 1) {
+							kml = KMLFile.getBaseKML(kmlFiles);
+						}
 						baseMarkers = Connector.downloadMarkers(kmlFiles);
 						allMarkers.addAll(baseMarkers);
+						for (Marker marker : allMarkers) {
+							data.insertMarker(marker);
+						}
+						allMarkers.addAll(data.getAllMarkers(boundary.getId(),
+								selectedEvent.getEventId()));
+						try {
+							diff = KMLFile.getLatestDiffKML(kmlFiles);
+						} catch (IndexOutOfBoundsException e) {
+							diff = null;
+						}
 					}
 
-					try {
-						data.updateKML(KMLFile.getBaseKML(kmlFiles),
-								KMLFile.getLatestDiffKML(kmlFiles));
-						taskCompleted = true;
-					} catch (IndexOutOfBoundsException e) {
-						activity.runOnUiThread(new Runnable() {
-							public void run() {
-								Toast.makeText(activity,
-										"Error while getting data from server",
-										Toast.LENGTH_LONG).show();
-							}
-						});
-						taskCompleted = false;
+					if (diff == null) {
+						data.updateKML(kml, kml);
+					} else {
+						data.updateKML(kml, diff);
 					}
 				}
 				Collections.sort(allMarkers);
-
+				taskCompleted = true;
 			} else {
 				activity.runOnUiThread(new Runnable() {
 					public void run() {

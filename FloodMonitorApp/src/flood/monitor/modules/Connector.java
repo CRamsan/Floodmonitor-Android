@@ -195,20 +195,9 @@ public class Connector {
 			 * Define InputStreams to read from the URLConnection.
 			 */
 			InputStream is = ucon.getInputStream();
-
-			// read it with BufferedReader
-			BufferedReader br = new BufferedReader(new InputStreamReader(is));
-			StringBuilder sb = new StringBuilder();
-
-			String line;
-			while ((line = br.readLine()) != null) {
-				sb.append(line);
-			}
-			line = sb.toString();
 			
 			kmlFiles = Parser.ParseKMLFiles(is);
 
-			br.close();
 		} catch (IOException e) {
 			Log.d("Connector", "Error: " + e);
 		}
@@ -314,6 +303,7 @@ public class Connector {
 	public static int SubmitMarker(Marker marker, File image, String coverType,
 			int coverHeight, String email) {
 		OutputStreamWriter request = null;
+		ArrayList<Marker> markers;
 		double lat = (marker.getLatitude());
 		double lon = (marker.getLongitude());
 		String data = "";
@@ -376,6 +366,9 @@ public class Connector {
 			request.flush();
 			request.close();
 
+			InputStream is = ucon.getInputStream();
+			
+			
 			// read it with BufferedReader
 			BufferedReader br = new BufferedReader(new InputStreamReader(
 					ucon.getInputStream()));
@@ -388,11 +381,13 @@ public class Connector {
 			line = sb.toString();
 			br.close();
 
+			markers = Parser.ParseMarkers(is);
+
 		} catch (IOException e) {
 			Log.d("Connector", "Error: " + e);
 			return 0;
 		}
-		return 1;
+		return markers.get(0).getId();
 	}
 
 	/**

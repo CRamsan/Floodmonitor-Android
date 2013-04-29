@@ -73,13 +73,15 @@ public class SQLiteManager extends SQLiteOpenHelper {
 			+ " int, " + MARKERS_COLUMN_BOUNDARYID + " int);";
 
 	private static final String CREATE_KML_FILE_TABLE = "create table "
-			+ TABLE_KML_FILE_NAME + " ( " + UNIQUE_COLUMN_ID
-			+ " integer primary key autoincrement, " + KML_FILE_COLUMN_ID
-			+ " int, " + KML_FILE_COLUMN_VERSION + " int, "
-			+ KML_FILE_COLUMN_REGIONID + " int, " + KML_FILE_COLUMN_BOUNDARYID
-			+ " int, " + KML_FILE_COLUMN_EVENTID + " int, "
-			+ KML_FILE_COLUMN_DIFF_ID + " int, " + KML_FILE_COLUMN_DIFF_VERSION
-			+ " int);";
+			+ TABLE_KML_FILE_NAME + " ( " + 
+			UNIQUE_COLUMN_ID + " integer primary key autoincrement, " + 
+			KML_FILE_COLUMN_ID + " int, " + 
+			KML_FILE_COLUMN_VERSION + " int, "+ 
+			KML_FILE_COLUMN_REGIONID + " int, " + 
+			KML_FILE_COLUMN_BOUNDARYID + " int, " + 
+			KML_FILE_COLUMN_EVENTID + " int, " + 
+			KML_FILE_COLUMN_DIFF_ID + " int, " + 
+			KML_FILE_COLUMN_DIFF_VERSION + " int);";
 
 	private static final String CREATE_EVENT_TABLE = "create table "
 			+ TABLE_EVENTS_NAME + " (  " + UNIQUE_COLUMN_ID

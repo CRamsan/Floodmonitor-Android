@@ -35,6 +35,7 @@ import com.google.android.maps.GeoPoint;
 
 import flood.monitor.modules.Connector;
 import flood.monitor.modules.kmlparser.Marker;
+import flood.monitor.modules.kmlparser.ObjectDataSource;
 
 /**
  * @author Cesar
@@ -472,6 +473,12 @@ public class UploadFormActivity extends Activity {
 				} catch (Exception e) {
 					coverHeight = 0;
 				}
+				try {
+					severity = Integer.parseInt(severitySpinner
+							.getSelectedItem().toString());
+				} catch (Exception e) {
+					severity = 5;
+				}
 				coverType = coverTypeSpinner.getSelectedItem().toString();
 				String observationTime = date.getMonth() + "/"
 						+ date.getDayOfMonth() + "/" + date.getYear() + " "
@@ -481,12 +488,21 @@ public class UploadFormActivity extends Activity {
 								(int) (longitude * 1000000)), observationTime,
 						comment, "", severity);
 				File image = null;
-				if (!file.equalsIgnoreCase("")) {
-					image = new File(file);
+				try {
+					if (!file.equalsIgnoreCase("")) {
+						image = new File(file);
+					}
+					int markerId = Connector.SubmitMarker(marker, image,
+							coverType, coverHeight, email);
+					marker.setId(markerId);
+					ObjectDataSource data = new ObjectDataSource(activity);
+					data.open();
+					data.insertMarker(marker);
+					data.close();
+					taskCompleted = true;
+				} catch (Exception e) {
+					taskCompleted = false;
 				}
-				Connector.SubmitMarker(marker, image, coverType, coverHeight,
-						email);
-				taskCompleted = true;
 			} else {
 				activity.runOnUiThread(new Runnable() {
 					public void run() {
@@ -508,6 +524,7 @@ public class UploadFormActivity extends Activity {
 		@Override
 		protected void onPostExecute(Void none) {
 			if (taskCompleted) {
+				setResult(RESULT_OK);
 			}
 			dismissDialog(UPLOADING_DIALOG);
 		}

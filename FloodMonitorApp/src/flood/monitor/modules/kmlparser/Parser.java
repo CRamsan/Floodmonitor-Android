@@ -122,11 +122,14 @@ public class Parser {
 			SAXParser saxParser = factory.newSAXParser();
 			saxParser.parse(stream, handler);
 		} catch (SAXException e) {
+			Log.d("Parser", e.getMessage());
 		} catch (ParserConfigurationException e) {
-		} catch (FileNotFoundException e1) {
+			Log.d("Parser", e.getMessage());
+		} catch (FileNotFoundException e) {
+			Log.d("Parser", e.getMessage());
 		} catch (IOException e) {
+			Log.d("Parser", e.getMessage());
 		}
-
 		return handler.getKMLFiles();
 	}
 
@@ -487,7 +490,7 @@ public class Parser {
 		private int regionId = -1;
 		private int boundaryId = -1;
 		private int eventId = -1;
-		private boolean isBase = false;
+		private boolean isBase = true;
 		private String fileURL;
 
 		private String temp = "";
@@ -552,6 +555,7 @@ public class Parser {
 				isBase = false;
 			} else if (qName.equalsIgnoreCase(KMLFILE)) {
 				kmlfiles.add(new KMLFile(fileId, fileVersion, fileURL, isBase));
+				isBase = true;
 			} else if (qName.equalsIgnoreCase(ID)) {
 				fileId = Integer.parseInt(temp);
 			} else if (qName.equalsIgnoreCase(FILE)) {
@@ -610,6 +614,7 @@ public class Parser {
 		 */
 		public MarkerHandler() {
 			super();
+			mOverlay = new ArrayList<Marker>(0);
 		}
 
 		/*
@@ -624,7 +629,6 @@ public class Parser {
 				Attributes attributes) throws SAXException {
 
 			if (qName.equalsIgnoreCase(DOCUMENT)) {
-				mOverlay = new ArrayList<Marker>(0);
 
 			} else if (qName.equalsIgnoreCase(PLACEMARK)) {
 				id = Integer.parseInt(attributes.getValue("id"));

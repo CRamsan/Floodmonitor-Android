@@ -551,10 +551,10 @@ public class ObjectDataSource {
 		ContentValues values = new ContentValues();
 		values.put(SQLiteManager.KML_FILE_COLUMN_ID, file.getFileId());
 		values.put(SQLiteManager.KML_FILE_COLUMN_REGIONID, file.getRegionId());
-		values.put(SQLiteManager.KML_FILE_COLUMN_BOUNDARYID,
-				file.getBoundaryId());
+		values.put(SQLiteManager.KML_FILE_COLUMN_BOUNDARYID,file.getBoundaryId());
 		values.put(SQLiteManager.KML_FILE_COLUMN_EVENTID, file.getEventId());
 		values.put(SQLiteManager.KML_FILE_COLUMN_VERSION, file.getFileVersion());
+		values.put(SQLiteManager.KML_FILE_COLUMN_DIFF_ID, file.getDiffId());
 
 		long insertId = database.insert(SQLiteManager.TABLE_KML_FILE_NAME,
 				null, values);
@@ -612,9 +612,9 @@ public class ObjectDataSource {
 	private KMLFile cursorToKMLFile(Cursor cursor) {
 		int fileId = cursor.getInt(0);
 		int fileVersion = cursor.getInt(1);
-		int regionId = cursor.getInt(3);
-		int boundaryId = cursor.getInt(4);
-		int eventId = cursor.getInt(5);
+		int regionId = cursor.getInt(2);
+		int boundaryId = cursor.getInt(3);
+		int eventId = cursor.getInt(4);
 		int diffId = cursor.getInt(6);
 
 		KMLFile file = new KMLFile(fileId, fileVersion, "", false, regionId,
