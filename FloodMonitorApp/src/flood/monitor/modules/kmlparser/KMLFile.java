@@ -2,8 +2,6 @@ package flood.monitor.modules.kmlparser;
 
 import java.util.ArrayList;
 
-import android.content.res.Resources.Theme;
-
 /**
  * @author Cesar
  * 

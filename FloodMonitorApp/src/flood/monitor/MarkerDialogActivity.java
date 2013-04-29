@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import android.app.Activity;
 import android.content.Context;
@@ -68,6 +69,7 @@ public class MarkerDialogActivity extends Activity {
 					markerData.getInt("severity"));
 			marker.setRegionId(markerData.getInt("regionId"));
 			marker.setEventId(markerData.getInt("eventId"));
+			marker.setBoundaryId(markerData.getInt("boundaryId"));
 
 			mode = markerData.getInt("mode");
 			upload = markerData.getBoolean("upload");
@@ -157,22 +159,33 @@ public class MarkerDialogActivity extends Activity {
 				finish();
 			}
 		});
+
+		Button buttonApply = (Button) findViewById(R.id.applyChangesButton);
+		buttonApply.setOnClickListener(new Button.OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				finish();
+			}
+		});
+
 		Button buttonUpload = (Button) findViewById(R.id.markerSubmitButton);
 		buttonUpload.setOnClickListener(new Button.OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
+				double lat = marker.getPoint().getLatitudeE6() / 1000000f;
+				double lon = marker.getPoint().getLongitudeE6() / 1000000f;
 				Intent intent = new Intent(activity, UploadFormActivity.class);
-				intent.putExtra("latitude",
-						marker.getPoint().getLatitudeE6() / 1000000f);
-				intent.putExtra("longitude",
-						marker.getPoint().getLongitudeE6() / 1000000f);
+				intent.putExtra("latitude", lat);
+				intent.putExtra("longitude", lon);
 				startActivityForResult(intent, MapViewActivity.UPLOAD_INTENT);
 			}
 		});
 		if (upload) {
 			buttonUpload.setVisibility(View.VISIBLE);
+			buttonApply.setVisibility(View.GONE);
 		} else {
 			buttonUpload.setVisibility(View.GONE);
+			buttonApply.setVisibility(View.GONE);
 		}
 
 		setResult(RESULT_CANCELED);
@@ -256,6 +269,28 @@ public class MarkerDialogActivity extends Activity {
 		// This bundle will be passed to onCreate if the process is
 		// killed and restarted.
 		super.onSaveInstanceState(savedInstanceState);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see android.app.Activity#onActivityResult(int, int,
+	 * android.content.Intent)
+	 */
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+
+		switch (requestCode) {
+		case MapViewActivity.UPLOAD_INTENT:
+			if (resultCode == RESULT_OK) {
+				setResult(RESULT_OK, data);
+				findViewById(R.id.applyChangesButton).setVisibility(View.VISIBLE);
+			}
+			break;
+		default:
+			break;
+		}
 	}
 
 	/*
@@ -443,24 +478,34 @@ public class MarkerDialogActivity extends Activity {
 					((TextView) findViewById(R.id.textViewImageLoading))
 							.setVisibility(View.GONE);
 					ImageView myImage = (ImageView) findViewById(R.id.imageViewPictureUpload);
-					Bitmap myBitmap = BitmapFactory.decodeFile(localImage);
+					try {
+						Bitmap myBitmap = BitmapFactory.decodeFile(localImage);
 
-					WindowManager mWinMgr = (WindowManager) activity
-							.getSystemService(Context.WINDOW_SERVICE);
-					int displayWidth = mWinMgr.getDefaultDisplay().getWidth();
-					int displayHeight = mWinMgr.getDefaultDisplay().getHeight();
-					if (myBitmap.getWidth() > ((float) displayWidth * 0.90f)
-							|| myBitmap.getHeight() > ((float) displayHeight * 0.90f)) {
-						Log.i("MarkerDialogActivity", "Image is been processed");
-						myImage.setImageBitmap(decodeSampledBitmapFromFile(
-								localImage, (int) (displayWidth * 0.90)));
-					} else {
-						Log.i("MarkerDialogActivity",
-								"Image is loaded without been processed");
-						myImage.setImageBitmap(myBitmap);
+						WindowManager mWinMgr = (WindowManager) activity
+								.getSystemService(Context.WINDOW_SERVICE);
+						int displayWidth = mWinMgr.getDefaultDisplay()
+								.getWidth();
+						int displayHeight = mWinMgr.getDefaultDisplay()
+								.getHeight();
+						if (myBitmap.getWidth() > ((float) displayWidth * 0.90f)
+								|| myBitmap.getHeight() > ((float) displayHeight * 0.90f)) {
+							Log.i("MarkerDialogActivity",
+									"Image is been processed");
+							myImage.setImageBitmap(decodeSampledBitmapFromFile(
+									localImage, (int) (displayWidth * 0.90)));
+						} else {
+							Log.i("MarkerDialogActivity",
+									"Image is loaded without been processed");
+							myImage.setImageBitmap(myBitmap);
+						}
+
+						myImage.setVisibility(View.VISIBLE);
+					} catch (Exception e) {
+						Log.e("MarkerDialogActivity",
+								"Error while loading picture");
+						((TextView) findViewById(R.id.textViewImageLoading))
+								.setVisibility(View.VISIBLE);
 					}
-
-					myImage.setVisibility(View.VISIBLE);
 				} else {
 					((TextView) findViewById(R.id.textViewImageLoading))
 							.setVisibility(View.VISIBLE);

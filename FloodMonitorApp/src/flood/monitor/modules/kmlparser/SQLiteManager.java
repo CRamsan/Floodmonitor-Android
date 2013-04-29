@@ -39,6 +39,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
 	public static final String MARKERS_COLUMN_IMAGEURL = "image";
 	public static final String MARKERS_COLUMN_BOUNDARYID = "boundaryid";
 	public static final String MARKERS_COLUMN_EVENTID = "eventid";
+	public static final String MARKERS_COLUMN_REGIONID = "regionid";
 
 	public static final String EVENTS_COLUMN_ID = "id";
 	public static final String EVENTS_COLUMN_NAME = "name";
@@ -59,18 +60,21 @@ public class SQLiteManager extends SQLiteOpenHelper {
 	public static final String BOUNDARIES_COLUMN_WEST = "west";
 
 	public static final String DATABASE_NAME = "floodmonitor.db";
-	public static final int DATABASE_VERSION = 35;
+	public static final int DATABASE_VERSION = 36;
 
 	private static final String CREATE_MARKER_TABLE = "create table "
-			+ TABLE_MARKERS_NAME + " ( " + UNIQUE_COLUMN_ID
-			+ " integer primary key autoincrement, " + MARKERS_COLUMN_ID
-			+ " int, " + MARKERS_COLUMN_LATITUDE + " text not null, "
+			+ TABLE_MARKERS_NAME + " ( " 
+			+ UNIQUE_COLUMN_ID + " integer primary key autoincrement, " 
+			+ MARKERS_COLUMN_ID + " int, " 
+			+ MARKERS_COLUMN_LATITUDE + " text not null, "
 			+ MARKERS_COLUMN_LONGITUDE + " text not null, "
 			+ MARKERS_COLUMN_OBSERVATION_TIME + " text not null, "
 			+ MARKERS_COLUMN_COMMENT + " text not null, "
 			+ MARKERS_COLUMN_IMAGEURL + " text not null, "
-			+ MARKERS_COLUMN_SEVERITY + " int, " + MARKERS_COLUMN_EVENTID
-			+ " int, " + MARKERS_COLUMN_BOUNDARYID + " int);";
+			+ MARKERS_COLUMN_SEVERITY + " int, " 
+			+ MARKERS_COLUMN_EVENTID + " int, " 
+			+ MARKERS_COLUMN_BOUNDARYID + " int, " 
+			+ MARKERS_COLUMN_REGIONID + " int);";
 
 	private static final String CREATE_KML_FILE_TABLE = "create table "
 			+ TABLE_KML_FILE_NAME + " ( " + 
@@ -141,7 +145,6 @@ public class SQLiteManager extends SQLiteOpenHelper {
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_EVENTS_NAME);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_MARKERS_NAME);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_REGIONS_NAME);
-		db.execSQL("DROP TABLE IF EXISTS " + TABLE_EXTRA_NAME);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_KML_FILE_NAME);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_BOUNDARIES_NAME);
 		onCreate(db);

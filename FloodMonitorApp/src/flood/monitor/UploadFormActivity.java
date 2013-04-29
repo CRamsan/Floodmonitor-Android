@@ -1,6 +1,11 @@
 package flood.monitor;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -26,6 +31,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -70,11 +76,15 @@ public class UploadFormActivity extends Activity {
 
 	private DatePicker date;
 	private TimePicker time;
-	private TextView commentTextView;
-	private TextView coverheightTextView;
-	private TextView emailTextView;
+	private EditText commentTextField;
+	private EditText coverheightTextField;
+	private EditText emailTextField;
 	private Spinner severitySpinner;
 	private Spinner coverTypeSpinner;
+
+	private int selectedRegionId;
+	private int selectedEventId;
+	private int selectedBoundaryId;
 
 	/*
 	 * (non-Javadoc)
@@ -111,8 +121,8 @@ public class UploadFormActivity extends Activity {
 			}
 		});
 
-		commentTextView = (TextView) findViewById(R.id.commentView);
-		coverheightTextView = (TextView) findViewById(R.id.coverheightText);
+		commentTextField = (EditText) findViewById(R.id.commentText);
+		coverheightTextField = (EditText) findViewById(R.id.coverheightText);
 
 		Bundle location = getIntent().getExtras();
 		if (location != null) {
@@ -122,7 +132,13 @@ public class UploadFormActivity extends Activity {
 			TextView lonText = (TextView) findViewById(R.id.longitudeValueView);
 			latText.setText(Double.toString(latitude));
 			lonText.setText(Double.toString(longitude));
+
+			selectedBoundaryId = location.getInt("boundaryId", -1);
+			selectedEventId = location.getInt("eventId", -1);
+			selectedRegionId = location.getInt("regionId", -1);
+
 		}
+
 		severitySpinner = (Spinner) findViewById(R.id.severitySpinner);
 		severitySpinner.setSelection(0);
 		coverTypeSpinner = (Spinner) findViewById(R.id.covertypeSpinner);
@@ -132,7 +148,7 @@ public class UploadFormActivity extends Activity {
 					.setCalendarViewShown(false);
 		}
 
-		emailTextView = (TextView) findViewById(R.id.emailText);
+		emailTextField = (EditText) findViewById(R.id.emailText);
 		date = (DatePicker) findViewById(R.id.datePicker1);
 		time = (TimePicker) findViewById(R.id.timePicker1);
 
@@ -444,6 +460,7 @@ public class UploadFormActivity extends Activity {
 	 */
 	private class UploadMarkerTask extends AsyncTask<Void, Void, Void> {
 		protected boolean taskCompleted = false;
+		protected Marker marker = null;
 
 		/*
 		 * (non-Javadoc)
@@ -465,10 +482,10 @@ public class UploadFormActivity extends Activity {
 			ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 			NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 			if (networkInfo != null && networkInfo.isConnected()) {
-				comment = commentTextView.getText().toString();
-				email = emailTextView.getText().toString();
+				comment = commentTextField.getText().toString();
+				email = emailTextField.getText().toString();
 				try {
-					coverHeight = Integer.parseInt(coverheightTextView
+					coverHeight = Integer.parseInt(coverheightTextField
 							.getText().toString());
 				} catch (Exception e) {
 					coverHeight = 0;
@@ -483,10 +500,14 @@ public class UploadFormActivity extends Activity {
 				String observationTime = date.getMonth() + "/"
 						+ date.getDayOfMonth() + "/" + date.getYear() + " "
 						+ time.getCurrentHour() + ":" + time.getCurrentMinute();
-				Marker marker = new Marker(0,
-						new GeoPoint((int) (latitude * 1000000),
-								(int) (longitude * 1000000)), observationTime,
-						comment, "", severity);
+				marker = new Marker(0, new GeoPoint((int) (latitude * 1000000),
+						(int) (longitude * 1000000)), observationTime, comment,
+						"", severity);
+
+				marker.setBoundaryId(selectedBoundaryId);
+				marker.setEventId(selectedEventId);
+				marker.setRegionId(selectedRegionId);
+
 				File image = null;
 				try {
 					if (!file.equalsIgnoreCase("")) {
@@ -495,12 +516,69 @@ public class UploadFormActivity extends Activity {
 					int markerId = Connector.SubmitMarker(marker, image,
 							coverType, coverHeight, email);
 					marker.setId(markerId);
+
+					File mediaStorageDir = new File(
+							Environment.getExternalStorageDirectory(),
+							Connector.PUBLIC_DIR + File.separator
+									+ Connector.DOWNLOAD_DIR + File.separator
+									+ marker.getRegionId() + File.separator
+									+ marker.getEventId() + File.separator
+									+ marker.getBoundaryId() + File.separator);
+
+					if (!mediaStorageDir.exists()) {
+						if (!mediaStorageDir.mkdirs()) {
+							Log.d("Connector", "failed to create directory");
+							return null;
+						}
+					}
+
+					File cacheImage = new File(
+							mediaStorageDir.getAbsoluteFile() + File.separator
+									+ marker.getId() + ".jpg");
+
+					InputStream inStream = null;
+					OutputStream outStream = null;
+
+					try {
+
+						inStream = new FileInputStream(image);
+						outStream = new FileOutputStream(cacheImage);
+
+						byte[] buffer = new byte[1024];
+
+						int length;
+						// copy the file content in bytes
+						while ((length = inStream.read(buffer)) > 0) {
+
+							outStream.write(buffer, 0, length);
+
+						}
+
+						inStream.close();
+						outStream.close();
+
+						file = cacheImage.getName();
+						marker.setImage(file);
+
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+
 					ObjectDataSource data = new ObjectDataSource(activity);
 					data.open();
 					data.insertMarker(marker);
 					data.close();
 					taskCompleted = true;
 				} catch (Exception e) {
+
+					activity.runOnUiThread(new Runnable() {
+						public void run() {
+							Toast.makeText(activity,
+									"Error while trying to upload data",
+									Toast.LENGTH_LONG).show();
+						}
+					});
+
 					taskCompleted = false;
 				}
 			} else {
@@ -523,10 +601,20 @@ public class UploadFormActivity extends Activity {
 		 */
 		@Override
 		protected void onPostExecute(Void none) {
-			if (taskCompleted) {
-				setResult(RESULT_OK);
-			}
 			dismissDialog(UPLOADING_DIALOG);
+			if (taskCompleted) {
+				Intent markerUploaded = new Intent();
+				markerUploaded.putExtra("latitude", marker.getLatitude());
+				markerUploaded.putExtra("longitude", marker.getLongitude());
+				markerUploaded.putExtra("id", marker.getId());
+				markerUploaded.putExtra("severity", marker.getSeverity());
+				markerUploaded.putExtra("title", marker.getTitle());
+				markerUploaded.putExtra("snippet", marker.getSnippet());
+				markerUploaded.putExtra("fileImage", marker.getImage());
+
+				setResult(RESULT_OK, markerUploaded);
+				finish();
+			}
 		}
 	}
 

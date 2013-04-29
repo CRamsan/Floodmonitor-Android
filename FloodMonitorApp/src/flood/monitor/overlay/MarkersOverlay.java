@@ -175,6 +175,13 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements
 		}
 	}
 
+	/**
+	 * Allows for other objects to force an update on the markers in the list.
+	 */
+	public void overlayPopulate() {
+		populate();
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -227,6 +234,7 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements
 		intent.putExtra("longitude", dialogMarker.getLongitude());
 		intent.putExtra("image", dialogMarker.getImage());
 		intent.putExtra("regionId", dialogMarker.getRegionId());
+		intent.putExtra("boundaryId", dialogMarker.getBoundaryId());
 		intent.putExtra("eventId", dialogMarker.getEventId());
 		intent.putExtra("markerId", dialogMarker.getId());
 		intent.putExtra("mode", MapViewActivity.MARKER_UPLOAD);
@@ -251,12 +259,10 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements
 			icon = activity.getResources().getDrawable(R.drawable.marker_lit);
 			break;
 		case 3:
-			icon = activity.getResources()
-					.getDrawable(R.drawable.marker_not);
+			icon = activity.getResources().getDrawable(R.drawable.marker_not);
 			break;
 		case 4:
-			icon = activity.getResources()
-					.getDrawable(R.drawable.marker_sig);
+			icon = activity.getResources().getDrawable(R.drawable.marker_sig);
 			break;
 		case 5:
 			icon = activity.getResources().getDrawable(R.drawable.marker_dan);

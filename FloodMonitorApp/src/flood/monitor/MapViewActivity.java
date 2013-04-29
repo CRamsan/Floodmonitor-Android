@@ -126,6 +126,10 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	private int buttonState;
 	private int markersPerPage;
 
+	private int selectedRegionId;
+	private int selectedEventId;
+	private int selectedBoundaryId;
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -172,6 +176,14 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 					@Override
 					public void onClick(View arg0) {
 						removeMarkerFromMap();
+					}
+				});
+
+		findViewById(R.id.buttonUnclustered).setOnClickListener(
+				new Button.OnClickListener() {
+					@Override
+					public void onClick(View arg0) {
+						activity.downloadEventsAndShowDialog(0);
 					}
 				});
 
@@ -559,6 +571,26 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		switch (requestCode) {
 		case UPLOAD_INTENT:
 			if (resultCode == RESULT_OK) {
+
+				GeoPoint point = new GeoPoint((int) (data.getDoubleExtra(
+						"latitude", 0.0) * 1000000),
+						(int) (data.getDoubleExtra("longitude", 0.0) * 1000000));
+				int id = data.getIntExtra("id", -1);
+				String obstime = data.getStringExtra("title");
+				String comment = data.getStringExtra("snippet");
+				String image = data.getStringExtra("fileImage");
+				int severity = data.getIntExtra("severity", 5);
+
+				Marker marker = new Marker(id, point, obstime, comment, image,
+						severity);
+
+				marker.setBoundaryId(selectedBoundaryId);
+				marker.setRegionId(selectedRegionId);
+				marker.setEventId(selectedEventId);
+
+				markersOverlay.addOverlayMarker(marker);
+				markersOverlay.overlayPopulate();
+
 				buttonState = ADD_BUTTON_ENABLED;
 				locationOverlay.stopDragMarker();
 				updateButton();
@@ -571,6 +603,29 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 				locationOverlay.stopDragMarker();
 				updateButton();
 				limitedMapView.invalidate();
+
+				if (data != null) {
+
+					GeoPoint point = new GeoPoint(
+							(int) (data.getDoubleExtra("latitude", 0.0) * 1000000),
+							(int) (data.getDoubleExtra("longitude", 0.0) * 1000000));
+					int id = data.getIntExtra("id", -1);
+					String obstime = data.getStringExtra("title");
+					String comment = data.getStringExtra("snippet");
+					String image = data.getStringExtra("fileImage");
+					int severity = data.getIntExtra("severity", 5);
+
+					Marker marker = new Marker(id, point, obstime, comment,
+							image, severity);
+
+					marker.setBoundaryId(selectedBoundaryId);
+					marker.setRegionId(selectedRegionId);
+					marker.setEventId(selectedEventId);
+
+					markersOverlay.addOverlayMarker(marker);
+					markersOverlay.overlayPopulate();
+				}
+
 			}
 			break;
 		case SETTINGS_INTENT:
@@ -860,6 +915,11 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 				.getLatitude());
 		intent.putExtra("longitude", locationOverlay.getMarkerLocation()
 				.getLongitude());
+
+		intent.putExtra("boundaryId", selectedBoundaryId);
+		intent.putExtra("eventId", selectedEventId);
+		intent.putExtra("regionId", selectedRegionId);
+
 		startActivityForResult(intent, UPLOAD_INTENT);
 	}
 
@@ -1033,6 +1093,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 				findViewById(R.id.buttonNextPage).setVisibility(View.GONE);
 				findViewById(R.id.buttonPrevPage).setVisibility(View.GONE);
 			}
+			findViewById(R.id.buttonUnclustered).setVisibility(View.GONE);
 			findViewById(R.id.buttonLayerUp).setVisibility(View.VISIBLE);
 			break;
 		case MAP_LEVEL_REGION:
@@ -1049,6 +1110,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 				findViewById(R.id.buttonInfoMarker).setVisibility(View.VISIBLE);
 				break;
 			}
+			findViewById(R.id.buttonUnclustered).setVisibility(View.VISIBLE);
 			findViewById(R.id.buttonUploadMarker).setVisibility(View.GONE);
 			findViewById(R.id.buttonLayerUp).setVisibility(View.GONE);
 			findViewById(R.id.buttonNextPage).setVisibility(View.GONE);
@@ -1347,6 +1409,10 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 					ArrayList<KMLFile> kmlFiles = null;
 					ArrayList<Marker> baseMarkers;
 					ArrayList<Marker> diffMarkers = null;
+
+					selectedBoundaryId = boundary.getId();
+					selectedEventId = selectedEvent.getEventId();
+					selectedRegionId = selectedRegion.getRegionId();
 
 					if (kml == null) {
 						kmlFiles = Connector.downloadKML(boundary.getId(),

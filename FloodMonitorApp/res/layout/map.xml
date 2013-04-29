@@ -82,15 +82,22 @@
             android:layout_height="wrap_content"
             android:contentDescription="@string/desc_buttonLayerUp"
             android:src="@drawable/layerup" />
+
+        <Button
+            android:id="@+id/buttonUnclustered"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/text_Unclustered"
+            android:textAppearance="?android:attr/buttonStyleSmall"  />
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/linearLayout1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="26dp"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" >
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="26dp" >
 
         <ImageButton
             android:id="@+id/buttonZoomOut"
@@ -107,7 +114,6 @@
             android:layout_marginLeft="18dp"
             android:contentDescription="@string/desc_buttonZoomIn"
             android:src="@drawable/zoomin" />
-
     </LinearLayout>
 
     <TextView

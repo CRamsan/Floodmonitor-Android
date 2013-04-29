@@ -150,19 +150,18 @@ public class Connector {
 			InputStream is = ucon.getInputStream();
 
 			// read it with BufferedReader
-			/*BufferedReader br = new BufferedReader(new InputStreamReader(is));
-			StringBuilder sb = new StringBuilder();
+			/*
+			 * BufferedReader br = new BufferedReader(new
+			 * InputStreamReader(is)); StringBuilder sb = new StringBuilder();
+			 * 
+			 * String line; while ((line = br.readLine()) != null) {
+			 * sb.append(line); } line = sb.toString();
+			 */
 
-			String line;
-			while ((line = br.readLine()) != null) {
-				sb.append(line);
-			}
-			line = sb.toString();*/
-			
 			kmlFiles = Parser.ParseKMLFiles(is);
 
-			//br.close();
-			
+			// br.close();
+
 		} catch (IOException e) {
 			Log.d("Connector", "Error: " + e);
 		}
@@ -195,7 +194,7 @@ public class Connector {
 			 * Define InputStreams to read from the URLConnection.
 			 */
 			InputStream is = ucon.getInputStream();
-			
+
 			kmlFiles = Parser.ParseKMLFiles(is);
 
 		} catch (IOException e) {
@@ -367,19 +366,15 @@ public class Connector {
 			request.close();
 
 			InputStream is = ucon.getInputStream();
-			
-			
-			// read it with BufferedReader
-			BufferedReader br = new BufferedReader(new InputStreamReader(
-					ucon.getInputStream()));
-			StringBuilder sb = new StringBuilder();
 
-			String line;
-			while ((line = br.readLine()) != null) {
-				sb.append(line);
-			}
-			line = sb.toString();
-			br.close();
+			// read it with BufferedReader
+			/*
+			 * BufferedReader br = new BufferedReader(new InputStreamReader(
+			 * ucon.getInputStream())); StringBuilder sb = new StringBuilder();
+			 * 
+			 * String line; while ((line = br.readLine()) != null) {
+			 * sb.append(line); } line = sb.toString(); br.close();
+			 */
 
 			markers = Parser.ParseMarkers(is);
 
@@ -402,8 +397,8 @@ public class Connector {
 				Environment.getExternalStorageDirectory(), PUBLIC_DIR
 						+ File.separator + DOWNLOAD_DIR + File.separator
 						+ marker.getRegionId() + File.separator
-						+ marker.getEventId() + marker.getBoundaryId()
-						+ File.separator);
+						+ marker.getEventId() + File.separator
+						+ marker.getBoundaryId() + File.separator);
 
 		if (!mediaStorageDir.exists()) {
 			if (!mediaStorageDir.mkdirs()) {

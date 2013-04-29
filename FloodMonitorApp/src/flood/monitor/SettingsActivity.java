@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
-import android.provider.ContactsContract.Data;
 import android.provider.SearchRecentSuggestions;
 import android.widget.Toast;
 import flood.monitor.MapViewActivity.AddressSuggestionProvider;

@@ -29,7 +29,8 @@ public class ObjectDataSource {
 			SQLiteManager.MARKERS_COLUMN_IMAGEURL,
 			SQLiteManager.MARKERS_COLUMN_SEVERITY,
 			SQLiteManager.MARKERS_COLUMN_EVENTID,
-			SQLiteManager.MARKERS_COLUMN_BOUNDARYID };
+			SQLiteManager.MARKERS_COLUMN_BOUNDARYID,
+			SQLiteManager.MARKERS_COLUMN_REGIONID};
 
 	private String[] allColumnsRegions = { SQLiteManager.REGIONS_COLUMN_ID,
 			SQLiteManager.REGIONS_COLUMN_NAME };
@@ -103,19 +104,15 @@ public class ObjectDataSource {
 	public boolean insertMarker(Marker marker) {
 		ContentValues values = new ContentValues();
 		values.put(SQLiteManager.MARKERS_COLUMN_ID, marker.getId());
-		values.put(SQLiteManager.MARKERS_COLUMN_LATITUDE, marker.getPoint()
-				.getLatitudeE6());
-		values.put(SQLiteManager.MARKERS_COLUMN_LONGITUDE, marker.getPoint()
-				.getLongitudeE6());
-		values.put(SQLiteManager.MARKERS_COLUMN_OBSERVATION_TIME,
-				marker.getObservationTime());
-		values.put(SQLiteManager.MARKERS_COLUMN_COMMENT,
-				marker.getUserComment());
+		values.put(SQLiteManager.MARKERS_COLUMN_LATITUDE, marker.getPoint().getLatitudeE6());
+		values.put(SQLiteManager.MARKERS_COLUMN_LONGITUDE, marker.getPoint().getLongitudeE6());
+		values.put(SQLiteManager.MARKERS_COLUMN_OBSERVATION_TIME,marker.getObservationTime());
+		values.put(SQLiteManager.MARKERS_COLUMN_COMMENT,marker.getUserComment());
 		values.put(SQLiteManager.MARKERS_COLUMN_IMAGEURL, marker.getImage());
 		values.put(SQLiteManager.MARKERS_COLUMN_SEVERITY, marker.getSeverity());
 		values.put(SQLiteManager.MARKERS_COLUMN_EVENTID, marker.getEventId());
-		values.put(SQLiteManager.MARKERS_COLUMN_BOUNDARYID,
-				marker.getBoundaryId());
+		values.put(SQLiteManager.MARKERS_COLUMN_BOUNDARYID,	marker.getBoundaryId());
+		values.put(SQLiteManager.MARKERS_COLUMN_REGIONID,	marker.getRegionId());
 
 		long insertId = database.insert(SQLiteManager.TABLE_MARKERS_NAME, null,
 				values);
@@ -182,6 +179,7 @@ public class ObjectDataSource {
 				(int) cursor.getLong(1), (int) cursor.getLong(2)),
 				cursor.getString(3), cursor.getString(4), cursor.getString(5),
 				severity, cursor.getInt(7), cursor.getInt(8));
+		marker.setRegionId(cursor.getInt(9));
 		return marker;
 	}
 

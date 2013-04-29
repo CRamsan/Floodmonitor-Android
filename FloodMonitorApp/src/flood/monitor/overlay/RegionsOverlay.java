@@ -74,6 +74,9 @@ public class RegionsOverlay extends ItemizedOverlay<OverlayItem> implements
 	public void setRegions(ArrayList<Region> regions) {
 		this.regions = regions;
 		for (Region region : regions) {
+			if(region.getRegionId() == 0){
+				continue;
+			}
 			OverlayItem item = new OverlayItem(region.getCenter(),
 					region.getName(), "");
 			markers.add(item);
