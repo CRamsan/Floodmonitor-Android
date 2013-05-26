@@ -17,7 +17,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.util.Base64;
-import android.util.Log;
 import flood.monitor.modules.kmlparser.Event;
 import flood.monitor.modules.kmlparser.KMLFile;
 import flood.monitor.modules.kmlparser.Marker;
@@ -71,7 +70,6 @@ public class Connector {
 			regions = Parser.ParseRegions(is);
 
 		} catch (IOException e) {
-			Log.d("Connector", "Error: " + e);
 		}
 		return regions;
 	}
@@ -114,7 +112,6 @@ public class Connector {
 				event.setRegionId(regionId);
 			}
 		} catch (IOException e) {
-			Log.d("Connector", "Error: " + e);
 		}
 		return events;
 	}
@@ -163,7 +160,6 @@ public class Connector {
 			// br.close();
 
 		} catch (IOException e) {
-			Log.d("Connector", "Error: " + e);
 		}
 		return kmlFiles;
 	}
@@ -198,7 +194,6 @@ public class Connector {
 			kmlFiles = Parser.ParseKMLFiles(is);
 
 		} catch (IOException e) {
-			Log.d("Connector", "Error: " + e);
 		}
 		return kmlFiles;
 	}
@@ -247,13 +242,11 @@ public class Connector {
 
 			br.close();
 		} catch (IOException e) {
-			Log.d("Connector", "Error: " + e);
 		}
 		return kmlFiles;
 	}
 
 	public static ArrayList<Marker> downloadMarkers(ArrayList<KMLFile> kmlFiles) {
-		OutputStreamWriter request = null;
 		InputStream is = null;
 		ArrayList<Marker> markers = new ArrayList<Marker>(0);
 		try {
@@ -283,7 +276,6 @@ public class Connector {
 			}
 
 		} catch (IOException e) {
-			Log.d("Connector", "Error: " + e);
 		}
 		return markers;
 	}
@@ -379,7 +371,6 @@ public class Connector {
 			markers = Parser.ParseMarkers(is);
 
 		} catch (IOException e) {
-			Log.d("Connector", "Error: " + e);
 			return 0;
 		}
 		return markers.get(0).getId();
@@ -402,7 +393,6 @@ public class Connector {
 
 		if (!mediaStorageDir.exists()) {
 			if (!mediaStorageDir.mkdirs()) {
-				Log.d("Connector", "failed to create directory");
 				return null;
 			}
 		}
@@ -429,7 +419,6 @@ public class Connector {
 				fos.close();
 
 			} catch (IOException e) {
-				Log.d("Connector", "Error: " + e);
 			}
 		} else {
 			return file;

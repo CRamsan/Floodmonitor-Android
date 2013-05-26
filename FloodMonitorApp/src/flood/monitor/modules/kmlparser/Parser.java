@@ -14,8 +14,6 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import android.util.Log;
-
 import com.google.android.maps.GeoPoint;
 
 /**
@@ -121,13 +119,9 @@ public class Parser {
 			SAXParser saxParser = factory.newSAXParser();
 			saxParser.parse(stream, handler);
 		} catch (SAXException e) {
-			Log.d("Parser", e.getMessage());
 		} catch (ParserConfigurationException e) {
-			Log.d("Parser", e.getMessage());
 		} catch (FileNotFoundException e) {
-			Log.d("Parser", e.getMessage());
 		} catch (IOException e) {
-			Log.d("Parser", e.getMessage());
 		}
 		return handler.getKMLFiles();
 	}
@@ -140,13 +134,9 @@ public class Parser {
 			SAXParser saxParser = factory.newSAXParser();
 			saxParser.parse(stream, handler);
 		} catch (SAXException e) {
-			Log.d("Parser", e.getMessage());
 		} catch (ParserConfigurationException e) {
-			Log.d("Parser", e.getMessage());
 		} catch (FileNotFoundException e) {
-			Log.d("Parser", e.getMessage());
 		} catch (IOException e) {
-			Log.d("Parser", e.getMessage());
 		}
 
 		return handler.getKMLFiles();
@@ -486,9 +476,6 @@ public class Parser {
 
 		private int fileId = -1;
 		private int fileVersion = -1;
-		private int regionId = -1;
-		private int boundaryId = -1;
-		private int eventId = -1;
 		private boolean isBase = true;
 		private String fileURL;
 
@@ -645,7 +632,6 @@ public class Parser {
 
 			}
 			temp = "";
-			// Log.i(Parser.class.toString(), "Start Element :" + qName);
 		}
 
 		/*

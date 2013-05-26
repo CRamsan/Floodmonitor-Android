@@ -8,7 +8,6 @@ import java.util.List;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
-import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
@@ -28,17 +27,14 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.SearchRecentSuggestions;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -110,6 +106,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	private static RegionsOverlay regionsOverlay;
 	private static IOverlay selectedOverlay;
 	private static MapViewActivity activity;
+	@SuppressWarnings("rawtypes")
 	private static AsyncTask runningTask;
 	private static Geocoder geocoder;
 
@@ -874,9 +871,11 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	 * If a process is running(using isProcessRunning()), then a signal will be
 	 * send to such process to forcefully stop it.
 	 */
+	//TODO Review this method and delete it if not needed.
+	@SuppressWarnings("unused")
 	private void stopRunningProcess() {
 		if (isProcessRunning()) {
-			this.runningTask.cancel(true);
+			MapViewActivity.runningTask.cancel(true);
 		}
 	}
 
@@ -1154,6 +1153,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		 * 
 		 * @see android.os.AsyncTask#onPreExecute()
 		 */
+		@SuppressWarnings("deprecation")
 		@Override
 		protected void onPreExecute() {
 			showDialog(REGION_DOWNLOAD_DIALOG);
@@ -1205,6 +1205,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		 * 
 		 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
 		 */
+		@SuppressWarnings("deprecation")
 		@Override
 		protected void onPostExecute(Void none) {
 			if (taskCompleted) {
@@ -1233,8 +1234,6 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		@Override
 		public void setActivity(MapViewActivity activity) {
 			super.setActivity(activity);
-			Log.i("DownloadRegionsTask",
-					"Activity set to " + activity.getTaskId());
 		}
 
 		/*
@@ -1245,7 +1244,6 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		@Override
 		public void removeActivity() {
 			super.removeActivity();
-			Log.i("DownloadRegionsTask", "Activity set to null");
 		}
 	}
 
@@ -1272,12 +1270,12 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		 * 
 		 * @see android.os.AsyncTask#onPreExecute()
 		 */
+		@SuppressWarnings("deprecation")
 		@Override
 		protected void onPreExecute() {
 			showDialog(EVENT_DOWNLOAD_DIALOG);
 			data = new ObjectDataSource(activity);
 			data.open();
-			Log.i("MapViewActivity", "DownloadAndShowEventsTask started");
 		}
 
 		/*
@@ -1307,7 +1305,6 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 				((RegionsOverlay) selectedOverlay).setEvents(regionId, events);
 				taskCompleted = true;
 			}
-			Log.i("MapViewActivity", "DownloadAndShowEventsTask job finished");
 			return null;
 		}
 
@@ -1328,7 +1325,6 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			}
 			downloadEventsDialog.cancel();
 			data.close();
-			Log.i("MapViewActivity", "DownloadAndShowEventsTask ended");
 			runningTask = null;
 		}
 
@@ -1342,8 +1338,6 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		@Override
 		public void setActivity(MapViewActivity newActivity) {
 			this.activity = newActivity;
-			Log.i("DownloadRegionsTask",
-					"Activity set to " + activity.getTaskId());
 		}
 
 		/*
@@ -1354,7 +1348,6 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		@Override
 		public void removeActivity() {
 			this.activity = null;
-			Log.i("DownloadRegionsTask", "Activity set to null");
 		}
 
 	}
@@ -1380,12 +1373,12 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		 * 
 		 * @see android.os.AsyncTask#onPreExecute()
 		 */
+		@SuppressWarnings("deprecation")
 		@Override
 		protected void onPreExecute() {
 			showDialog(MARKER_DOWNLOAD_DIALOG);
 			data = new ObjectDataSource(activity);
 			data.open();
-			Log.i("MapViewActivity", "DownloadMarkersTask started");
 		}
 
 		/*
@@ -1493,7 +1486,6 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 				Collections.sort(allMarkers);
 				taskCompleted = true;
 			}
-			Log.i("MapViewActivity", "DownloadMarkersTask job finished");
 			return null;
 		}
 
@@ -1527,7 +1519,6 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 			data.close();
 			// dismissDialog(MARKER_DOWNLOAD_DIALOG);
 			downloadMarkersDialog.cancel();
-			Log.i("MapViewActivity", "DownloadMarkersTask ended");
 			runningTask = null;
 		}
 
@@ -1541,8 +1532,6 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		@Override
 		public void setActivity(MapViewActivity activity) {
 			this.activity = activity;
-			Log.i("DownloadRegionsTask",
-					"Activity set to " + activity.getTaskId());
 		}
 
 		/*
@@ -1553,7 +1542,6 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		@Override
 		public void removeActivity() {
 			this.activity = null;
-			Log.i("DownloadRegionsTask", "Activity set to null");
 		}
 	}
 
@@ -1918,7 +1906,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	public static class SearchActivity extends Activity {
 
 		private List<Address> addressList;
-		
+
 		/*
 		 * (non-Javadoc)
 		 * 
@@ -1951,8 +1939,7 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		 */
 		public void search(String query) {
 			try {
-				this.addressList = geocoder.getFromLocationName(query,
-						1);
+				this.addressList = geocoder.getFromLocationName(query, 1);
 				if (addressList.size() == 0) {
 					return;
 				} else if (addressList.size() == 1) {

@@ -9,7 +9,6 @@ import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import flood.monitor.MapViewActivity;
 
 /**
@@ -239,17 +238,12 @@ public class Locator {
 
 			switch (status) {
 			case LocationProvider.OUT_OF_SERVICE:
-				Log.v("Locator", "Provider Status Changed: Out Of Service");
 				break;
 			case LocationProvider.TEMPORARILY_UNAVAILABLE:
-				Log.v("Locator",
-						"Provider Status Changed: Temporarily Unavailable");
 				break;
 			case LocationProvider.AVAILABLE:
-				Log.v("Locator", "Provider Status Changed: Available");
 				break;
 			default:
-				Log.v("Locator", "Provider Status Changed: Not Specified");
 				break;
 			}
 		}
@@ -281,7 +275,6 @@ public class Locator {
 		 */
 		@Override
 		public void onProviderEnabled(String provider) {
-			Log.v("Locator", "Provider Enabled " + provider);
 		}
 
 		/*
@@ -293,7 +286,6 @@ public class Locator {
 		 */
 		@Override
 		public void onProviderDisabled(String provider) {
-			Log.v("Locator", "Provider Disabled " + provider);
 		}
 
 	}

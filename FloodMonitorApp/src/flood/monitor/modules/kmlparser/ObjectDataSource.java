@@ -90,7 +90,7 @@ public class ObjectDataSource {
 	 * Drops all the tables and creates them again.
 	 */
 	public void reset() {
-		dbHelper.onUpgrade(database, dbHelper.DATABASE_VERSION, dbHelper.DATABASE_VERSION);
+		dbHelper.onUpgrade(database, SQLiteManager.DATABASE_VERSION, SQLiteManager.DATABASE_VERSION);
 	}
 	
 	/**

@@ -3,7 +3,6 @@ package flood.monitor;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
@@ -27,7 +26,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -276,8 +274,6 @@ public class UploadFormActivity extends Activity {
 					new String[] { file.toString() }, null,
 					new MediaScannerConnection.OnScanCompletedListener() {
 						public void onScanCompleted(String path, Uri uri) {
-							Log.i("ExternalStorage", "Scanned " + path + ":");
-							Log.i("ExternalStorage", "-> uri=" + uri);
 						}
 					});
 			if (resultCode == RESULT_OK) {
@@ -290,8 +286,6 @@ public class UploadFormActivity extends Activity {
 					Toast.makeText(this, "Image saved to:\n" + file,
 							Toast.LENGTH_LONG).show();
 				} catch (Exception e) {
-					Log.i(UploadFormActivity.class.toString(),
-							"Something went terribly bad and I still can't figure out what it is");
 					Toast.makeText(
 							this,
 							"Error while retrieving picture, select this picture through the gallery please",
@@ -339,8 +333,6 @@ public class UploadFormActivity extends Activity {
 																					// the
 																					// image
 								if (fileUri == null) {
-									Log.i(UploadFormActivity.class.toString(),
-											"fileUri empty at createDialog()");
 								}
 								file = fileUri.getPath();
 								intent.putExtra(MediaStore.EXTRA_OUTPUT,
@@ -409,7 +401,6 @@ public class UploadFormActivity extends Activity {
 		// Create the storage directory if it does not exist
 		if (!mediaStorageDir.exists()) {
 			if (!mediaStorageDir.mkdirs()) {
-				Log.d("MyCameraApp", "failed to create directory");
 				return null;
 			}
 		}
@@ -420,10 +411,7 @@ public class UploadFormActivity extends Activity {
 		if (type == MEDIA_TYPE_IMAGE) {
 			mediaFile = new File(mediaStorageDir.getPath() + File.separator
 					+ "IMG_" + timeStamp + ".jpg");
-			Log.i(UploadFormActivity.class.toString(), "fileUri created");
 		} else {
-			Log.i(UploadFormActivity.class.toString(),
-					"fileUri empty at creation");
 			return null;
 		}
 
@@ -441,6 +429,8 @@ public class UploadFormActivity extends Activity {
 	public String getRealPathFromURI(Uri contentUri) {
 		// can post image
 		String[] proj = { MediaStore.Images.Media.DATA };
+		@SuppressWarnings("deprecation")
+		//TODO Review method used and look for alternative
 		Cursor cursor = managedQuery(contentUri, proj, // Which columns to
 														// return
 				null, // WHERE clause; which rows to return (all rows)
@@ -467,6 +457,7 @@ public class UploadFormActivity extends Activity {
 		 * 
 		 * @see android.os.AsyncTask#onPreExecute()
 		 */
+		@SuppressWarnings("deprecation")
 		@Override
 		protected void onPreExecute() {
 			showDialog(UPLOADING_DIALOG);
@@ -527,7 +518,6 @@ public class UploadFormActivity extends Activity {
 
 					if (!mediaStorageDir.exists()) {
 						if (!mediaStorageDir.mkdirs()) {
-							Log.d("Connector", "failed to create directory");
 							return null;
 						}
 					}
@@ -599,6 +589,7 @@ public class UploadFormActivity extends Activity {
 		 * 
 		 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
 		 */
+		@SuppressWarnings("deprecation")
 		@Override
 		protected void onPostExecute(Void none) {
 			dismissDialog(UPLOADING_DIALOG);

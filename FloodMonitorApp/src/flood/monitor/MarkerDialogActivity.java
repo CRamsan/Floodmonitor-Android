@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import android.app.Activity;
 import android.content.Context;
@@ -18,7 +17,6 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -285,7 +283,8 @@ public class MarkerDialogActivity extends Activity {
 		case MapViewActivity.UPLOAD_INTENT:
 			if (resultCode == RESULT_OK) {
 				setResult(RESULT_OK, data);
-				findViewById(R.id.applyChangesButton).setVisibility(View.VISIBLE);
+				findViewById(R.id.applyChangesButton).setVisibility(
+						View.VISIBLE);
 			}
 			break;
 		default:
@@ -483,26 +482,24 @@ public class MarkerDialogActivity extends Activity {
 
 						WindowManager mWinMgr = (WindowManager) activity
 								.getSystemService(Context.WINDOW_SERVICE);
+						// TODO Review the use of deprecated methods and look
+						// for alternatives
+						@SuppressWarnings("deprecation")
 						int displayWidth = mWinMgr.getDefaultDisplay()
 								.getWidth();
+						@SuppressWarnings("deprecation")
 						int displayHeight = mWinMgr.getDefaultDisplay()
 								.getHeight();
 						if (myBitmap.getWidth() > ((float) displayWidth * 0.90f)
 								|| myBitmap.getHeight() > ((float) displayHeight * 0.90f)) {
-							Log.i("MarkerDialogActivity",
-									"Image is been processed");
 							myImage.setImageBitmap(decodeSampledBitmapFromFile(
 									localImage, (int) (displayWidth * 0.90)));
 						} else {
-							Log.i("MarkerDialogActivity",
-									"Image is loaded without been processed");
 							myImage.setImageBitmap(myBitmap);
 						}
 
 						myImage.setVisibility(View.VISIBLE);
 					} catch (Exception e) {
-						Log.e("MarkerDialogActivity",
-								"Error while loading picture");
 						((TextView) findViewById(R.id.textViewImageLoading))
 								.setVisibility(View.VISIBLE);
 					}

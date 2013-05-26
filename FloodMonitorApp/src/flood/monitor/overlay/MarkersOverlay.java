@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.MotionEvent;
 
 import com.google.android.maps.ItemizedOverlay;
@@ -126,7 +125,6 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements
 		this.markersinPage.addAll(markers.subList(page * markersPerPage, page
 				* markersPerPage + perPage));
 		populate();
-		Log.i("Sample", Integer.toString(markersinPage.size()));
 	}
 
 	/**
@@ -144,7 +142,6 @@ public class MarkersOverlay extends ItemizedOverlay<OverlayItem> implements
 		this.markersinPage.addAll(markers.subList(page * markersPerPage, page
 				* markersPerPage + perPage));
 		populate();
-		Log.i("Sample", Integer.toString(markersinPage.size()));
 	}
 
 	/*
