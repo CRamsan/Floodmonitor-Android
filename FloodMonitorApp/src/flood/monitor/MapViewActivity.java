@@ -1915,10 +1915,10 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	 * @author Cesar
 	 * 
 	 */
-	public static class SearchActivity extends ListActivity {
+	public static class SearchActivity extends Activity {
 
 		private List<Address> addressList;
-
+		
 		/*
 		 * (non-Javadoc)
 		 * 
@@ -1951,30 +1951,14 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		 */
 		public void search(String query) {
 			try {
-				List<Address> addressList = geocoder.getFromLocationName(query,
-						5);
-				this.addressList = addressList;
+				this.addressList = geocoder.getFromLocationName(query,
+						1);
 				if (addressList.size() == 0) {
 					return;
-				}
-				String[] items = new String[addressList.size()];
-				for (int i = 0; i < addressList.size(); i++) {
-					int addSize = addressList.get(i).getMaxAddressLineIndex();
-					StringBuffer sb = new StringBuffer(100);
-					for (int j = 0; j < addSize; j++) {
-						sb.append(addressList.get(i).getAddressLine(j));
-						if (j < addSize - 1)
-							sb.append(", ");
-					}
-					items[i] = sb.toString();
-				}
-				if (addressList.size() == 1) {
+				} else if (addressList.size() == 1) {
 					activity.getResults(addressList.get(0));
 					this.finish();
 				}
-				ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-						android.R.layout.simple_list_item_1, items);
-				setListAdapter(adapter);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -1994,20 +1978,6 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 						.show();
 				this.finish();
 			}
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * android.app.ListActivity#onListItemClick(android.widget.ListView,
-		 * android.view.View, int, long)
-		 */
-		@Override
-		protected void onListItemClick(ListView l, View v, int position, long id) {
-			Address address = addressList.get(position);
-			activity.getResults(address);
-			this.finish();
 		}
 
 	}

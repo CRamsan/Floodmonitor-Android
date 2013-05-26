@@ -1,8 +1,7 @@
 package flood.monitor;
 
-import org.acra.ACRA;
-import org.acra.ReportingInteractionMode;
-import org.acra.annotation.ReportsCrashes;
+import org.acra.*;
+import org.acra.annotation.*;
 
 import android.app.Application;
 
