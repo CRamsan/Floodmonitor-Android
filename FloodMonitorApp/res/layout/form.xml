@@ -13,7 +13,7 @@
             android:id="@+id/observationTimeView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/text_ObservationDateTime"
+            android:text="@string/text_ObservationDateTime_Required"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <DatePicker
@@ -32,7 +32,7 @@
             android:id="@+id/emailView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/text_Email"
+            android:text="@string/text_Email_Required"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <EditText
@@ -45,7 +45,7 @@
             android:id="@+id/severityView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/text_Severity"
+            android:text="@string/text_Severity_Required"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <Spinner
@@ -53,7 +53,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:entries="@array/severities"
-            android:prompt="@string/text_Severity" />
+            android:prompt="@string/text_Severity_Required" />
 
         <TextView
             android:id="@+id/latitudeView"
@@ -158,14 +158,6 @@
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textIsSelectable="true" />
         </LinearLayout>
-
-        <TextView
-            android:id="@+id/requiredView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:text="@string/text_DenotesRequired"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <RelativeLayout
             android:layout_width="match_parent"

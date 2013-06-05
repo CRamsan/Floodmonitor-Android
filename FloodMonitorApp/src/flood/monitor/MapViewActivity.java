@@ -349,9 +349,9 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 	@Override
 	protected void onPause() {
 		super.onPause();
-		if (selectedOverlay != null) {
+		/*if (selectedOverlay != null) {
 			removeOverlay((Overlay) selectedOverlay);
-		}
+		}*/
 		// Another activity is taking focus (this activity is about to
 		// be"paused")
 	}
@@ -366,6 +366,9 @@ public class MapViewActivity extends MapActivity implements OnTouchListener {
 		super.onStop();
 		// The activity is no longer visible (it is now "stopped")
 		locator.stopListening();
+		if (selectedOverlay != null) {
+			removeOverlay((Overlay) selectedOverlay);
+		}
 		switch (getMapLevel()) {
 		case MapViewActivity.MAP_LEVEL_REGION:
 			break;

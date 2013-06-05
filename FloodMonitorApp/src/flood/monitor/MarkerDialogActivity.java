@@ -93,11 +93,9 @@ public class MarkerDialogActivity extends Activity {
 
 				latView.setText(activity.getResources().getString(
 						R.string.text_Latitude)
-						+ ": "
 						+ Double.toString(marker.getPoint().getLatitudeE6() / 1000000f));
 				lonView.setText(activity.getResources().getString(
 						R.string.text_Longitude)
-						+ ": "
 						+ Double.toString(marker.getPoint().getLongitudeE6() / 1000000f));
 
 				titleView.setVisibility(View.GONE);
@@ -123,16 +121,16 @@ public class MarkerDialogActivity extends Activity {
 
 				titleView.setText(activity.getResources().getString(
 						R.string.text_ObservationDateTime)
-						+ ": " + marker.getObservationTime());
+						+ marker.getObservationTime());
 				descView.setText(activity.getResources().getString(
 						R.string.text_Description)
-						+ ": " + marker.getUserComment());
+						+ marker.getUserComment());
 				latView.setText(activity.getResources().getString(
 						R.string.text_Latitude)
-						+ ": " + Double.toString(marker.getLatitude()));
+						+ Double.toString(marker.getLatitude()));
 				lonView.setText(activity.getResources().getString(
 						R.string.text_Longitude)
-						+ ": " + Double.toString(marker.getLongitude()));
+						+ Double.toString(marker.getLongitude()));
 
 				titleView.setVisibility(View.VISIBLE);
 				descView.setVisibility(View.VISIBLE);
@@ -382,7 +380,7 @@ public class MarkerDialogActivity extends Activity {
 				((TextView) findViewById(R.id.textViewAddress))
 						.setText(activity.getResources().getString(
 								R.string.text_Address)
-								+ ": " + address);
+								+ address);
 				((ProgressBar) findViewById(R.id.progressBarAddress))
 						.setVisibility(View.GONE);
 
@@ -511,7 +509,7 @@ public class MarkerDialogActivity extends Activity {
 			((TextView) findViewById(R.id.textViewImageLoading))
 					.setText(activity.getResources().getString(
 							R.string.text_Picture)
-							+ ": " + message);
+							+ message);
 			((ProgressBar) findViewById(R.id.progressBarImageLoading))
 					.setVisibility(View.GONE);
 		}
